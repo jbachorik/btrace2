@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sun.btrace</groupId>
+        <artifactId>btrace</artifactId>
+        <relativePath>..</relativePath>
+        <version>1.3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>btrace-dtrace</artifactId>
+    <packaging>pom</packaging>
+
+    <name>btrace-dtrace</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>btrace-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>btrace-dtrace-mock</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <modules>
+        <module>java</module>
+        <module>native</module>
+    </modules>
+    <description>(Open)Solaris only</description>
+</project>

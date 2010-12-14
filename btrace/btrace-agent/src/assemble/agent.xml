@@ -1,0 +1,32 @@
+
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    <id>agent</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>      
+      <!-- Now, select which projects to include in this module-set. -->
+            <includes>
+                <include>com.sun.btrace:btrace-instr</include>
+            </includes>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <excludes>
+                    <exclude>com/sun/btrace/*.class</exclude>
+                    <exclude>com/sun/btrace/aggregation/*</exclude>
+                    <exclude>com/sun/btrace/comm/*</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <fileSet>
+            <directory>target/classes/com</directory>
+            <outputDirectory>com</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>
