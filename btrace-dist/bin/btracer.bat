@@ -6,9 +6,9 @@ set DEFAULT_BTRACE_HOME=%~dp0..
 if "%BTRACE_HOME%"=="" set BTRACE_HOME=%DEFAULT_BTRACE_HOME%
 set DEFAULT_BTRACE_HOME=
 
-if not exist "%BTRACE_HOME%\build\btrace-agent.jar" goto noBTraceHome
+if not exist "%BTRACE_HOME%\bin\btrace-agent.jar" goto noBTraceHome
 
-java -Xshare:off -javaagent:%BTRACE_HOME%/build/btrace-agent.jar=dumpClasses=false,debug=false,unsafe=false,probeDescPath=.,noServer=true,script=%1 %2 %3 %4 %5 %6 %7 %8 %9
+java -Xshare:off -javaagent:%BTRACE_HOME%/bin/btrace-agent.jar=dumpClasses=false,debug=false,unsafe=false,probeDescPath=.,noServer=true,script=%1 %2 %3 %4 %5 %6 %7 %8 %9
 goto end
 
 :noBTraceHome
