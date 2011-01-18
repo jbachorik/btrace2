@@ -43,7 +43,7 @@ abstract public class TraceOutputWriter extends Writer {
         final private FileWriter delegate;
 
         public SimpleFileOutput(File output) throws IOException {
-            output.getParentFile().mkdirs();
+            output.getCanonicalFile().getParentFile().mkdirs();
             delegate = new FileWriter(output);
         }
         @Override
