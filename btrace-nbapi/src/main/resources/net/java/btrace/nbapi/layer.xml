@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.0//EN" "http://www.netbeans.org/dtds/filesystem-1_0.dtd">
+<filesystem>
+    <folder name="OptionsDialog">
+        <folder name="Advanced">
+            <file name="BTrace.instance">
+                <attr methodvalue="org.netbeans.spi.options.AdvancedOption.createSubCategory" name="instanceCreate"/>
+                <attr name="controller" newvalue="net.java.btrace.nbapi.options.impl.BTraceOptionsPanelController"/>
+                <attr name="displayName" bundlevalue="net.java.btrace.nbapi.options.impl.Bundle#BTrace"/>
+            </file>
+        </folder>
+    </folder>
+</filesystem>

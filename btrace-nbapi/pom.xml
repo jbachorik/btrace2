@@ -1,0 +1,169 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.java.btrace</groupId>
+    <artifactId>btrace-nbapi</artifactId>
+    <version>1.3-SNAPSHOT</version>
+    <packaging>nbm</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <repositories>
+        <!--
+        Repository hosting NetBeans modules, especially APIs.
+        Versions are based on IDE releases, e.g.: RELEASE691
+        To create your own repository, use: nbm:populate-repository
+        -->
+        <repository>
+            <id>netbeans</id>
+            <name>NetBeans</name>
+            <url>http://bits.netbeans.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-annotations-common</artifactId>
+            <version>RELEASE70-BETA</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-options-api</artifactId>
+            <version>RELEASE70-BETA</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <version>RELEASE70-BETA</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-compat</artifactId>
+            <version>RELEASE70-BETA</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-modules</artifactId>
+            <version>RELEASE70-BETA</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.btrace</groupId>
+            <artifactId>btrace-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.btrace</groupId>
+            <artifactId>btrace-agent</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <artifactId>org-openide-util</artifactId>
+            <groupId>org.netbeans.api</groupId>
+            <type>jar</type>
+            <version>RELEASE70-BETA</version>
+        </dependency>
+        <dependency>
+            <artifactId>btrace-compiler</artifactId>
+            <groupId>com.sun.btrace</groupId>
+            <type>jar</type>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <artifactId>btrace-asm</artifactId>
+            <groupId>com.sun.btrace</groupId>
+            <type>jar</type>
+            <version>3.3</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <artifactId>btrace-core</artifactId>
+            <groupId>com.sun.btrace</groupId>
+            <type>jar</type>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <artifactId>btrace-instr</artifactId>
+            <groupId>com.sun.btrace</groupId>
+            <type>jar</type>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <artifactId>asm</artifactId>
+            <groupId>asm</groupId>
+            <type>jar</type>
+            <version>3.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <artifactId>ant</artifactId>
+            <groupId>ant</groupId>
+            <type>jar</type>
+            <version>1.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <artifactId>ant-contrib</artifactId>
+            <groupId>ant-contrib</groupId>
+            <type>jar</type>
+            <version>1.0b3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.btrace</groupId>
+            <artifactId>btrace-boot</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+            <classifier>boot</classifier>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>nbm-maven-plugin</artifactId>
+                <version>3.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publicPackages>
+                        <publicPackage>com.sun.btrace.api</publicPackage>
+                        <publicPackage>com.sun.btrace.spi</publicPackage>
+                    </publicPackages>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <!-- NetBeans 6.9+ requires JDK 6 -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <showDeprecation>false</showDeprecation>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <!-- to have the jar plugin pickup the nbm generated manifest -->
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <name>BTrace NetBeans API</name>
+</project>

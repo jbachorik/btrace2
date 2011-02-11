@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: net/java/btrace/nbapi/Bundle.properties
+OpenIDE-Module-Layer: net/java/btrace/nbapi/layer.xml

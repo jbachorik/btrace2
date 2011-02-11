@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>btrace-asm</artifactId>
-    <version>3.3</version>
+    <version>${asm.version}</version>
     <packaging>jar</packaging>
 
     <name>btrace-asm</name>

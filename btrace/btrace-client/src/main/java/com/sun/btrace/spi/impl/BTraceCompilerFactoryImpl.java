@@ -9,6 +9,7 @@ import com.sun.btrace.api.BTraceCompiler;
 import com.sun.btrace.api.BTraceTask;
 import com.sun.btrace.spi.BTraceCompilerFactory;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -58,12 +59,25 @@ final public class BTraceCompilerFactoryImpl implements BTraceCompilerFactory {
 
             @Override
             public String getAgentJarPath() {
-                return getJarBaseDir() + File.separatorChar + "btrace-agent.jar";
+                return getJarPath("btrace-agent-");
             }
 
             @Override
             public String getClientJarPath() {
-                return getJarBaseDir() + File.separatorChar + "btrace-client.jar";
+                String base = getJarBaseDir();
+                File f = new File(base);
+                File[] files = f.listFiles(new FilenameFilter() {
+
+                    public boolean accept(File file, String name) {
+                        return name.endsWith(".jar");
+                    }
+                });
+                assert files.length > 0;
+                StringBuilder sb = new StringBuilder();
+                for(File jar : files) {
+                    sb.append(jar.getAbsolutePath()).append(File.pathSeparator);
+                }
+                return sb.toString();
             }
 
             final private Object toolsJarLock = new Object();
@@ -84,6 +98,19 @@ final public class BTraceCompilerFactoryImpl implements BTraceCompilerFactory {
             final private Object jarBaseDirLock = new Object();
             private String jarBaseDir = null;
 
+            private String getJarPath(final String jarBaseName) {
+                String base = getJarBaseDir();
+                File f = new File(base);
+                File[] files = f.listFiles(new FilenameFilter() {
+
+                    public boolean accept(File file, String name) {
+                        return name.startsWith(jarBaseName);
+                    }
+                });
+                assert files.length > 0;
+                return files[0].getAbsolutePath();
+            }
+            
             private String getJarBaseDir() {
                 synchronized(jarBaseDirLock) {
                     if (jarBaseDir == null) {

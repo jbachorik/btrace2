@@ -22,7 +22,7 @@
             </includes>
             <outputDirectory>btrace/lib</outputDirectory>
             <unpack>false</unpack>
-            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}</outputFileNameMapping>
             <useProjectArtifact>false</useProjectArtifact>
         </dependencySet>
         <dependencySet>
@@ -68,7 +68,7 @@
     </dependencySets>
     <fileSets>
         <fileSet>
-            <directory>bin</directory>
+            <directory>${basedir}/target/bin</directory>
             <outputDirectory>btrace/bin</outputDirectory>
             <fileMode>0555</fileMode>
         </fileSet>

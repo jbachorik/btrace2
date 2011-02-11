@@ -59,6 +59,11 @@
         </plugins>
     </reporting>
   
+  
+    <properties>
+        <asm.version>3.3</asm.version>
+    </properties>
+    
     <modules>
         <module>btrace-core</module>
         <module>btrace-asm</module>
