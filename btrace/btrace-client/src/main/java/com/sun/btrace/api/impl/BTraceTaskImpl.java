@@ -50,7 +50,7 @@ import java.util.concurrent.Executors;
  * @author Jaroslav Bachorik
  */
 public class BTraceTaskImpl extends BTraceTask implements BTraceEngineImpl.StateListener {
-    final private static Pattern NAMED_EVENT_PATTERN = Pattern.compile("@OnEvent\\s*\\(\\s*\\\"(\\w.*)\\\"\\s*\\)", Pattern.MULTILINE);
+    final private static Pattern NAMED_EVENT_PATTERN = Pattern.compile("@OnEvent\\s*\\(\\s*(value\\s*=\\s*)?\"(\\w.*)\"\\s*\\)", Pattern.MULTILINE);
     final private static Pattern ANONYMOUS_EVENT_PATTERN = Pattern.compile("@OnEvent(?!\\s*\\()");
     final private static Pattern UNSAFE_PATTERN = Pattern.compile("@BTrace\\s*\\(.*unsafe\\s*=\\s*(true|false).*\\)", Pattern.MULTILINE);
     final private static Pattern NAME_ANNOTATION_PATTERN = Pattern.compile("@BTrace\\s*\\(.*name\\s*=\\s*\"(.*)\".*\\)", Pattern.MULTILINE);
@@ -121,7 +121,7 @@ public class BTraceTaskImpl extends BTraceTask implements BTraceEngineImpl.State
         Set<String> events = new HashSet<String>();
         Matcher matcher = NAMED_EVENT_PATTERN.matcher(getScript());
         while (matcher.find()) {
-            events.add(matcher.group(1));
+            events.add(matcher.group(2));
         }
         return events;
     }
