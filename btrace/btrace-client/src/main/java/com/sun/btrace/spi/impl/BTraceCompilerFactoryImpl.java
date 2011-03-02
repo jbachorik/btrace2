@@ -1,6 +1,26 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2007, 2011, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
  */
 
 package com.sun.btrace.spi.impl;
@@ -8,16 +28,17 @@ package com.sun.btrace.spi.impl;
 import com.sun.btrace.api.BTraceCompiler;
 import com.sun.btrace.api.BTraceTask;
 import com.sun.btrace.spi.BTraceCompilerFactory;
+import com.sun.btrace.spi.ToolsJarLocator;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -86,9 +107,16 @@ final public class BTraceCompilerFactoryImpl implements BTraceCompilerFactory {
             public String getToolsJarPath() {
                 synchronized(toolsJarLock) {
                     if (toolsJar == null) {
-                        File toolsJarFile = getContainingJar("com/sun/tools/javac/Main.class");
-                        if (toolsJarFile != null) {
-                            toolsJar = toolsJarFile.getAbsolutePath();
+                        ServiceLoader<ToolsJarLocator> locator = ServiceLoader.load(ToolsJarLocator.class);
+                        if (locator != null) {
+                            Iterator<ToolsJarLocator> iter = locator.iterator();
+                            while (iter.hasNext()) {
+                                File file = iter.next().locateToolsJar(task);
+                                if (file != null && file.exists()) {
+                                    toolsJar = file.getAbsolutePath();
+                                    break;
+                                }
+                            }
                         }
                     }
                     return toolsJar;

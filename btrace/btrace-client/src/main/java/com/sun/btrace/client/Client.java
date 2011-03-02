@@ -1,12 +1,12 @@
 /*
- * Copyright 2008-2010 Sun Microsystems, Inc.  All Rights Reserved.
+ * Copyright (c) 2007, 2011, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Sun designates this
+ * published by the Free Software Foundation.  Oracle designates this
  * particular file as subject to the "Classpath" exception as provided
- * by Sun in the LICENSE file that accompanied this code.
+ * by Oracle in the LICENSE file that accompanied this code.
  *
  * This code is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -18,10 +18,11 @@
  * 2 along with this work; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
- * CA 95054 USA or visit www.sun.com if you need additional information or
- * have any questions.
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
  */
+
 package com.sun.btrace.client;
 
 import java.io.File;
@@ -51,6 +52,9 @@ import com.sun.tools.attach.VirtualMachine;
 import com.sun.btrace.org.objectweb.asm.ClassReader;
 import com.sun.btrace.org.objectweb.asm.AnnotationVisitor;
 import com.sun.btrace.org.objectweb.asm.Type;
+import com.sun.btrace.spi.ToolsJarLocator;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -290,7 +294,7 @@ public class Client {
                 agentArgs += ",bootClassPath=" + bootCp;
             }
             if (sysCp == null) {
-                sysCp = getToolsJarPath();
+                sysCp = getToolsJarPath(pid);
             }
             agentArgs += ",systemClassPath=" + sysCp;
             agentArgs += ",probeDescPath=" + probeDescPath;
@@ -407,26 +411,18 @@ public class Client {
     }
 
     //-- Internals only below this point
-    private String getToolsJarPath() {
-        // try to get absolute path of tools.jar
-        // first check this application's classpath
-        String[] components = System.getProperty("java.class.path").split(File.pathSeparator);
-        for (String c : components) {
-            if (c.endsWith("tools.jar")) {
-                return new File(c).getAbsolutePath();
-            } else if (c.endsWith("classes.jar")) { // MacOS specific
-                return new File(c).getAbsolutePath();
+    private String getToolsJarPath(String pid) {
+        ServiceLoader<ToolsJarLocator> locator = ServiceLoader.load(ToolsJarLocator.class);
+        if (locator != null) {
+            Iterator<ToolsJarLocator> iter = locator.iterator();
+            while (iter.hasNext()) {
+                File file = iter.next().locateToolsJar(Integer.valueOf(pid));
+                if (file != null && file.exists()) {
+                    return file.getAbsolutePath();
+                }
             }
         }
-        // we didn't find -- make a guess! If this app is running on a JDK rather 
-        // than a JRE there will be a tools.jar in $JDK_HOME/lib directory.
-        if(System.getProperty("os.name").startsWith("Mac")) {
-            String java_home = System.getProperty("java.home");
-            String java_mac_home = java_home.substring(0,java_home.indexOf("/Home"));
-            return java_mac_home + "/Classes/classes.jar";
-        } else {
-            return System.getProperty("java.home") + "../lib/tools.jar";
-        }
+        return null;
     }
 
     private void send(Command cmd) throws IOException {

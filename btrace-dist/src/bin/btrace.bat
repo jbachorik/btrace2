@@ -9,7 +9,7 @@ set DEFAULT_BTRACE_HOME=
 if not exist "%BTRACE_HOME%\lib\btrace-core-${project.version}.jar" goto noBTraceHome
 
 if "%JAVA_HOME%" == "" goto noJavaHome
-  %JAVA_HOME%/bin/java -Dcom.sun.btrace.probeDescPath=. -Dcom.sun.btrace.dumpClasses=false -Dcom.sun.btrace.debug=false -Dcom.sun.btrace.unsafe=false -cp %BTRACE_HOME%/lib/btrace-core-${project.version}.jar;%BTRACE_HOME%/lib/btrace-compiler-${project.version}.jar;%BTRACE_HOME%/lib/btrace-asm-${asm.version}.jar;%JAVA_HOME%/lib/tools.jar com.sun.btrace.client.Main %*
+  %JAVA_HOME%/bin/java -Dcom.sun.btrace.probeDescPath=. -Dcom.sun.btrace.dumpClasses=false -Dcom.sun.btrace.debug=false -Dcom.sun.btrace.unsafe=false -cp %BTRACE_HOME/lib/btrace-api-${project.version}.jar:%BTRACE_HOME%/lib/btrace-core-${project.version}.jar;%BTRACE_HOME%/lib/btrace-compiler-${project.version}.jar;%BTRACE_HOME%/lib/btrace-client-${project.version}.jar;%BTRACE_HOME%/lib/btrace-asm-${asm.version}.jar;%JAVA_HOME%/lib/tools.jar com.sun.btrace.client.Main %*
   goto end
 :noJavaHome
   echo Please set JAVA_HOME before running this script
