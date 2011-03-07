@@ -49,7 +49,7 @@
                             <outputDirectory>${basedir}/target/classes/samples</outputDirectory>
                             <resources>          
                                 <resource>
-                                    <directory>resources/samples</directory>
+                                    <directory>${basedir}/src/main/resources/samples</directory>
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>              
