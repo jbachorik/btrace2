@@ -26,6 +26,7 @@ package com.sun.btrace.compiler;
 
 import com.sun.btrace.org.objectweb.asm.ClassReader;
 import com.sun.btrace.org.objectweb.asm.ClassWriter;
+import java.util.Arrays;
 import javax.annotation.processing.Processor;
 import com.sun.source.util.JavacTask;
 import com.sun.btrace.util.Messages;
@@ -67,7 +68,7 @@ public class Compiler {
         if (includePath != null) {
             includeDirs = new ArrayList<String>();
             String[] paths = includePath.split(File.pathSeparator);
-            for (String p : paths) includeDirs.add(p);
+            includeDirs.addAll(Arrays.asList(paths));
         }
         this.unsafe = unsafe;
         this.compiler = ToolProvider.getSystemJavaCompiler();

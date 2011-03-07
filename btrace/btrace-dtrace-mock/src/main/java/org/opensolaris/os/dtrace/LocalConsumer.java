@@ -24,7 +24,6 @@
  */
 package org.opensolaris.os.dtrace;
 
-import com.sun.corba.se.impl.presentation.rmi.ExceptionHandler;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
