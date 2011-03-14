@@ -40,11 +40,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>btrace-asm</artifactId>
-            <version>3.3</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>btrace-compiler</artifactId>
             <version>${project.version}</version>
         </dependency>
