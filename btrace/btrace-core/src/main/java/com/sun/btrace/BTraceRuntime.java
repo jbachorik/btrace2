@@ -85,7 +85,6 @@ import java.lang.management.ThreadMXBean;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -97,6 +96,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import javax.management.ListenerNotFoundException;
 import javax.management.MBeanServer;
@@ -174,8 +174,8 @@ public final class BTraceRuntime {
     private static ThreadEnteredMap map = new ThreadEnteredMap(NULL);
 
     // BTraceRuntime against BTrace class name
-    private static Map<String, BTraceRuntime> runtimes =
-        Collections.synchronizedMap(new HashMap<String, BTraceRuntime>());
+    private static ConcurrentMap<String, BTraceRuntime> runtimes =
+        new ConcurrentHashMap<String, BTraceRuntime>();
 
     // jvmstat related stuff
     // to read and write perf counters
@@ -360,7 +360,7 @@ public final class BTraceRuntime {
                 } catch (InterruptedException ignored) {
                 } catch (IOException ignored) {
                 } finally {
-                    runtimes.put(className, null);
+                    runtimes.put(className, NULL);
                     queue.clear();
                     specQueueManager.clear();
                     BTraceRuntime.leave();
@@ -1998,6 +1998,18 @@ public final class BTraceRuntime {
             }
         } catch (InterruptedException ie) {
             ie.printStackTrace();
+        }
+    }
+    
+    public static void retransform(String runtimeName, Class<?> clazz) {
+        try {
+            BTraceRuntime rt = runtimes.get(runtimeName);
+            if (rt != null && rt.instrumentation.isModifiableClass(clazz)) {
+                System.err.println("*** calling retransform on " + clazz.getName());
+                rt.instrumentation.retransformClasses(clazz);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
