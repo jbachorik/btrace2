@@ -60,8 +60,10 @@ public class ClinitInjector extends ClassAdapter {
         if (((access & (Opcodes.ACC_INTERFACE | Opcodes.ACC_ANNOTATION)) != 0) ||
             (supername.equals("java/lang/Object") && interfaces.length == 0)) return;
         transformed = true;
-        super.visit(version, access, name, signature, supername, interfaces);
+        super.visit(version < Opcodes.V1_5 ? Opcodes.V1_5 : version, access, name, signature, supername, interfaces);
     }
+    
+    
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
@@ -78,7 +80,6 @@ public class ClinitInjector extends ClassAdapter {
 
                 @Override
                 public void visitMaxs(int maxStack, int maxLocals) {
-                    // the injected code requires 2 
                     super.visitMaxs(maxStack < requiredStack ? requiredStack : maxStack, maxLocals);
                 }
 

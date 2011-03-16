@@ -108,8 +108,8 @@ abstract class Client implements ClassFileTransformer, CommandListener {
             
             if (!skipRetransforms) {
                 if (debug) Main.debugPrint("injecting <clinit> for " + cname); // NOI18N
-                ClassWriter cw = InstrumentUtils.newClassWriter(classfileBuffer);
                 ClassReader cr = new ClassReader(classfileBuffer);
+                ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
                 ClinitInjector injector = new ClinitInjector(cw, className, cname);
                 InstrumentUtils.accept(cr, injector);
                 if (injector.isTransformed()) {
