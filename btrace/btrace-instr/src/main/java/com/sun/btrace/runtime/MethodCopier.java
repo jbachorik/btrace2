@@ -40,7 +40,9 @@ import com.sun.btrace.org.objectweb.asm.ClassReader;
 import com.sun.btrace.org.objectweb.asm.ClassVisitor;
 import com.sun.btrace.org.objectweb.asm.ClassWriter;
 import com.sun.btrace.org.objectweb.asm.FieldVisitor;
+import com.sun.btrace.org.objectweb.asm.MethodAdapter;
 import com.sun.btrace.org.objectweb.asm.MethodVisitor;
+import com.sun.btrace.org.objectweb.asm.Opcodes;
 import com.sun.btrace.org.objectweb.asm.Type;
 import static com.sun.btrace.runtime.Constants.CLASS_INITIALIZER;
 
@@ -56,6 +58,7 @@ import static com.sun.btrace.runtime.Constants.CLASS_INITIALIZER;
 public class MethodCopier extends ClassAdapter {
     private ClassReader fromClass;
     private Iterable<MethodInfo> methods;
+    private final boolean keepStackMap;
 
     public static class MethodInfo { 
         String name;
@@ -73,16 +76,36 @@ public class MethodCopier extends ClassAdapter {
     }
  
     public MethodCopier(ClassReader fromClass, ClassVisitor toClass, 
-                       Iterable<MethodInfo> methods) {  
+                       Iterable<MethodInfo> methods, boolean keepStackMap) {  
         super(toClass);
         this.fromClass = fromClass;
         this.methods = methods;
+        this.keepStackMap = keepStackMap;
     }
 
     protected MethodVisitor addMethod(int access, String name, String desc,
                         String signature, String[] exceptions) {
-        return super.visitMethod(access, name, desc, 
+        MethodVisitor mv = super.visitMethod(access, name, desc, 
                 signature, exceptions);
+        
+        return new MethodAdapter(mv) {
+
+            @Override
+            public AnnotationVisitor visitAnnotation(String string, boolean bln) {
+                return null;
+            }
+
+            @Override
+            public AnnotationVisitor visitAnnotationDefault() {
+                return null;
+            }
+
+            @Override
+            public void visitFrame(int i, int i1, Object[] os, int i2, Object[] os1) {
+                if (keepStackMap) super.visitFrame(i, i1, os, i2, os1);
+            }
+            
+        };
     }
 
     private MethodInfo getMethodInfo(String name, String desc) {
@@ -97,7 +120,7 @@ public class MethodCopier extends ClassAdapter {
         }
         return null;
     }
-                
+    
     public void visitEnd() {
         fromClass.accept(new ClassVisitor() {
             public void visit(int version, int access, String name, 
@@ -170,7 +193,7 @@ public class MethodCopier extends ClassAdapter {
         ClassReader reader2 = new ClassReader(new BufferedInputStream(fis2));
         FileOutputStream fos = new FileOutputStream(args[1] + ".class");
         ClassWriter writer = InstrumentUtils.newClassWriter();
-        MethodCopier copier = new MethodCopier(reader1, writer, miList);
+        MethodCopier copier = new MethodCopier(reader1, writer, miList, true);
         InstrumentUtils.accept(reader2, copier);
         fos.write(writer.toByteArray());
     }

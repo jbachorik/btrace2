@@ -64,6 +64,7 @@ public class Instrumentor extends ClassAdapter {
     private Set<OnMethod> calledOnMethods;
     private String className, superName;
     private Class clazz;
+    private int version;
 
     private boolean usesTimeStamp = false;
     private boolean timeStampExisting = false;
@@ -137,6 +138,7 @@ public class Instrumentor extends ClassAdapter {
                 applicableOnMethods.add(om);
             }
         }
+        this.version = version;
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
@@ -1318,7 +1320,7 @@ public class Instrumentor extends ClassAdapter {
                      ACC_STATIC | ACC_PRIVATE));
         }
         introduceTimeStampHelper();
-        MethodCopier copier = new MethodCopier(btraceClass, cv, mi) {
+        MethodCopier copier = new MethodCopier(btraceClass, cv, mi, (version & 0x0000ffff) >= Opcodes.V1_6) {
             @Override 
             protected MethodVisitor addMethod(int access, String name, String desc,
                         String signature, String[] exceptions) {
@@ -1330,6 +1332,7 @@ public class Instrumentor extends ClassAdapter {
             }
         };
         copier.visitEnd();
+        super.visitEnd();
     }
 
 
