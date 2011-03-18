@@ -2005,7 +2005,6 @@ public final class BTraceRuntime {
         try {
             BTraceRuntime rt = runtimes.get(runtimeName);
             if (rt != null && rt.instrumentation.isModifiableClass(clazz)) {
-                System.err.println("*** calling retransform on " + clazz.getName());
                 rt.instrumentation.retransformClasses(clazz);
             }
         } catch (Exception e) {
