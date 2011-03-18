@@ -432,6 +432,8 @@ public final class Main {
                                         inst.retransformClasses(c);
                                     } catch (VerifyError e) {
                                         debugPrint("verification error: " + c.getName());
+                                    } catch (UnsupportedOperationException e) {
+                                        debugPrint("retransformation error: " + c.getName());
                                     }
                                 }
                             } else {
