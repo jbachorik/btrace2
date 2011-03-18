@@ -60,7 +60,8 @@ public class ClinitInjector extends ClassAdapter {
         if (((access & (Opcodes.ACC_INTERFACE | Opcodes.ACC_ANNOTATION)) != 0) ||
             (supername.equals("java/lang/Object") && interfaces.length == 0)) return;
         transformed = true;
-        super.visit(version < Opcodes.V1_5 ? Opcodes.V1_5 : version, access, name, signature, supername, interfaces);
+        int major = version & 0x0000ffff;
+        super.visit(major < Opcodes.V1_5 ? Opcodes.V1_5 : version, access, name, signature, supername, interfaces);
     }
     
     
