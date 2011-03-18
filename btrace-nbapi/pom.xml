@@ -5,8 +5,14 @@
 
     <groupId>net.java.btrace</groupId>
     <artifactId>btrace-nbapi</artifactId>
-    <version>1.3-SNAPSHOT</version>
     <packaging>nbm</packaging>
+
+    <parent>
+        <groupId>com.sun.btrace</groupId>
+        <artifactId>dummy</artifactId>
+        <version>1.3-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
