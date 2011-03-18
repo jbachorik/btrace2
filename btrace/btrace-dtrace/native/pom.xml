@@ -20,18 +20,6 @@
     
     <profiles>
         <profile>
-            <id>amd64</id>
-            <activation>
-                <os>
-                    <name>SunOS</name>
-                    <arch>x86_64</arch>
-                </os>
-            </activation>
-            <modules>
-                <module>native-amd64</module>
-            </modules>
-        </profile>
-        <profile>
             <id>i386</id>
             <activation>
                 <os>
@@ -39,9 +27,29 @@
                     <arch>x86</arch>
                 </os>
             </activation>
-            <modules>
-                <module>native-i386</module>
-            </modules>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.1</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <executable>make</executable>
+                            <workingDirectory>${basedir}/src/main/native</workingDirectory>
+                            <arguments>
+                                <argument>all</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
     
