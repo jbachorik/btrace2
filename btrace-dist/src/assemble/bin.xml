@@ -19,6 +19,7 @@
                 <include>com.sun.btrace:btrace-boot</include>
                 <include>com.sun.btrace:btrace-agent</include>
                 <include>com.sun.btrace:btrace-client</include>
+                <include>com.sun.btrace:dtrace-java</include>
             </includes>
             <outputDirectory>btrace/lib</outputDirectory>
             <unpack>false</unpack>
@@ -64,6 +65,14 @@
             <outputDirectory>btrace/docs/javadoc</outputDirectory>
             <unpack>true</unpack>
             <useProjectArtifact>false</useProjectArtifact>
+        </dependencySet>
+        <dependencySet>
+            <includes>
+                <include>com.sun.btrace:dtrace-native:zip</include>
+            </includes>
+            <unpack>true</unpack>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>btrace/lib/dtrace/${os.arch}</outputDirectory>
         </dependencySet>
     </dependencySets>
     <fileSets>

@@ -92,7 +92,6 @@
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
