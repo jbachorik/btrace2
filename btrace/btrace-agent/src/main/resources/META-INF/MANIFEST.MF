@@ -1,5 +1,5 @@
 Premain-Class: com.sun.btrace.agent.Main
 Agent-Class: com.sun.btrace.agent.Main
-Boot-Class-Path: btrace-boot-${project.version}-boot.jar btrace-core-${project.version}.jar btrace-instr-${project.version}.jar btrace-asm-${asm.version}.jar
+Boot-Class-Path: btrace-boot-${project.version}.jar btrace-core-${project.version}.jar btrace-instr-${project.version}.jar btrace-asm-${asm.version}.jar
 Can-Redefine-Classes: true
 Can-Retransform-Classes: true

@@ -14,6 +14,7 @@
             <includes>
                 <include>com.sun.btrace:btrace-asm</include>
                 <include>com.sun.btrace:btrace-core</include>
+                <include>com.sun.btrace:btrace-api</include>
                 <include>com.sun.btrace:btrace-compiler</include>
                 <include>com.sun.btrace:btrace-instr</include>
                 <include>com.sun.btrace:btrace-boot</include>

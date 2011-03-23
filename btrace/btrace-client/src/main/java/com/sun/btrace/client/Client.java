@@ -54,6 +54,7 @@ import com.sun.btrace.org.objectweb.asm.AnnotationVisitor;
 import com.sun.btrace.org.objectweb.asm.Type;
 import com.sun.btrace.spi.ToolsJarLocator;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -74,6 +75,7 @@ public class Client {
     private static final String DTRACE_DESC;
     private static final String DTRACE_REF_DESC;
 
+    private static final String PROJECT_VERSION;
     static {
         try {
             /*
@@ -102,6 +104,8 @@ public class Client {
         }
         DTRACE_DESC = Type.getDescriptor(DTrace.class);
         DTRACE_REF_DESC = Type.getDescriptor(DTraceRef.class);
+        ResourceBundle rb = ResourceBundle.getBundle("com/sun/btrace/client/Bundle");
+        PROJECT_VERSION = rb.getString("btrace.version");
     }
 
     // port on which BTrace agent listens
@@ -226,13 +230,14 @@ public class Client {
      */
     public void attach(String pid) throws IOException {
         try {
-            String agentPath = "/btrace-agent.jar";
+            String agentPath = "/btrace-agent-" + PROJECT_VERSION + ".jar";
+            String bootPath = "/btrace-boot-" + PROJECT_VERSION + ".jar";
             String tmp = Client.class.getClassLoader().getResource("com/sun/btrace").toString();
             tmp = tmp.substring(0, tmp.indexOf("!"));
             tmp = tmp.substring("jar:".length(), tmp.lastIndexOf("/"));
             agentPath = tmp + agentPath;
             agentPath = new File(new URI(agentPath)).getAbsolutePath();
-            attach(pid, agentPath, null, null);
+            attach(pid, agentPath, null, new File(new URI(tmp + bootPath)).getAbsolutePath());
         } catch (RuntimeException re) {
             throw re;
         } catch (IOException ioexp) {
