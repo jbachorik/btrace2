@@ -10,7 +10,7 @@ fi
 
 BTRACE_LIB=$BTRACE_HOME/lib
 
-if [ -f "${BTRACE_LIB}/btrace-core-${project.version}.jar" ] ; then
+if [ -f "${BTRACE_LIB}/btrace-cli-${project.version}.jar" ] ; then
     if [ "${JAVA_HOME}" != "" ]; then
        case "`uname`" in
           Darwin*)
@@ -38,7 +38,14 @@ if [ -f "${BTRACE_LIB}/btrace-core-${project.version}.jar" ] ; then
               TOOLS_JAR="${JAVA_HOME}/lib/tools.jar"
           ;;
        esac
-       BTRACE_CP=${BTRACE_LIB}/btrace-api-${project.version}.jar:${BTRACE_LIB}/btrace-core-${project.version}.jar:${BTRACE_LIB}/btrace-compiler-${project.version}.jar:${BTRACE_LIB}/btrace-client-${project.version}.jar:${BTRACE_LIB}/btrace-asm-${asm.version}.jar
+
+       # Collect the classpath
+       BTRACE_CP=
+       for f in ${BTRACE_LIB}/*.jar
+       do
+          BTRACE_CP=$f:$BTRACE_CP
+       done
+
        ${JAVA_HOME}/bin/java -Dcom.sun.btrace.probeDescPath=. -Dcom.sun.btrace.dumpClasses=false -Dcom.sun.btrace.debug=false -Dcom.sun.btrace.unsafe=false -cp ${BTRACE_CP}:${TOOLS_JAR}:/usr/share/lib/java/dtrace.jar com.sun.btrace.client.Main $*
     else
        echo "Please set JAVA_HOME before running this script"

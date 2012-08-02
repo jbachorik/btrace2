@@ -1,0 +1,44 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package net.java.btrace.client.commands;
+
+
+import net.java.btrace.api.core.BTraceLogger;
+import net.java.btrace.api.wireio.Command;
+import net.java.btrace.api.wireio.CommandContext;
+import net.java.btrace.client.Client;
+import net.java.btrace.spi.wireio.CommandImpl;
+import net.java.btrace.wireio.Channel;
+import net.java.btrace.wireio.commands.ExitCommand;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+/**
+ *
+ * @author Jaroslav Bachorik
+ */
+@Command(clazz=ExitCommand.class)
+public class ExitCommandImpl extends CommandImpl<ExitCommand> {
+    public void execute(CommandContext ctx, ExitCommand cmd) {
+        PrintWriter pw = ctx.lookup(PrintWriter.class);
+        if (pw != null) {
+            pw.println();
+            pw.println("Target application has quit with code " + cmd.getExitCode());
+            pw.flush();
+        }
+        Client c = ctx.lookup(Client.class);
+        if (c != null) {
+            try {
+                Channel ch = ctx.lookup(Channel.class);
+                if (ch != null) {
+                    ch.sendResponse(cmd, null);
+                }
+            } catch (IOException e) {
+                BTraceLogger.debugPrint(e);
+            }
+            c.agentExit(cmd.getExitCode());
+        }
+    }
+}

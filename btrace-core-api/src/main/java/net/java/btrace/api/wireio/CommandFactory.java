@@ -1,0 +1,245 @@
+/*
+ * Copyright (c) 2007, 2011, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
+ */
+package net.java.btrace.api.wireio;
+
+import net.java.btrace.api.core.BTraceLogger;
+import net.java.btrace.api.core.ServiceLocator;
+import net.java.btrace.spi.wireio.CommandImpl;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ *
+ * @author Jaroslav Bachorik
+ */
+public class CommandFactory {
+    private static class FactoryMethod<T extends AbstractCommand> {
+        private CommandImpl<T> impl;
+        private Constructor<T> constructor;
+        private static Field implFld;
+        private int type;
+
+        static {
+            try {
+                implFld = AbstractCommand.class.getDeclaredField("impl");
+                implFld.setAccessible(true);
+            } catch (NoSuchFieldException e) {
+                implFld = null;
+            } catch (SecurityException e) {
+                implFld = null;
+            }
+        }
+        
+        public FactoryMethod(CommandImpl<T> impl, Constructor<T> constructor, int type) {
+            this.impl = impl;
+            this.constructor = constructor;
+            this.type = type;
+            this.constructor.setAccessible(true);
+        }
+        
+        public T newInstance(int rx, int tx) {
+            try {
+                T instance = constructor.newInstance(type, rx, tx);
+                if (implFld != null) {
+                    implFld.set(instance, impl);
+                }
+                return instance;
+            } catch (InstantiationException e) {
+                e.printStackTrace(System.err);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace(System.err);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace(System.err);
+            } catch (InvocationTargetException e) {
+                e.printStackTrace(System.err);
+            }
+            return null;
+        }
+    }
+    
+    private Map<Integer, FactoryMethod> mapById = new HashMap();
+    private Map<Class<? extends AbstractCommand>, FactoryMethod> mapByType = new WeakHashMap();
+    
+    private List<Class<? extends AbstractCommand>> supportedCommands = null;
+    
+    private int lastTypeId = 0;
+    final private static int MAX_SEQ_NR = 100000;
+    private AtomicInteger rxCntr = new AtomicInteger(0);
+    
+    private CommandFactory(Iterable<CommandImpl> svcs) throws NoSuchMethodException {
+        this(Collections.EMPTY_MAP, svcs);
+    }
+    
+    private CommandFactory(Class<? extends AbstractCommand>[] mapping, Iterable<CommandImpl> svcs) throws NoSuchMethodException {
+        this(createMapper(mapping), svcs);
+    }
+    
+    private CommandFactory(Map<Class<? extends AbstractCommand>, Integer> mapper, Iterable<CommandImpl> svcs) throws NoSuchMethodException {
+        copyInitialMapper(mapper);
+        applyMapper(svcs, mapper);
+    }
+
+    private void applyMapper(Iterable<CommandImpl> svcs, Map<Class<? extends AbstractCommand>, Integer> mapper) throws SecurityException, NoSuchMethodException {
+        int cnt = lastTypeId;
+        for(CommandImpl svc : svcs) {
+            Command ann = svc.getClass().getAnnotation(Command.class);
+            if (ann != null) {
+                Class<? extends AbstractCommand> cmdClz = ann.clazz();
+                Constructor<? extends AbstractCommand> constructor = cmdClz.getDeclaredConstructor(int.class, int.class, int.class);
+                constructor.setAccessible(true);
+                
+                Integer cmdId = mapper.get(cmdClz);
+                if (cmdId == null) {
+                    cmdId = cnt++;
+                }
+                FactoryMethod fm = new FactoryMethod(svc, constructor, cmdId); 
+                mapById.put(cmdId, fm);
+                mapByType.put(cmdClz, fm);
+                
+                lastTypeId = cnt;
+            }
+        }
+    }
+
+    private void copyInitialMapper(Map<Class<? extends AbstractCommand>, Integer> mapper) throws NoSuchMethodException, SecurityException {
+        for(Map.Entry<Class<? extends AbstractCommand>, Integer> mapping : mapper.entrySet()) {
+            Constructor<? extends AbstractCommand> constructor = mapping.getKey().getDeclaredConstructor(int.class, int.class, int.class);
+            constructor.setAccessible(true);
+            FactoryMethod fm = new FactoryMethod(CommandImpl.NULL, constructor, mapping.getValue());
+            int id = mapping.getValue();
+            lastTypeId = Math.max(lastTypeId, id + 1);
+            mapById.put(mapping.getValue(), fm);
+            mapByType.put(mapping.getKey(), fm);
+        }
+    }
+    
+    public static CommandFactory getInstance(ClassLoader cl) {
+        try {
+            Iterable<CommandImpl> rslt = ServiceLocator.listServices(CommandImpl.class, cl);
+            if (rslt != null) {
+                return new CommandFactory(rslt);
+            }
+        } catch (NoSuchMethodException e) {
+        }
+        return null;
+    }
+    
+    public static CommandFactory getInstance(Class<? extends AbstractCommand>[] mapping, ClassLoader cl) {
+        ServiceLocator.listServiceNames(CommandImpl.class, cl);
+        try {
+            Iterable<CommandImpl> rslt = ServiceLocator.listServices(CommandImpl.class, cl);
+            if (rslt != null) {
+                return new CommandFactory(mapping, rslt);
+            }
+        } catch (NoSuchMethodException e) {
+        }
+        return null;
+    }
+    
+    synchronized public List<Class<? extends AbstractCommand>> listSupportedCommands() {
+        if (supportedCommands == null) {
+            Class<? extends AbstractCommand>[] supported = new Class[mapByType.size()];
+            for(Map.Entry<Class<? extends AbstractCommand>, FactoryMethod> entry : mapByType.entrySet()) {
+                supported[entry.getValue().type] = entry.getKey();
+            }
+            supportedCommands = Arrays.asList(supported);
+        }
+        return supportedCommands;
+    }
+    
+    public <T extends AbstractCommand> T createCommand(Class<T> cmdClass) {
+        FactoryMethod<T> fm = mapByType.get(cmdClass);
+        if (fm != null) {
+            T cmd = fm.newInstance(incCounter(), -1);
+            return cmd;
+        }
+        return null;
+    }
+    
+    public <T> ResponseCommand<T> createResponse(T data, int tx) {
+        FactoryMethod<ResponseCommand<T>> fm = mapByType.get(ResponseCommand.class);
+        if (fm != null) {
+            ResponseCommand<T> cmd = fm.newInstance(incCounter(), tx);
+            cmd.setPayload(data);
+            return cmd;
+        }
+        return null;
+    }
+    
+    private int incCounter() {
+        int cntr = rxCntr.getAndIncrement();
+        if (cntr == MAX_SEQ_NR) {
+            rxCntr.set(0);
+        }
+        return cntr;
+    }
+    
+    public AbstractCommand restoreCommand(int type, int rx, int tx) {
+        FactoryMethod fm = mapById.get(type);
+        if (fm != null) {
+            return fm.newInstance(rx, tx);
+        }
+        return null;
+    }
+    
+    public void addMapper(Class<? extends AbstractCommand>[] mapping) {
+        int cnt = lastTypeId;
+        for(Class<? extends AbstractCommand> cmdClz : mapping) {
+            if (cmdClz == null) continue;
+            
+            try {
+                Constructor<? extends AbstractCommand> constructor = cmdClz.getDeclaredConstructor(int.class, int.class, int.class);
+                constructor.setAccessible(true);
+                
+                int id = cnt++;
+                FactoryMethod fm = new FactoryMethod(CommandImpl.NULL, constructor, id);
+                mapById.put(cnt, fm);
+                mapByType.put(cmdClz, fm);
+            } catch (NoSuchMethodException e) {
+                BTraceLogger.debugPrint(e);
+            } catch (SecurityException e) {
+                BTraceLogger.debugPrint(e);
+            }
+        }
+        lastTypeId = cnt;
+    }
+    
+    private static Map<Class<? extends AbstractCommand>, Integer> createMapper(Class<? extends AbstractCommand>[] mapping) {
+        Map<Class<? extends AbstractCommand>, Integer> tmpMap = new WeakHashMap<Class<? extends AbstractCommand>, Integer>();
+        
+        for(int i=0;i<mapping.length;i++) {
+            tmpMap.put(mapping[i], i);
+        }
+        return tmpMap;
+    }
+}

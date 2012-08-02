@@ -1,0 +1,5 @@
+com.sun.btrace.dtrace.commands.impl.DTraceDataCommandImpl
+com.sun.btrace.dtrace.commands.impl.DTraceDropCommandImpl
+com.sun.btrace.dtrace.commands.impl.DTraceErrorCommandImpl
+com.sun.btrace.dtrace.commands.impl.DTraceStartCommandImpl
+com.sun.btrace.dtrace.commands.impl.DTraceStopCommandImpl
