@@ -24,11 +24,7 @@
  */
 package net.java.btrace.api.wireio;
 
-import net.java.btrace.api.wireio.CommandFactory;
 import net.java.btrace.api.core.BTraceLogger;
-import net.java.btrace.api.wireio.AbstractCommand;
-import net.java.btrace.api.wireio.Response;
-import net.java.btrace.api.wireio.ResponseCommand;
 import java.io.IOException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
