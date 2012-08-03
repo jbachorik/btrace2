@@ -10,7 +10,7 @@ import net.java.btrace.api.wireio.Command;
 import net.java.btrace.api.wireio.CommandContext;
 import net.java.btrace.client.Client;
 import net.java.btrace.spi.wireio.CommandImpl;
-import net.java.btrace.wireio.Channel;
+import net.java.btrace.api.wireio.Channel;
 import net.java.btrace.wireio.commands.ExitCommand;
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -24,6 +24,7 @@
  */
 package net.java.btrace.wireio;
 
+import net.java.btrace.api.wireio.Channel;
 import net.java.btrace.api.extensions.ExtensionsRepository;
 import net.java.btrace.api.wireio.AbstractCommand;
 import net.java.btrace.api.wireio.CommandFactory;

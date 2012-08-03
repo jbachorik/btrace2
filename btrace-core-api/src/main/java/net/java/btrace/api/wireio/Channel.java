@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package net.java.btrace.wireio;
+package net.java.btrace.api.wireio;
 
 import net.java.btrace.api.wireio.CommandFactory;
 import net.java.btrace.api.core.BTraceLogger;

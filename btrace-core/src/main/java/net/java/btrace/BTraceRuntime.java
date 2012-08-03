@@ -46,7 +46,7 @@ import com.sun.management.HotSpotDiagnosticMXBean;
 import net.java.btrace.api.core.BTraceLogger;
 import net.java.btrace.api.extensions.ExtensionsRepository;
 import net.java.btrace.api.wireio.AbstractCommand;
-import net.java.btrace.wireio.Channel;
+import net.java.btrace.api.wireio.Channel;
 import net.java.btrace.wireio.commands.ErrorCommand;
 import net.java.btrace.wireio.commands.ExitCommand;
 import net.java.btrace.wireio.commands.MessageCommand;

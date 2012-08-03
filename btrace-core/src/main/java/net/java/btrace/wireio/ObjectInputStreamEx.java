@@ -15,7 +15,7 @@ import java.lang.reflect.Proxy;
  *
  * @author Jaroslav Bachorik
  */
-public class ObjectInputStreamEx extends ObjectInputStream {
+final public class ObjectInputStreamEx extends ObjectInputStream {
 
     final private ClassLoader loader;
 

@@ -33,7 +33,7 @@ import net.java.btrace.api.extensions.ExtensionsRepositoryFactory;
 import net.java.btrace.api.wireio.AbstractCommand;
 import net.java.btrace.api.wireio.CommandContext;
 import net.java.btrace.api.wireio.Response;
-import net.java.btrace.wireio.Channel;
+import net.java.btrace.api.wireio.Channel;
 import net.java.btrace.org.objectweb.asm.Type;
 import net.java.btrace.wireio.commands.EventCommand;
 import net.java.btrace.wireio.commands.ExitCommand;

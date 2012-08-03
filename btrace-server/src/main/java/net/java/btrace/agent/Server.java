@@ -24,8 +24,8 @@
  */
 package net.java.btrace.agent;
 
-import net.java.btrace.agent.comm.ServerChannel;
-import net.java.btrace.agent.comm.LocalChannel;
+import net.java.btrace.agent.wireio.ServerChannel;
+import net.java.btrace.agent.wireio.LocalChannel;
 import net.java.btrace.api.core.BTraceLogger;
 import net.java.btrace.api.extensions.ExtensionsRepository;
 import net.java.btrace.api.extensions.ExtensionsRepositoryFactory;
@@ -36,8 +36,8 @@ import net.java.btrace.instr.InstrumentUtils;
 import net.java.btrace.instr.Instrumentor;
 import net.java.btrace.org.objectweb.asm.ClassReader;
 import net.java.btrace.org.objectweb.asm.ClassWriter;
-import net.java.btrace.wireio.Channel;
-import net.java.btrace.wireio.Session;
+import net.java.btrace.api.wireio.Channel;
+import net.java.btrace.agent.wireio.Session;
 import net.java.btrace.wireio.commands.InstrumentCommand;
 import java.io.BufferedWriter;
 import java.io.File;

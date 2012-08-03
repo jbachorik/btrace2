@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.java.btrace.agent.commands;
+package net.java.btrace.agent.wireio;
 
 import net.java.btrace.api.wireio.Command;
 import net.java.btrace.api.wireio.CommandContext;
 import net.java.btrace.spi.wireio.CommandImpl;
-import net.java.btrace.wireio.Session;
+import net.java.btrace.agent.wireio.Session;
 import net.java.btrace.wireio.commands.EventCommand;
 
 

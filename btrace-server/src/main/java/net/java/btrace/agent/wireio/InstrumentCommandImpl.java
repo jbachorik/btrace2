@@ -22,14 +22,14 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package net.java.btrace.agent.commands;
+package net.java.btrace.agent.wireio;
 
 import net.java.btrace.api.core.BTraceLogger;
 import net.java.btrace.api.wireio.Command;
 import net.java.btrace.api.wireio.CommandContext;
 import net.java.btrace.spi.wireio.CommandImpl;
-import net.java.btrace.wireio.Channel;
-import net.java.btrace.wireio.Session;
+import net.java.btrace.api.wireio.Channel;
+import net.java.btrace.agent.wireio.Session;
 import net.java.btrace.wireio.commands.InstrumentCommand;
 import java.io.IOException;
 

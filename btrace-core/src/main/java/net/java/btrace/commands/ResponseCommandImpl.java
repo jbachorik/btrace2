@@ -28,7 +28,7 @@ import net.java.btrace.api.wireio.Command;
 import net.java.btrace.api.wireio.CommandContext;
 import net.java.btrace.api.wireio.ResponseCommand;
 import net.java.btrace.spi.wireio.CommandImpl;
-import net.java.btrace.wireio.Channel;
+import net.java.btrace.api.wireio.Channel;
 
 /**
  *
