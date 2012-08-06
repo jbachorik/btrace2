@@ -11,6 +11,9 @@
     <groupId>net.java.btrace</groupId>
     <artifactId>btrace-core-api</artifactId>
     <name>btrace-core-api</name>
+    <description>
+        The low level BTrace APIs - annotations, wireio, extensions.
+    </description>
   
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

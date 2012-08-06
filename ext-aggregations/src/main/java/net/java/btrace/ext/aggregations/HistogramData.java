@@ -24,9 +24,9 @@
  */
 package net.java.btrace.ext.aggregations;
 
-import net.java.btrace.spi.cli.ValueFormatterImpl;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import net.java.btrace.spi.core.ValueFormatterImpl;
 
 /**
  * A wire data structure describing histogram data.

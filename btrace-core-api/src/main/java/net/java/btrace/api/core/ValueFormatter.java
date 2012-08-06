@@ -2,19 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.java.btrace.api.cli;
+package net.java.btrace.api.core;
 
-import net.java.btrace.api.core.ServiceLocator;
-import net.java.btrace.spi.cli.ValueFormatterImpl;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.Collection;
 import java.util.LinkedList;
+import net.java.btrace.spi.core.ValueFormatterImpl;
 
 /**
- *
+ * Allows for obtaining an object specific format string
  * @author Jaroslav Bachorik
+ * @since 2.0
  */
 public class ValueFormatter  {
     final private static String DEFAULT_FORMAT = "%15s";
@@ -25,6 +22,11 @@ public class ValueFormatter  {
         }
     }
     
+    /**
+     * 
+     * @param obj The object to get the format string for
+     * @return The specific format string or the default <b>"%15s"</b>
+     */
     public String getFormat(Object obj) {
         if (obj == null) return DEFAULT_FORMAT;
         

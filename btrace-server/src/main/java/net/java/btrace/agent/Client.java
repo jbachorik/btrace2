@@ -32,7 +32,6 @@ import net.java.btrace.org.objectweb.asm.ClassReader;
 import net.java.btrace.org.objectweb.asm.ClassWriter;
 import net.java.btrace.org.objectweb.asm.ClassVisitor;
 import net.java.btrace.BTraceRuntime;
-import net.java.btrace.CommandListener;
 import net.java.btrace.PerfReader;
 import net.java.btrace.api.extensions.BTraceExtension;
 import net.java.btrace.api.extensions.ExtensionsRepository;
@@ -59,7 +58,7 @@ import java.lang.instrument.Instrumentation;
  *
  * @author A. Sundararajan
  */
-abstract class Client implements ClassFileTransformer, CommandListener {
+abstract class Client implements ClassFileTransformer {
     protected final Instrumentation inst;
     private volatile BTraceRuntime runtime;
     private volatile String className;
@@ -72,8 +71,8 @@ abstract class Client implements ClassFileTransformer, CommandListener {
     private volatile boolean skipRetransforms;
     private volatile boolean hasSubclassChecks;
     private volatile ExtensionsRepository repository;
-    protected final boolean debug = Main.isDebug();
-    protected final boolean trackRetransforms = Main.isRetransformTracking();
+    protected final boolean debug = MainOld.isDebug();
+    protected final boolean trackRetransforms = MainOld.isRetransformTracking();
 
     static {
         ClassFilter.class.getClass();
@@ -103,18 +102,18 @@ abstract class Client implements ClassFileTransformer, CommandListener {
             if (!hasSubclassChecks || classBeingRedefined != null || isBTraceClass(cname) || isSensitiveClass(cname)) return null;
             
             if (!skipRetransforms) {
-                if (debug) Main.debugPrint("injecting <clinit> for " + cname); // NOI18N
+                if (debug) MainOld.debugPrint("injecting <clinit> for " + cname); // NOI18N
                 ClassReader cr = new ClassReader(classfileBuffer);
                 ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
                 ClinitInjector injector = new ClinitInjector(cw, className, cname);
                 InstrumentUtils.accept(cr, injector);
                 if (injector.isTransformed()) {
                     byte[] instrumentedCode = cw.toByteArray();
-                    Main.dumpClass(className, cname + "_clinit", instrumentedCode); // NOI18N
+                    MainOld.dumpClass(className, cname + "_clinit", instrumentedCode); // NOI18N
                     return instrumentedCode;
                 }
             } else {
-                if (debug) Main.debugPrint("client " + className + ": skipping transform for " + cname); // NOI18N
+                if (debug) MainOld.debugPrint("client " + className + ": skipping transform for " + cname); // NOI18N
             }
             return null;
         }
@@ -135,7 +134,7 @@ abstract class Client implements ClassFileTransformer, CommandListener {
         boolean entered = BTraceRuntime.enter();
         try {
             if (isBTraceClass(cname) || isSensitiveClass(cname)) {
-                if (debug) Main.debugPrint("skipping transform for BTrace class " + cname); // NOI18N
+                if (debug) MainOld.debugPrint("skipping transform for BTrace class " + cname); // NOI18N
                 return null;
             }
 
@@ -149,10 +148,10 @@ abstract class Client implements ClassFileTransformer, CommandListener {
                         if (!skipRetransforms && filter.isCandidate(classBeingRedefined)) {
                             return doTransform(classBeingRedefined, cname, classfileBuffer);
                         } else {
-                            if (debug) Main.debugPrint("client " + className + ": skipping transform for " + cname); // NOi18N
+                            if (debug) MainOld.debugPrint("client " + className + ": skipping transform for " + cname); // NOi18N
                         }
                     } else {
-                        Main.dumpClass(className, cname, bytecode);
+                        MainOld.dumpClass(className, cname, bytecode);
                         return bytecode;
                     }
                 } else {
@@ -163,11 +162,11 @@ abstract class Client implements ClassFileTransformer, CommandListener {
                             if (filter.isCandidate(classfileBuffer)) {
                                 return doTransform(classBeingRedefined, cname, classfileBuffer);
                             } else {
-                                if (debug) Main.debugPrint("client " + className + ": skipping transform for " + cname); // NOI18N
+                                if (debug) MainOld.debugPrint("client " + className + ": skipping transform for " + cname); // NOI18N
                             }
                         }
                     } else {
-                        Main.dumpClass(className, cname, bytecode);
+                        MainOld.dumpClass(className, cname, bytecode);
                         return bytecode;
                     }
                 }
@@ -197,7 +196,7 @@ abstract class Client implements ClassFileTransformer, CommandListener {
     }
 
     private byte[] doTransform(Class<?> classBeingRedefined, String cname, byte[] classfileBuffer) {
-        if (debug) Main.debugPrint("client " + className + ": instrumenting " + cname); // NOI18N
+        if (debug) MainOld.debugPrint("client " + className + ": instrumenting " + cname); // NOI18N
         if (trackRetransforms) {
             // FIXME
 //            this.runtime.send(new RetransformClassNotification(cname));
@@ -208,7 +207,7 @@ abstract class Client implements ClassFileTransformer, CommandListener {
 
     protected synchronized void onExit(int exitCode) {
         if (shouldAddTransformer()) {
-            if (debug) Main.debugPrint("onExit: removing transformer for " + className); // NOI18N
+            if (debug) MainOld.debugPrint("onExit: removing transformer for " + className); // NOI18N
             unregisterTransformer();
 //            Set<Class<?>> retransforming = new HashSet<Class<?>>(classes.size());
 //            for(WeakReference<Class<?>> clzRef : classes) {
@@ -225,17 +224,17 @@ abstract class Client implements ClassFileTransformer, CommandListener {
 //            }
         }
         try {
-            if (debug) Main.debugPrint("onExit: closing all"); // NOI18N
+            if (debug) MainOld.debugPrint("onExit: closing all"); // NOI18N
             Thread.sleep(300);
             closeAll();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (IOException ioexp) {
-            if (debug) Main.debugPrint(ioexp);
+            if (debug) MainOld.debugPrint(ioexp);
         } finally {
             this.runtime = null;
             this.btraceClazz = null;
-            Main.exitClient(this);
+            MainOld.exitClient(this);
         }
     }
 
@@ -245,18 +244,18 @@ abstract class Client implements ClassFileTransformer, CommandListener {
         try {
             verify(btraceCode);
         } catch (Throwable th) {
-            if (debug) Main.debugPrint(th);
+            if (debug) MainOld.debugPrint(th);
             errorExit(th);
             return null;
         }
 
         this.filter = new ClassFilter(onMethods);
-        if (debug) Main.debugPrint("created class filter"); // NOI18N
+        if (debug) MainOld.debugPrint("created class filter"); // NOI18N
 
         ClassWriter writer = InstrumentUtils.newClassWriter(btraceCode);
         ClassReader reader = new ClassReader(btraceCode);
         ClassVisitor visitor = new Preprocessor(writer);
-        Main.dumpClass(className + "_orig", className + "_orig", btraceCode); // NOI18N
+        MainOld.dumpClass(className + "_orig", className + "_orig", btraceCode); // NOI18N
 //        if (BTraceRuntime.classNameExists(className)) {
 //            className += "$" + getCount(); // NOI18N
 //            if (debug) Main.debugPrint("class renamed to " + className); // NOI18N
@@ -265,24 +264,24 @@ abstract class Client implements ClassFileTransformer, CommandListener {
 //            visitor = new ClassRenamer(className, visitor);
 //        }
         try {
-            if (debug) Main.debugPrint("preprocessing BTrace class " + className); // NOI18N
+            if (debug) MainOld.debugPrint("preprocessing BTrace class " + className); // NOI18N
             InstrumentUtils.accept(reader, visitor);
-            if (debug) Main.debugPrint("preprocessed BTrace class " + className); // NOI18N
+            if (debug) MainOld.debugPrint("preprocessed BTrace class " + className); // NOI18N
             btraceCode = writer.toByteArray();
         } catch (Throwable th) {
-            if (debug) Main.debugPrint(th);
+            if (debug) MainOld.debugPrint(th);
             errorExit(th);
             return null;
         }
-        Main.dumpClass(className + "_proc", className + "_proc", btraceCode); // NOI18N
-        if (debug) Main.debugPrint("creating BTraceRuntime instance for " + className); // NOI18N
+        MainOld.dumpClass(className + "_proc", className + "_proc", btraceCode); // NOI18N
+        if (debug) MainOld.debugPrint("creating BTraceRuntime instance for " + className); // NOI18N
 //        this.runtime = new BTraceRuntime(className, args, this, inst, repository);
-        if (debug) Main.debugPrint("created BTraceRuntime instance for " + className); // NOI18N
-        if (debug) Main.debugPrint("removing @OnMethod, @OnProbe methods"); // NOI18N
+        if (debug) MainOld.debugPrint("created BTraceRuntime instance for " + className); // NOI18N
+        if (debug) MainOld.debugPrint("removing @OnMethod, @OnProbe methods"); // NOI18N
         byte[] codeBuf = removeMethods(btraceCode);
-        Main.dumpClass(className, className, codeBuf);
-        if (debug) Main.debugPrint("removed @OnMethod, @OnProbe methods"); // NOI18N
-        if (debug) Main.debugPrint("sending Okay command"); // NOI18N
+        MainOld.dumpClass(className, className, codeBuf);
+        if (debug) MainOld.debugPrint("removed @OnMethod, @OnProbe methods"); // NOI18N
+        if (debug) MainOld.debugPrint("sending Okay command"); // NOI18N
         // FIXME
 //        runtime.send(new OkayCommand());
         // This extra BTraceRuntime.enter is needed to
@@ -293,15 +292,15 @@ abstract class Client implements ClassFileTransformer, CommandListener {
             // without BTraceRuntime.enter(). Please look at the
             // static initializer code of trace class.
             BTraceRuntime.leave();
-            if (debug) Main.debugPrint("about to defineClass " + className); // NOI18N
+            if (debug) MainOld.debugPrint("about to defineClass " + className); // NOI18N
             if (shouldAddTransformer()) {
                 this.btraceClazz = runtime.defineClass(codeBuf);
             } else {
                 this.btraceClazz = runtime.defineClass(codeBuf, false);
             }
-            if (debug) Main.debugPrint("defineClass succeeded for " + className); // NOI18N
+            if (debug) MainOld.debugPrint("defineClass succeeded for " + className); // NOI18N
         } catch (Throwable th) {
-            if (debug) Main.debugPrint(th);
+            if (debug) MainOld.debugPrint(th);
             errorExit(th);
             return null;
         } finally {
@@ -361,12 +360,12 @@ abstract class Client implements ClassFileTransformer, CommandListener {
     final void startRetransformClasses(int numClasses) {
         // FIXME
 //        runtime.send(new RetransformationStartNotification(numClasses));
-        if (Main.isDebug()) Main.debugPrint("calling retransformClasses (" + numClasses + " classes to be retransformed)"); // NOI18N
+        if (MainOld.isDebug()) MainOld.debugPrint("calling retransformClasses (" + numClasses + " classes to be retransformed)"); // NOI18N
     }
 
     // Internals only below this point
     private static boolean isBTraceClass(String name) {
-        return name.startsWith("com/sun/btrace/") && // NOI18N
+        return name.startsWith("net/java/btrace") && // NOI18N
                !name.contains("/ext/"); // NOI18N
     }
 
@@ -396,7 +395,7 @@ abstract class Client implements ClassFileTransformer, CommandListener {
             InstrumentUtils.accept(reader, new ExtensionRuntimeProcessor(writer));
             return writer.toByteArray();
         } catch (Throwable th) {
-            Main.debugPrint(th);
+            MainOld.debugPrint(th);
             return null;
         }
     }
@@ -408,30 +407,30 @@ abstract class Client implements ClassFileTransformer, CommandListener {
             ClassReader reader = new ClassReader(target);
             Instrumentor i = new Instrumentor(clazz, className,  btraceCode, onMethods, writer);
             InstrumentUtils.accept(reader, i);
-            if (Main.isDebug() && !i.hasMatch()) {
-                Main.debugPrint("*WARNING* No method was matched for class " + cname); // NOI18N
+            if (MainOld.isDebug() && !i.hasMatch()) {
+                MainOld.debugPrint("*WARNING* No method was matched for class " + cname); // NOI18N
             }
             instrumentedCode = writer.toByteArray();
         } catch (Throwable th) {
-            Main.debugPrint(th);
+            MainOld.debugPrint(th);
             return null;
         }
-        Main.dumpClass(className, cname, instrumentedCode);
+        MainOld.dumpClass(className, cname, instrumentedCode);
         return instrumentedCode;
     }
 
     private void verify(byte[] buf) {
         ClassReader reader = new ClassReader(buf);
-        Verifier verifier = new Verifier(new ClassVisitor(Opcodes.ASM4){}, Main.isUnsafe(), repository);
-        if (debug) Main.debugPrint("verifying BTrace class"); // NOI18N
+        Verifier verifier = new Verifier(new ClassVisitor(Opcodes.ASM4){}, MainOld.isUnsafe(), repository);
+        if (debug) MainOld.debugPrint("verifying BTrace class"); // NOI18N
         InstrumentUtils.accept(reader, verifier);
         className = verifier.getClassName().replace('/', '.');
-        if (debug) Main.debugPrint("verified '" + className + "' successfully"); // NOI18N
+        if (debug) MainOld.debugPrint("verified '" + className + "' successfully"); // NOI18N
         onMethods = verifier.getOnMethods();
         onProbes = verifier.getOnProbes();
         if (onProbes != null && !onProbes.isEmpty()) {
             // map @OnProbe's to @OnMethod's and store
-            onMethods.addAll(Main.mapOnProbes(onProbes));
+            onMethods.addAll(MainOld.mapOnProbes(onProbes));
         }
         for(OnMethod om : onMethods) {
             if (om.getClazz().startsWith("+")) {

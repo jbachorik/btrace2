@@ -13,6 +13,10 @@
         <relativePath>../btrace-parent</relativePath>
         <version>2.0-SNAPSHOT</version>
     </parent>
+    
+    <description>
+        BTrace specific maven plugin
+    </description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -25,11 +25,7 @@
 
 /**
  * This package contains various extension points for the BTrace core.
- * <p>
- * One can create a new extension, register a custom command receiver or 
- * a custom type to OpenType convertor.
- * </p>
  * 
- * @since 1.3
+ * @since 2.0
  */
 package net.java.btrace.spi.core;

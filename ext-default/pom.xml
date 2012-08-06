@@ -11,6 +11,9 @@
     <artifactId>btrace-ext-default</artifactId>
     <packaging>jar</packaging>
     <name>btrace-ext-default</name>
+    <description>
+        The basic set of BTrace extensions: Atomic, Counters, Numbers, Printer, References, Reflective, Strings, Threads, Time
+    </description>
     <build>
         <plugins>
             <plugin>

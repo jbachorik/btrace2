@@ -11,6 +11,9 @@
     <artifactId>btrace-docs</artifactId>
     <packaging>jar</packaging>
     <name>btrace-docs</name>
+    <description>
+        BTrace documentation
+    </description>
     
     <build>
         <plugins>

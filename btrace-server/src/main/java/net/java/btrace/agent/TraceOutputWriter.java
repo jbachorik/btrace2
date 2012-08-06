@@ -121,7 +121,7 @@ abstract public class TraceOutputWriter extends Writer {
                 writerLock.writeLock().lock();
                 currentFileWriter = getNextWriter();
             } catch (IOException e) {
-                Main.debugPrint(e);
+                MainOld.debugPrint(e);
             } finally {
                 writerLock.writeLock().unlock();
             }
@@ -184,7 +184,7 @@ abstract public class TraceOutputWriter extends Writer {
         try {
             instance = new SimpleFileOutput(output);
         } catch (IOException e) {
-            Main.debugPrint(e);
+            MainOld.debugPrint(e);
         }
         return instance;
     }
@@ -201,7 +201,7 @@ abstract public class TraceOutputWriter extends Writer {
         try {
             instance = new TimeBasedRollingFileWriter(null, interval, unit);
         } catch (IOException e) {
-            Main.debugPrint(e);
+            MainOld.debugPrint(e);
         }
         return instance;
     }
@@ -219,7 +219,7 @@ abstract public class TraceOutputWriter extends Writer {
         try {
             instance = new TimeBasedRollingFileWriter(output, maxRolls, interval, unit);
         } catch (IOException e) {
-            Main.debugPrint(e);
+            MainOld.debugPrint(e);
         }
         return instance;
     }

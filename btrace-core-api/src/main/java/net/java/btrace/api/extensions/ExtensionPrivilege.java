@@ -7,6 +7,9 @@ package net.java.btrace.api.extensions;
 /**
  *
  * @author Jaroslav Bachorik <jaroslav.bachorik@oracle.com>
+ * @since 2.0
+ * 
+ * BTrace privileges enumeration
  */
 public enum ExtensionPrivilege {
 

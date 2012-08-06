@@ -4,13 +4,13 @@
  */
 package net.java.btrace.client;
 
-import net.java.btrace.spi.cli.ValueFormatterImpl;
+import net.java.btrace.spi.core.ValueFormatterImpl;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 
 /**
- *
+ * The default formats for various object types
  * @author Jaroslav Bachorik
  */
 @ValueFormatterImpl.Registration

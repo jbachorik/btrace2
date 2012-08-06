@@ -11,6 +11,11 @@
     <artifactId>btrace-ext-export</artifactId>
     <packaging>jar</packaging>
     <name>btrace-ext-export</name>
+    
+    <description>
+        Export the collected data to various external formats
+    </description>
+    
     <build>
         <plugins>
             <plugin>

@@ -102,11 +102,11 @@ class RemoteClient extends Client {
 //        cmdHandler.start();
     }
 
-    public void onCommand(AbstractCommand cmd) throws IOException {
-        if (oos == null) {
-            throw new IOException("no output stream");
-        }
-        oos.reset();
+//    public void onCommand(AbstractCommand cmd) throws IOException {
+//        if (oos == null) {
+//            throw new IOException("no output stream");
+//        }
+//        oos.reset();
         // FIXME
 //        switch (cmd.getType()) {
 //        case Command.EXIT:
@@ -118,7 +118,7 @@ class RemoteClient extends Client {
 //            if (debug) Main.debugPrint("client " + getClassName() + ": got " + cmd);
 //            Command.writeCommand(oos, cmd);
 //        }
-    }
+//    }
 
     protected synchronized void closeAll() throws IOException {
         if (oos != null) {

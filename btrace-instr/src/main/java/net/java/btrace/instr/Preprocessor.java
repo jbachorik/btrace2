@@ -300,7 +300,7 @@ public class Preprocessor extends ClassVisitor {
     
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         final AnnotationVisitor zupr = super.visitAnnotation(desc, visible);
-        if ("Lcom/sun/btrace/annotations/BTrace;".equals(desc)) {
+        if ("Lnet/java/btrace/annotations/BTrace;".equals(desc)) {
             return new AnnotationVisitor(Opcodes.ASM4) {
 
                 public void visit(String string, Object o) {
@@ -655,7 +655,7 @@ public class Preprocessor extends ClassVisitor {
 
                 @Override
                 public AnnotationVisitor visitAnnotation(String name, boolean bln) {
-                    if (name.startsWith("Lcom/sun/btrace/annotations/")) {
+                    if (name.startsWith("Lnet/java/btrace/annotations/")) {
                         isBTraceHandler = true;
                     } else {
                         isBTraceHandler = false;

@@ -30,6 +30,12 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.IOException;
 
+/**
+ * Command for processing an encountered {@linkplain Throwable}
+ *
+ * @author A.Sundararajan
+ * @author Jaroslav Bachorik
+ */
 final public class ErrorCommand extends AbstractCommand {
     private Throwable cause;
     
@@ -42,19 +48,29 @@ final public class ErrorCommand extends AbstractCommand {
         return super.canBeSpeculated();
     }
     
+    @Override
     final public void write(ObjectOutput out) throws IOException {
         out.writeObject(cause);
     }
 
+    @Override
     final public void read(ObjectInput in)
         throws IOException, ClassNotFoundException {
         cause = (Throwable) in.readObject();
     }
 
+    /**
+     * 
+     * @return The wrapped exception
+     */
     final public Throwable getCause() {
         return cause;
     }
 
+    /**
+     * 
+     * @param cause The exception to wrap
+     */
     final public void setCause(Throwable cause) {
         this.cause = cause;
     }

@@ -73,7 +73,6 @@
         <dependencySet>
             <includes>
                 <include>com.sun.btrace:btrace-cli</include>
-                <include>com.sun.btrace:btrace-cli-api</include>
                 <include>com.sun.btrace:btrace-core</include>
                 <include>com.sun.btrace:btrace-core-api</include>
                 <include>com.sun.btrace:btrace-client</include>

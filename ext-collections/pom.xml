@@ -12,6 +12,11 @@
     
     <packaging>jar</packaging>
     <name>btrace-ext-collections</name>
+    
+    <description>
+        Adds the ability to use certaing collections in BTrace scripts
+    </description>
+    
     <build>
         <plugins>
             <plugin>

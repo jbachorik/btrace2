@@ -30,6 +30,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.IOException;
 
+/**
+ * Transfer an instrumentation request
+ * @author A.Sundararajan
+ * @author Jaroslav Bachorik <jaroslav.bachorik at oracle.com>
+ */
 final public class InstrumentCommand extends AbstractCommand {
     final private static String[] EMPTY_ARGS = new String[0];
     private byte[] code;

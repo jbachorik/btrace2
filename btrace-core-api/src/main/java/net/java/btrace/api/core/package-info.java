@@ -25,6 +25,6 @@
 
 /**
  * BTrace core APIs
- * @since 1.3
+ * @since 2.0
  */
 package net.java.btrace.api.core;

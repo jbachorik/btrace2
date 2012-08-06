@@ -25,7 +25,6 @@
 package net.java.btrace.agent;
 
 import net.java.btrace.api.extensions.ExtensionsRepository;
-import net.java.btrace.api.wireio.AbstractCommand;
 import java.lang.instrument.Instrumentation;
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,14 +57,14 @@ class FileClient extends Client {
         this(inst, readAll(scriptFile), traceWriter, eLocator);
     }
 
-    public void onCommand(AbstractCommand cmd) throws IOException {
-        if (out == null) {
-            throw new IOException("no output stream");
-        }
-        if (debug) {
-            
-            Main.debugPrint("client " + getClassName() + ": got " + cmd);
-        }
+//    public void onCommand(AbstractCommand cmd) throws IOException {
+//        if (out == null) {
+//            throw new IOException("no output stream");
+//        }
+//        if (debug) {
+//            
+//            Main.debugPrint("client " + getClassName() + ": got " + cmd);
+//        }
         // FIXME
 //        switch (cmd.getType()) {
 //            case Command.EXIT:
@@ -87,7 +86,7 @@ class FileClient extends Client {
 //                }
 //                break;
 //        }
-    }
+//    }
 
     protected synchronized void closeAll() throws IOException {
         if (out != null) {

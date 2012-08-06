@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  * This annotation is used to mark an arbitrary java class as a BTrace extension.
  * @author Jaroslav Bachorik
  * 
- * @since 1.3
+ * @since 2.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

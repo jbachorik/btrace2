@@ -32,6 +32,20 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
 
+/**
+ * Represents the base class for command types.
+ * <p>
+ * A new command type is created by extending this class. Command types are
+ * used to allow decoupling of the command implementation (eg. client vs. server)
+ * </p>
+ * <p>
+ * A specific implementation of a command type will extend {@linkplain CommandImpl} 
+ * with the type parameter of the command type class to be extended. Also, an {@linkplain Command}
+ * annotation is necessary to overcome generics erasure.
+ * </p>
+ * @author Jaroslav Bachorik <jaroslav.bachorik at oracle.com>
+ * @since 2.0
+ */
 public abstract class AbstractCommand implements Serializable {
     transient final private int type;
     transient final private int rx, tx;
@@ -58,30 +72,67 @@ public abstract class AbstractCommand implements Serializable {
         this.tx = tx;
     }
 
+    /**
+     * 
+     * @return Internal type ID
+     */
     final public int getType() {
         return type;
     }
 
+    /**
+     * 
+     * @return Internal RX counter
+     */
     final public int getRx() {
         return rx;
     }
 
+    /**
+     * 
+     * @return Internal TX counter
+     */
     final public int getTx() {
         return tx;
     }
     
+    /**
+     * Can this command be placed on speculation queue?
+     * @return Returns <b>TRUE</b> if the command can be speculated, <b>FALSE</b> otherwise
+     */
     public boolean canBeSpeculated() {
         return true;
     }
     
+    /**
+     * Executes the command with the given context
+     * @param ctx The execution context - a command can use it to search for specific services and information
+     */
     final public void execute(CommandContext ctx) {
         impl.execute(ctx, this);
     }
     
+    /**
+     * Sync/Async command
+     * @return Returns <b>TRUE</b> if the command is synchronous in nature, <b>FALSE</b> otherwise
+     */
     public boolean needsResponse() {
         return false;
     }
-        
+
+    /**
+     * Serializes the command.
+     * To be overridden by subclasses.
+     * @param out The output to write the command contents to
+     * @throws IOException 
+     */
     abstract public void write(ObjectOutput out) throws IOException;
+    /**
+     * De-serializes the command.
+     * To be overridden by subclasses
+     * @param in The input to read the command contents from
+     * @throws ClassNotFoundException
+     * @throws IOException 
+     */
     abstract public void read(ObjectInput in) throws ClassNotFoundException, IOException;
 }

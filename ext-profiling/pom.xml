@@ -11,6 +11,11 @@
     <artifactId>btrace-ext-profiling</artifactId>
     <packaging>jar</packaging>
     <name>btrace-ext-profiling</name>
+    
+    <description>
+        BTrace low-overhead profiling support
+    </description>
+    
     <build>
         <plugins>
             <plugin>

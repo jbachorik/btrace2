@@ -23,17 +23,7 @@
  * questions.
  */
 
-package net.java.btrace;
-
-import net.java.btrace.api.wireio.AbstractCommand;
-import java.io.IOException;
-
 /**
- * Callback interface called to notify wire
- * protocol commands.
- *
- * @author A. Sundararajan
+ * BTrace annotations used in the tracing scripts
+ * @since 2.0
  */
-public interface CommandListener {
-    public void onCommand(AbstractCommand cmd) throws IOException;
-}

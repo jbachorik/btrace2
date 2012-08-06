@@ -34,6 +34,7 @@ import java.io.ObjectOutput;
  * A simple data command that has one number value.
  * 
  * @author A. Sundararajan
+ * @author Jaroslav Bachorik
  */
 final public class NumberDataCommand extends DataCommand<Number> {
     public NumberDataCommand(int typeId, int rx, int tx) {

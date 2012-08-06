@@ -25,6 +25,10 @@
 
 package net.java.btrace.spi.core;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import net.java.btrace.api.core.BTraceMBean;
 import java.lang.reflect.Type;
 import javax.management.openmbean.OpenType;
@@ -32,12 +36,21 @@ import javax.management.openmbean.OpenType;
 /**
  * An SPI class for providing custom types exposed through the BTrace MBeean
  * <p>
- * In order to register an implementation use the standard <b>META-INF/services</b> mechanism
+ * An implementation must be annotated by {@linkplain BTraceMBean.Decorator}
  * </p>
  * @author Jaroslav Bachorik
- * @since 1.3
+ * @since 2.0
  */
-abstract public class MBeanDecorator {
+abstract public class MBeanDecoratorImpl {
+    /**
+     * Service registration annotation
+     * @author Jaroslav Bachorik
+     */
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.CLASS)
+    public static @interface Registration {
+    }
+    
     /**
      * Converts an actual {@linkplain Type} instance to an {@linkplain OpenType} instance
      * @param type The {@linkplain Type} instance to be converted

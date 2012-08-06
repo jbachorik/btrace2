@@ -13,7 +13,9 @@
         <relativePath>../btrace-parent</relativePath>
         <version>2.0-SNAPSHOT</version>
     </parent>
-
+    <description>
+        BTrace script compiler
+    </description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

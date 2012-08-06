@@ -57,7 +57,7 @@ In particular, a BTrace class
 <li>can <b>not</b> throw exceptions.
 <li>can <b>not</b> catch exceptions.
 <li>can <b>not</b> make arbitrary instance or static method calls - only the <b><code>public static</code></b> methods
-of <code><b><a href="javadoc/net/java/btrace/BTraceUtils.html">net.java.btrace.BTraceUtils</a></b></code>
+of <code><b><a href="javadoc/net/java/btraceBTraceUtils.html">com.sun.btrace.BTraceUtils</a></b></code>
 class may be called from a BTrace program.
 <li>can <b>not</b> assign to static or instance fields of
 target program's classes and objects. But, BTrace class can assign
@@ -80,9 +80,9 @@ fields have to be static.
 <pre>
 <code>
 // import all BTrace annotations
-import <b>net.java.btrace.annotations.*;</b>
+import <b>com.sun.btrace.annotations.*;</b>
 // import statics from BTraceUtils class
-import <b>static net.java.btrace.BTraceUtils.*;</b>
+import <b>static com.sun.btrace.BTraceUtils.*;</b>
 
 // @BTrace annotation tells that this is a BTrace program
 <b>@BTrace</b>
@@ -217,7 +217,7 @@ There is a convenient script called <b>btracer</b> to do the above:
 
 <h4>Method Annotations</h4>
 <ul>
-<li><b><a href="javadoc/net/java/btrace/annotations/OnMethod.html">@net.java.btrace.annotations.OnMethod</a></b> 
+<li><b><a href="javadoc/net/java/btraceannotations/OnMethod.html">@com.sun.btrace.annotations.OnMethod</a></b> 
 annotation can be used to
 specify target class(es), target method(s) and "location(s)" within the method(s). 
 An action method annotated by this annotation is called when the matching method(s) reaches 
@@ -241,22 +241,22 @@ regular expression. It is possible to match multiple classes by specifying super
 a given super type. <b><code>+java.lang.Runnable</code></b> matches all classes implementing java.lang.Runnable
 interface. Refer to the sample <b><a href="../samples/SubtypeTracer.java">SubtypeTracer.java</a></b>.
 
-<li><b><a href="javadoc/net/java/btrace/annotations/OnTimer.html">@net.java.btrace.annotations.OnTimer</a></b> 
+<li><b><a href="javadoc/net/java/btraceannotations/OnTimer.html">@com.sun.btrace.annotations.OnTimer</a></b> 
 annotation can be used to specify tracing 
 actions that have to run periodically once every N milliseconds. Time period is specified as long
 "value" property of this annotation. Refer to the sample
 <b><a href="../samples/Histogram.java">Histogram.java</a></b>
 
-<li><b><a href="javadoc/net/java/btrace/annotations/OnError.html">@net.java.btrace.annotations.OnError</a></b> 
+<li><b><a href="javadoc/net/java/btraceannotations/OnError.html">@com.sun.btrace.annotations.OnError</a></b> 
 annotation can be used to specify 
 actions that are run whenever any exception is thrown by tracing actions of some other probe.
 BTrace method annotated by this annotation is called when any exception is thrown by any of 
 the other BTrace action methods in the same BTrace class. 
-<li><b><a href="javadoc/net/java/btrace/annotations/OnExit.html">@net.java.btrace.annotations.OnExit</a></b> 
+<li><b><a href="javadoc/net/java/btraceannotations/OnExit.html">@com.sun.btrace.annotations.OnExit</a></b> 
 annotation can be used to specify
 actions that are run when BTrace code calls "exit(int)" built-in function to finish the tracing
 "session". Refer to the sample <b><a href="../samples/ProbeExit.java">ProbeExit.java</a></b>.
-<li><b><a href="javadoc/net/java/btrace/annotations/OnEvent.html">@net.java.btrace.annotations.OnEvent</a></b>
+<li><b><a href="javadoc/net/java/btraceannotations/OnEvent.html">@com.sun.btrace.annotations.OnEvent</a></b>
  annotation is used to associate tracing
 methods with "external" events send by BTrace client. BTrace methods annotated by this annotation are called when
 BTrace client sends an "event". Client may send an event based on some form of user request to 
@@ -267,11 +267,11 @@ a console menu is shown to send an event or exit the client [which is the defaul
 Refer to the sample
 <b><a href="../samples/HistoOnEvent.java">HistoOnEvent.java</a></b>
 
-<li><b><a href="javadoc/net/java/btrace/annotations/OnLowMemory.html">@net.java.btrace.annotations.OnLowMemory</a></b>
+<li><b><a href="javadoc/net/java/btraceannotations/OnLowMemory.html">@com.sun.btrace.annotations.OnLowMemory</a></b>
 annotation can be used to trace memory threshold exceed event.
 See sample <b><a href="../samples/MemAlerter.java">MemAlerter.java</a></b>
 
-<li><b><a href="javadoc/net/java/btrace/annotations/OnProbe.html">@net.java.btrace.annotations.OnProbe</a></b> 
+<li><b><a href="javadoc/net/java/btraceannotations/OnProbe.html">@com.sun.btrace.annotations.OnProbe</a></b> 
 annotation can be used to specify to avoid using implementation internal classes
 in BTrace scripts. @OnProbe probe specifications are mapped to one or more @OnMethod
 specifications by the BTrace VM agent. Currently, this mapping is done using a XML probe descriptor
@@ -283,24 +283,24 @@ the .xml file is).
 </ul>
 <h4>Argument Annotations</h4>
 <ul>
-    <li><b><a href="javadoc/net/java/btrace/annotations/Self.html">@net.java.btrace.annotations.Self</a></b>
+    <li><b><a href="javadoc/net/java/btraceannotations/Self.html">@com.sun.btrace.annotations.Self</a></b>
         annotation can be used to mark an argument to hold *this* (or *self*) value. Refer to the samples
 
         <b><a href="../samples/AWTEventTracer.java">AWTEventTracer.java</a></b> or
         <b><a href="../samples/AllCalls1.java">AllCalls1.java</a></b>
 
     </li>
-    <li><b><a href="javadoc/net/java/btrace/annotations/Return.html">@net.java.btrace.annotations.Return</a></b>
+    <li><b><a href="javadoc/net/java/btraceannotations/Return.html">@com.sun.btrace.annotations.Return</a></b>
         annotation can be used to mark an argument to hold the return value. Refer to the sample
 
         <b><a href="../samples/Classload.java">Classload.java</a></b>
     </li>
-    <li><b><a href="javadoc/net/java/btrace/annotations/CalledInstance.html">@net.java.btrace.annotations.CalledInstance</a></b>
+    <li><b><a href="javadoc/net/java/btraceannotations/CalledInstance.html">@com.sun.btrace.annotations.CalledInstance</a></b>
         annotation can be used to mark an argument to hold the called instance value. Refer to the sample
 
         <b><a href="../samples/AllCalls2.java">AllCalls2.java</a></b>
     </li>
-    <li><b><a href="javadoc/net/java/btrace/annotations/CalledMethod.html">@net.java.btrace.annotations.CalledMethod</a></b>
+    <li><b><a href="javadoc/net/java/btraceannotations/CalledMethod.html">@com.sun.btrace.annotations.CalledMethod</a></b>
         can be used to mark an argument to hold the called method name. Refer to the samples
 
         <b><a href="../samples/AllCalls1.java">AllCalls1.java</a></b> or
@@ -309,13 +309,13 @@ the .xml file is).
 </ul>
 <h4>Field Annotations</h4>
 <ul>
-<li><b><code><a href="javadoc/net/java/btrace/annotations/Export.html">@net.java.btrace.annotations.Export</a></code></b> annotation can be used with BTrace fields
+<li><b><code><a href="javadoc/net/java/btraceannotations/Export.html">@com.sun.btrace.annotations.Export</a></code></b> annotation can be used with BTrace fields
 (static fields) to specify that the field has to be mapped to a jvmstat counter. Using this, a BTrace
 program can expose tracing counters to external jvmstat clients (such as jstat). Refer to the sample
 
 <b><a href="../samples/ThreadCounter.java">ThreadCounter.java</a></b>
 
-<li><b><code><a href="javadoc/net/java/btrace/annotations/Property.html">@net.java.btrace.annotations.Property</a></code></b> annotation
+<li><b><code><a href="javadoc/net/java/btraceannotations/Property.html">@com.sun.btrace.annotations.Property</a></code></b> annotation
 can be used to flag a specific (static) field as a MBean attribute. If a BTrace class has atleast one static field with
 @Property attribute, then a MBean is created and registered with platform MBean server. JMX clients such as VisualVM, jconsole can be
 used to view such BTrace MBeans. After attaching BTrace to the target program, you can attach VisualVM or jconsole to the same
@@ -323,7 +323,7 @@ program and view the newly created BTrace MBean. With VisualVM and jconsole, you
 check out it's attributes. Refer to the samples <b><a href="../samples/ThreadCounterBean.java">ThreadCounterBean</a></b> and
 <b><a href="../samples/HistogramBean.java">HistogramBean.java</a></b>.
 
-<li><b><code><a href="javadoc/net/java/btrace/annotations/TLS.html">@net.java.btrace.annotations.TLS</a></code></b> annotation can be used with BTrace fields (static
+<li><b><code><a href="javadoc/net/java/btraceannotations/TLS.html">@com.sun.btrace.annotations.TLS</a></code></b> annotation can be used with BTrace fields (static
 fields) to specify that the field is a thread local field. Each Java thread gets a separate "copy" of
 the field. These thread local fields may be used by BTrace programs to identify whether we reached multiple
 probe actions from the same thread or not. Refer to the samples 
@@ -333,11 +333,11 @@ probe actions from the same thread or not. Refer to the samples
 
 <h4>Class Annotations</h4>
 <ul>
-<li><b><code><a href="javadoc/net/java/btrace/annotations/DTrace.html">@net.java.btrace.annotations.DTrace</a></code></b> annotation can be used to associate a simple one-liner D-script (inlined in BTrace Java class) with
+<li><b><code><a href="javadoc/net/java/btraceannotations/DTrace.html">@com.sun.btrace.annotations.DTrace</a></code></b> annotation can be used to associate a simple one-liner D-script (inlined in BTrace Java class) with
 the BTrace program. Refer to the sample <b><a href="../samples/DTraceInline.java">DTraceInline.java</a></b>.
-<li><b><code><a href="javadoc/net/java/btrace/annotations/DTraceRef.html">@net.java.btrace.annotations.DTraceRef</a></code></b> annotation can be used to associate a D-script (stored in a separate file) with the BTrace 
+<li><b><code><a href="javadoc/net/java/btraceannotations/DTraceRef.html">@com.sun.btrace.annotations.DTraceRef</a></code></b> annotation can be used to associate a D-script (stored in a separate file) with the BTrace 
 program. Refer to the sample <b><a href="../samples/DTraceRefDemo.java">DTraceRefDemo.java</a></b>.
-<li><b><code><a href="javadoc/net/java/btrace/annotations/BTrace.html">@net.java.btrace.annotations.BTrace</a></code></b> annotation must be used to designate a given Java class as a BTrace program. This annotation is 
+<li><b><code><a href="javadoc/net/java/btraceannotations/BTrace.html">@com.sun.btrace.annotations.BTrace</a></code></b> annotation must be used to designate a given Java class as a BTrace program. This annotation is 
 enforced by the BTrace compiler as well as by the BTrace agent.
 </ul>
 

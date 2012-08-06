@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package net.java.btrace.wireio;
+package net.java.btrace.api.wireio;
 
 import net.java.btrace.api.wireio.Channel;
 import net.java.btrace.api.extensions.ExtensionsRepository;
@@ -33,7 +33,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 /**
- *
+ * A {@linkplain Channel} implementation using sockets for communication
  * @author Jaroslav Bachorik
  */
 abstract public class SocketChannel extends Channel {
@@ -113,5 +113,9 @@ abstract public class SocketChannel extends Channel {
         }
     }
     
+    /**
+     * Preforms the handshake
+     * @return <b>TRUE</b> if handshake succeeded, <b>FALSE</b> otherwise
+     */
     abstract protected boolean handshake();
 }

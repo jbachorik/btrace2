@@ -30,6 +30,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.IOException;
 
+/**
+ * A command indicating that the current session is about to end
+ * @author A.Sundararajan
+ * @author Jaroslav Bachorik
+ */
 final public class ExitCommand extends AbstractCommand {
     private int exitCode = 0;
 
@@ -54,6 +59,10 @@ final public class ExitCommand extends AbstractCommand {
         exitCode = in.readInt();
     }
 
+    /**
+     * 
+     * @return The exit code
+     */
     final public int getExitCode() {
         return exitCode;
     }

@@ -30,6 +30,12 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.IOException;
 
+/**
+ * Transfer a BTrace event
+ *
+ * @author A.Sundararajan
+ * @author Jaroslav Bachorik <jaroslav.bachorik at oracle.com>
+ */
 final public class EventCommand extends AbstractCommand {
     private String event;
     
@@ -42,10 +48,18 @@ final public class EventCommand extends AbstractCommand {
         return super.canBeSpeculated();
     }
     
+    /**
+     * 
+     * @param event The event name
+     */
     final public void setEvent(String event) {
         this.event = event != null ? event : "";
     }
 
+    /**
+     * 
+     * @return The event name or empty string for <b>global<b> event
+     */
     final public String getEvent() {
         return event != null ? event : "";
     }

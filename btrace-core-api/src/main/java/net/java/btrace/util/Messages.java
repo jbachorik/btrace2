@@ -29,6 +29,10 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * Simple localisation support
+ * @author A. Sundararajan
+ */
 public final class Messages {
     private static ResourceBundle messages;
     static {

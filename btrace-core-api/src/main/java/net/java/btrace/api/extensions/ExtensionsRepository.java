@@ -48,8 +48,9 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
 /**
- *
+ * Represents a repository location of a set of extensions
  * @author Jaroslav Bachorik
+ * @since 2.0
  */
 abstract public class ExtensionsRepository {
 
@@ -70,6 +71,10 @@ abstract public class ExtensionsRepository {
         }
         return requestedPermissions;
     }
+    /**
+     * Defines the intended execution location for an extension
+     * <p>Extension can be allowed to run on <b>CLIENT</b>, <b>SERVER</b> or <b>BOTH</b>
+     */
     public enum Location {
         CLIENT, SERVER, BOTH
     }
@@ -100,6 +105,10 @@ abstract public class ExtensionsRepository {
         return location;
     }
     
+    /**
+     * Calculated class-path for the extension repository
+     * @return Returns the classpath computed over the repository
+     */
     final public String getClassPath() {
         Collection<File> jars = getExtensionFiles();
 
@@ -112,6 +121,10 @@ abstract public class ExtensionsRepository {
         return sb.toString();
     }
     
+    /**
+     * Repository's classloader
+     * @return {@linkplain ClassLoader} used to load extensions from the repository
+     */
     final synchronized public ClassLoader getClassLoader() {
         if (cLoader == null) {
             List<URL> locs = getExtensionURLs();
@@ -120,11 +133,21 @@ abstract public class ExtensionsRepository {
         return cLoader;
     }
     
+    /**
+     * Repository's classloader with custom parent
+     * @param parent The parent classloader
+     * @return {@linkplain ClassLoader} used to load extensions from the repository
+     */
     final public ClassLoader getClassLoader(ClassLoader parent) {
         List<URL> locs = getExtensionURLs();
         return new URLClassLoader(locs.toArray(new URL[locs.size()]), parent);
     }
     
+    /**
+     * Loads an extension by name
+     * @param className The extension class name
+     * @return The class of a loaded extension or <b>NULL</b>
+     */
     final public Class loadExtension(String className) {
         try {
             return getClassLoader().loadClass(className.replace('/', '.'));
@@ -132,11 +155,19 @@ abstract public class ExtensionsRepository {
         }
         return null;
     }
-    
+    /**
+     * Checks for an extension availability
+     * @param extensionFqn The extension fully qualified name 
+     * @return Returns <b>TRUE</b> if the extensions is loadable by this repository, <b>FALSE</b> otherwise
+     */
     final public boolean isExtensionAvailable(String extensionFqn) {
         return listExtensions().contains(extensionFqn);
     }
     
+    /**
+     * Lists all the extensions known to the repository
+     * @return A FQN list of all extensions in the repository
+     */
     final public Collection<String> listExtensions() {
         if (extensionsLoaded.compareAndSet(false, true)) {
             for(String svcName : ServiceLocator.listServiceNames(BTraceExtension.class, getClassLoader())) {
@@ -146,6 +177,10 @@ abstract public class ExtensionsRepository {
         return Collections.unmodifiableSet(enabledExtensions);
     }
     
+    /**
+     * Lists the URLs of all the extensions known to the repository
+     * @return A URL list of all extensions in the repository
+     */
     final public List<URL> getExtensionURLs() {
         synchronized(extensionsLock) {
             if (extensions == null) {
@@ -163,6 +198,11 @@ abstract public class ExtensionsRepository {
         return extensions;
     }
     
+    /**
+     * Repository definition path
+     * @return Returns the repository definition in the form of {@linkplain File#pathSeparator} 
+     * delimited list of jars and folders containing the extensions.
+     */
     abstract public String getExtensionsPath();
     
     final ReadWriteLock extensionJarsLock = new ReentrantReadWriteLock();

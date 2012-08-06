@@ -42,7 +42,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
+ * Expands a class with source script in short syntax (eg. no need to type <b>public static</b> everywhere) to the 
+ * BTrace's native long syntax.
+ * 
  * @author Jaroslav Bachorik
  */
 public class Postprocessor extends ClassVisitor {

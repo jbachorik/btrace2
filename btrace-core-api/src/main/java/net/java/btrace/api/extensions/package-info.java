@@ -24,7 +24,15 @@
  */
 
 /**
- * BTrace core APIs
- * @since 1.3
+ * BTrace Extension's APIs.
+ * <p>
+ * Extensions can be used to overcome the limitations of the tracing scripts imposed by the security requirements. An extension must be 
+ * trusted by the user and must declare a set of {@linkplain net.java.btrace.api.extensions.ExtensionPrivilege} values required for its
+ * correct functionality. If an extensions needs to use any of the additional privileges it must be correctly signed.
+ * </p>
+ * <p>
+ * An extension is a POJO marked by {@linkplain net.java.btrace.api.extensions.BTraceExtension}. 
+ * </p>
+ * @since 2.0
  */
 package net.java.btrace.api.extensions;

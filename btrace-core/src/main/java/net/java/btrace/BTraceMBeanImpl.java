@@ -36,7 +36,7 @@ import net.java.btrace.annotations.BTrace;
 import net.java.btrace.annotations.Property;
 import net.java.btrace.api.core.BTraceMBean;
 import net.java.btrace.api.extensions.ExtensionsRepository;
-import net.java.btrace.spi.core.MBeanDecorator;
+import net.java.btrace.spi.core.MBeanDecoratorImpl;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -274,12 +274,12 @@ final public class BTraceMBeanImpl extends BTraceMBean {
         classToOpenTypes.put(Date.class, SimpleType.DATE);
     }
     
-    private Iterable<MBeanDecorator> listDecorators() {
-        final ServiceLoader<MBeanDecorator> decoratorLoader = ServiceLoader.load(MBeanDecorator.class, repository.getClassLoader(BTraceMBeanImpl.class.getClassLoader()));
+    private Iterable<MBeanDecoratorImpl> listDecorators() {
+        final ServiceLoader<MBeanDecoratorImpl> decoratorLoader = ServiceLoader.load(MBeanDecoratorImpl.class, repository.getClassLoader(BTraceMBeanImpl.class.getClassLoader()));
 
-        return new Iterable<MBeanDecorator>() {
+        return new Iterable<MBeanDecoratorImpl>() {
 
-            public Iterator<MBeanDecorator> iterator() {
+            public Iterator<MBeanDecoratorImpl> iterator() {
                 return decoratorLoader.iterator();
             }
         };
@@ -287,7 +287,7 @@ final public class BTraceMBeanImpl extends BTraceMBean {
     
     public OpenType typeToOpenType(Type t) {
         OpenType ot = null;
-        for (MBeanDecorator d : listDecorators()) {
+        for (MBeanDecoratorImpl d : listDecorators()) {
             ot = d.toOpenType(t, this);
             if (ot != null) {
                 return ot;
@@ -330,7 +330,7 @@ final public class BTraceMBeanImpl extends BTraceMBean {
 
     public Object convertToOpenTypeValue(OpenType ot, Object value) {
         Object val = null;
-        for (MBeanDecorator d : listDecorators()) {
+        for (MBeanDecoratorImpl d : listDecorators()) {
             val = d.toOpenTypeValue(ot, value, this);
             if (val != null) {
                 return val;

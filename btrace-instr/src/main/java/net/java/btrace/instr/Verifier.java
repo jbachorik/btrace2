@@ -301,7 +301,7 @@ public class Verifier extends ClassVisitor {
 
             public AnnotationVisitor visitAnnotation(String desc,
                                   boolean visible) {
-                if (desc.startsWith("Lcom/sun/btrace/annotations/")) {
+                if (desc.startsWith("Lnet/java/btrace/annotations/")) {
                     asBTrace = true;
                     cycleDetector.addStarting(new CycleDetector.Node(methodName + methodDesc));
                 }

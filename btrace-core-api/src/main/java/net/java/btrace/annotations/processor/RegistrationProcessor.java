@@ -10,8 +10,11 @@ import java.util.Set;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import net.java.btrace.api.core.BTraceMBean;
 import net.java.btrace.api.extensions.BTraceExtension;
 import net.java.btrace.api.wireio.Command;
+import net.java.btrace.spi.core.MBeanDecoratorImpl;
+import net.java.btrace.spi.core.ValueFormatterImpl;
 import net.java.btrace.spi.wireio.CommandImpl;
 
 /**
@@ -23,7 +26,9 @@ final public class RegistrationProcessor extends AbstractServiceProviderProcesso
     public Set<String> getSupportedAnnotationTypes() {
         return new HashSet<String>(Arrays.asList(
             BTraceExtension.class.getCanonicalName(),
-            Command.class.getCanonicalName()
+            Command.class.getCanonicalName(),
+            MBeanDecoratorImpl.Registration.class.getCanonicalName(),
+            ValueFormatterImpl.Registration.class.getCanonicalName()
         ));
     }
     
@@ -42,6 +47,20 @@ final public class RegistrationProcessor extends AbstractServiceProviderProcesso
                 continue;
             }
             register(el, "META-INF/services/" + CommandImpl.class.getName());
+        }
+        for (Element el : roundEnv.getElementsAnnotatedWith(MBeanDecoratorImpl.Registration.class)) {
+            MBeanDecoratorImpl.Registration sp = el.getAnnotation(MBeanDecoratorImpl.Registration.class);
+            if (sp == null) {
+                continue;
+            }
+            register(el, "META-INF/services/" + MBeanDecoratorImpl.class.getName());
+        }
+        for (Element el : roundEnv.getElementsAnnotatedWith(ValueFormatterImpl.Registration.class)) {
+            ValueFormatterImpl.Registration sp = el.getAnnotation(ValueFormatterImpl.Registration.class);
+            if (sp == null) {
+                continue;
+            }
+            register(el, "META-INF/services/" + ValueFormatterImpl.class.getName());
         }
         return true;
     }

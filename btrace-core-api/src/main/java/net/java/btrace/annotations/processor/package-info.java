@@ -24,7 +24,6 @@
  */
 
 /**
- * BTrace communication protocol
- * @since 1.3
+ * JSR 269 annotation processor support
+ * @since 2.0
  */
-package net.java.btrace.wireio;

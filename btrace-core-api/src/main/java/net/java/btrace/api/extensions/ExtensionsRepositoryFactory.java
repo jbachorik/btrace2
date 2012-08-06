@@ -32,8 +32,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
+ * Factory for {@linkplain ExtensionsRepository} instances
  * @author Jaroslav Bachorik
+ * @since 2.0
  */
 public class ExtensionsRepositoryFactory {
     private final static String EXTPATH_PROP = "btrace.extensions.path";
@@ -87,6 +88,11 @@ public class ExtensionsRepositoryFactory {
     private static final ExtensionsRepository DEFAULT_CLIENT = new DefaultExtensionsRepository(ExtensionsRepository.Location.CLIENT);
     private static final ExtensionsRepository DEFAULT_BOTH = new DefaultExtensionsRepository(ExtensionsRepository.Location.BOTH);
     
+    /**
+     * The built-in extension repository - located in <i>(&lt;btrace_dist&gt;/lib/ext)</i>
+     * @param location Desired execution {@linkplain ExtensionsRepository.Location}
+     * @return Returns the default {@linkplain ExtensionsRepository} instance
+     */
     public static ExtensionsRepository builtin(ExtensionsRepository.Location location) {
         switch (location) {
             case SERVER: return DEFAULT_SERVER;
@@ -95,6 +101,13 @@ public class ExtensionsRepositoryFactory {
         }
     }
     
+    /**
+     * Creates an {@linkplain ExtensionsRepository} instance from the given path
+     * @param location Desired execution {@linkplain ExtensionsRepository.Location}
+     * @param userExtPath The repository path in the form of {@linkplain File#pathSeparator} 
+     * delimited list of jars and folders containing the extensions
+     * @return Returns a new instance of {@linkplain ExtensionsRepository}
+     */
     public static ExtensionsRepository fixed(ExtensionsRepository.Location location, final String userExtPath) {
         return new ExtensionsRepository(location) {
 
@@ -105,6 +118,12 @@ public class ExtensionsRepositoryFactory {
         };
     }
     
+    /**
+     * Creates a new instance of {@linkplain ExtensionsRepository} which is a result of composition of other repositories
+     * @param location Desired execution {@linkplain ExtensionsRepository.Location}
+     * @param reps The repositories to wrap in composite
+     * @return Returns a new instance of {@linkplain ExtensionsRepository}
+     */
     public static ExtensionsRepository composite(ExtensionsRepository.Location location, ExtensionsRepository ... reps) {
         Set<String> paths = new HashSet<String>();
         StringBuilder sb = new StringBuilder();

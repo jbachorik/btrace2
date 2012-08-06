@@ -14,8 +14,9 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 /**
- *
+ * An extension aware compiler wrapper
  * @author Jaroslav Bachorik
+ * @since 2.0
  */
 public class Compiler {
     private boolean unsafe;

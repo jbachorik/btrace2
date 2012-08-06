@@ -1,6 +1,0 @@
-Premain-Class: net.java.btrace.agent.Main1
-Agent-Class: net.java.btrace.agent.Main1
-Boot-Class-Path: btrace-boot-${project.version}.jar
-Can-Redefine-Classes: true
-Can-Retransform-Classes: true
-BTrace-Extension: server

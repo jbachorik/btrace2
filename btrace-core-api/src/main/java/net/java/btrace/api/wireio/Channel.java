@@ -30,10 +30,15 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- *
- * @author Jaroslav Bachorik
+ * The representation of the communication channel.
+ * 
+ * @author Jaroslav Bachorik <jaroslav.bachorik at oracle.com>
+ * @since 2.0
  */
 abstract public class Channel {
+    /**
+     * <b>Closed</b> flag
+     */
     protected final AtomicBoolean isClosed = new AtomicBoolean(false);
     private static class ResponseHandler<T> implements Response<T> {
         final private CountDownLatch latch = new CountDownLatch(1);
@@ -97,14 +102,36 @@ abstract public class Channel {
         return null;
     }
     
+    /**
+     * 
+     * @return Returns the associated {@linkplain CommandFactory}
+     */
     abstract protected CommandFactory getCommandFactory();
 
+    /**
+     * Reads and returns the next {@linkplain AbstractCommand} from the pipeline.
+     * @return Returns the next deserialized {@linkplain AbstractCommand}
+     * @throws IOException
+     * @throws ClassNotFoundException 
+     */
     abstract public AbstractCommand readCommand() throws IOException, ClassNotFoundException;
 
+    /**
+     * Submits the {@linkplain AbstractCommand} to the pipeline
+     * @param cmd The {@linkplain AbstractCommand} to write
+     * @throws IOException 
+     */
     abstract public void writeCommand(AbstractCommand cmd) throws IOException;
     
+    /**
+     * Perform the close operation.
+     * To be overridden.
+     */
     abstract protected void doClose();
     
+    /**
+     * Closes the communication channel
+     */
     final public void close() {
         if (isClosed.compareAndSet(false, true)) {
             delayedWriteService.interrupt();
@@ -112,10 +139,27 @@ abstract public class Channel {
         }
     }
     
+    /**
+     * Creates and sends a command of the given type
+     * @param <T> The command type type
+     * @param <V> The response type type
+     * @param clz The command type class
+     * @return Returns an asynchronous {@linkplain Response}
+     * @throws IOException 
+     */
     final public <T extends AbstractCommand, V> Response<V> sendCommand(Class<? extends T> clz) throws IOException {
         return sendCommand(clz, null);
     }
     
+    /**
+     * Creates and sends a command of the given type initialised by the given initialiser
+     * @param <T> The command type type
+     * @param <V> The response type type
+     * @param clz The command type class
+     * @param init The initialisation closure
+     * @return Returns an asynchronous {@linkplain Response}
+     * @throws IOException 
+     */
     final public <T extends AbstractCommand, V> Response<V> sendCommand(Class<? extends T> clz, AbstractCommand.Initializer<T> init) throws IOException {
         T cmd = prepareCommand(clz, init);
         if (cmd != null) {
@@ -131,7 +175,13 @@ abstract public class Channel {
         }
         return Response.NULL;
     }
-    
+    /**
+     * Sends a response of the given type
+     * @param <T> The response type type
+     * @param cmd The {@linkplain AbstractCommand} to link the response to
+     * @param data The response payload
+     * @throws IOException 
+     */
     final public <T> void sendResponse(AbstractCommand cmd, T data) throws IOException {
         ResponseCommand<T> response = getCommandFactory().createResponse(data, cmd.getRx());
         if (response != null) {
@@ -145,6 +195,13 @@ abstract public class Channel {
         }
     }
     
+    /**
+     * Creates a command of the given type and with the given initialiser
+     * @param <T> The command type type
+     * @param clz The command type class
+     * @param init The initialiser closure
+     * @return A new instance of {@linkplain AbstractCommand}
+     */
     final public <T extends AbstractCommand> T prepareCommand(Class<? extends T> clz, AbstractCommand.Initializer<T> init) {
         T cmd = getCommandFactory().createCommand(clz);
         if (cmd != null && init != null) {
@@ -153,11 +210,20 @@ abstract public class Channel {
         return cmd;
     }
     
+    /**
+     * Response-received hook
+     * @param <T> The response command type
+     * @param cmd The response command received
+     */
     final public <T> void responseReceived(ResponseCommand<T> cmd) {
         ResponseHandler<T> t = responseMap.get(cmd.getTx());
         t.setResponse(cmd.getPayload());
     }
     
+    /**
+     * 
+     * @return The {@linkplain ClassLoader} used by this channel
+     */
     protected static ClassLoader getMyLoader() {
         ClassLoader myLoader = Channel.class.getClassLoader();
         return myLoader != null ? myLoader : ClassLoader.getSystemClassLoader();

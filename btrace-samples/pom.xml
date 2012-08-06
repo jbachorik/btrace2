@@ -13,6 +13,9 @@
     <artifactId>btrace-samples</artifactId>
     <packaging>jar</packaging>
     <name>btrace-samples</name>
+    <description>
+        BTrace samples collection
+    </description>
     
     <build>
         <plugins>

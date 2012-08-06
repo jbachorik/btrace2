@@ -25,7 +25,7 @@
 package net.java.btrace.ext.profiling;
 
 import net.java.btrace.api.core.BTraceMBean;
-import net.java.btrace.spi.core.MBeanDecorator;
+import net.java.btrace.spi.core.MBeanDecoratorImpl;
 import java.lang.reflect.Type;
 import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeData;
@@ -39,7 +39,8 @@ import javax.management.openmbean.SimpleType;
  * Profiler specific {@linkplain MBeanDecorator} instance
  * @author Jaroslav Bachorik
  */
-public class ProfilerMBeanDecorator extends MBeanDecorator {
+@MBeanDecoratorImpl.Registration
+public class ProfilerMBeanDecorator extends MBeanDecoratorImpl {
     @Override
     public OpenType toOpenType(Type type, BTraceMBean mbean) {
         try {

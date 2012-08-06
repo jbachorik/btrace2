@@ -35,6 +35,7 @@ import java.util.Map;
  * A data command that hold data of type Map<String, String>.
  * 
  * @author A. Sundararajan
+ * @author Jaroslav Bachorik
  */
 final public class StringMapDataCommand extends DataCommand<Map<String, String>> {
     public StringMapDataCommand(int typeId, int rx, int tx) {

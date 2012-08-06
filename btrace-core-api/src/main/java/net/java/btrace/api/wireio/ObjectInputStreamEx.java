@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.java.btrace.wireio;
+package net.java.btrace.api.wireio;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +12,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 
 /**
- *
+ * An extended version of {@linkplain ObjectInputStream} allowing to specify the used {@linkplain ClassLoader}
  * @author Jaroslav Bachorik
+ * 
+ * @since 2.0
  */
 final public class ObjectInputStreamEx extends ObjectInputStream {
 

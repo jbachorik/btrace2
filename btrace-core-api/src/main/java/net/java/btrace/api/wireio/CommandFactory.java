@@ -39,8 +39,9 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *
+ * A factory for instances of {@linkplain AbstractCommand}.
  * @author Jaroslav Bachorik
+ * @since 2.0
  */
 public class CommandFactory {
     private static class FactoryMethod<T extends AbstractCommand> {
@@ -143,6 +144,11 @@ public class CommandFactory {
         }
     }
     
+    /**
+     * Creates a factory with the given classloader
+     * @param cl The {@linkplain ClassLoader} to use
+     * @return Returns a new instance of {@linkplain CommandFactory} or <b>NULL</b>
+     */
     public static CommandFactory getInstance(ClassLoader cl) {
         try {
             Iterable<CommandImpl> rslt = ServiceLocator.listServices(CommandImpl.class, cl);
@@ -154,6 +160,12 @@ public class CommandFactory {
         return null;
     }
     
+    /**
+     * Creates a factory with the given classloader and a custom command implementation mapping
+     * @param mapping The command implementation mapping list; the position is the key
+     * @param cl The {@linkplain ClassLoader} to use
+     * @return Returns a new instance of {@linkplain CommandFactory} or <b>NULL</b>
+     */
     public static CommandFactory getInstance(Class<? extends AbstractCommand>[] mapping, ClassLoader cl) {
         ServiceLocator.listServiceNames(CommandImpl.class, cl);
         try {
@@ -166,6 +178,10 @@ public class CommandFactory {
         return null;
     }
     
+    /**
+     * Lists all the supported commands
+     * @return The list of all the supported commands
+     */
     synchronized public List<Class<? extends AbstractCommand>> listSupportedCommands() {
         if (supportedCommands == null) {
             Class<? extends AbstractCommand>[] supported = new Class[mapByType.size()];
@@ -177,6 +193,12 @@ public class CommandFactory {
         return supportedCommands;
     }
     
+    /**
+     * Creates a new command of <b>&lt;T&gt;</b> type with an appropriate handler.
+     * @param <T> Type parameter for the command type
+     * @param cmdClass The command type class
+     * @return A new instance of <b>&lt;T&gt;</b> or <b>NULL</b> if the factory can not handle this type
+     */
     public <T extends AbstractCommand> T createCommand(Class<T> cmdClass) {
         FactoryMethod<T> fm = mapByType.get(cmdClass);
         if (fm != null) {
@@ -186,6 +208,13 @@ public class CommandFactory {
         return null;
     }
     
+    /**
+     * Creates a new response of <b>&lt;T&gt;</b> type with an appropriate handler.
+     * @param <T> Type parameter for the response type
+     * @param data The response type class
+     * @param tx The TX value of the command to create the response for
+     * @return A new instance of <b>&lt;T&gt;</b> or <b>NULL</b> if the factory can not handle this type
+     */
     public <T> ResponseCommand<T> createResponse(T data, int tx) {
         FactoryMethod<ResponseCommand<T>> fm = mapByType.get(ResponseCommand.class);
         if (fm != null) {
@@ -204,6 +233,14 @@ public class CommandFactory {
         return cntr;
     }
     
+    /**
+     * Restores the deserialized command
+     * 
+     * @param type The command type id
+     * @param rx The command RX
+     * @param tx The command TX
+     * @return Returns a deserialized command or <b>NULL</b>
+     */
     public AbstractCommand restoreCommand(int type, int rx, int tx) {
         FactoryMethod fm = mapById.get(type);
         if (fm != null) {
@@ -212,6 +249,10 @@ public class CommandFactory {
         return null;
     }
     
+    /**
+     * Allows for ad-hoc addition of command type mappers
+     * @param mapping The command implementation mapping list; the position is the key 
+     */
     public void addMapper(Class<? extends AbstractCommand>[] mapping) {
         int cnt = lastTypeId;
         for(Class<? extends AbstractCommand> cmdClz : mapping) {

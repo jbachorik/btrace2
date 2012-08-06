@@ -11,6 +11,9 @@
     <artifactId>btrace-ext-sys</artifactId>
     <packaging>jar</packaging>
     <name>btrace-ext-sys</name>
+    <description>
+        Gives BTrace access to various system information
+    </description>
     <build>
         <plugins>
             <plugin>

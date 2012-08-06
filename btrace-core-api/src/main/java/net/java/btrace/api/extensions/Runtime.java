@@ -43,7 +43,7 @@ import java.util.List;
  * by BTrace runtime when needed.
  * </p>
  * @author Jaroslav Bachorik
- * @since 1.3
+ * @since 2.0
  */
 final public class Runtime {
     private Runtime() {}

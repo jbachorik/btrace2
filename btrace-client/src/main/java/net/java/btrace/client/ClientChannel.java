@@ -29,9 +29,9 @@ import net.java.btrace.api.extensions.ExtensionsRepository;
 import net.java.btrace.api.wireio.AbstractCommand;
 import net.java.btrace.api.wireio.CommandFactory;
 import net.java.btrace.api.wireio.Channel;
-import net.java.btrace.wireio.SocketChannel;
-import net.java.btrace.wireio.Version;
-import net.java.btrace.wireio.ObjectInputStreamEx;
+import net.java.btrace.api.wireio.SocketChannel;
+import net.java.btrace.api.wireio.Version;
+import net.java.btrace.api.wireio.ObjectInputStreamEx;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -42,8 +42,10 @@ import java.net.Socket;
 import java.util.List;
 
 /**
- *
+ * The client side of the BTrace communication channel
  * @author Jaroslav Bachorik
+ * 
+ * @since 2.0
  */
 public final class ClientChannel extends SocketChannel {
 

@@ -14,7 +14,10 @@
     <packaging>jar</packaging>
 
     <name>btrace-server</name>
-
+    <description>
+        The BTrace server implementation
+    </description>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

@@ -39,6 +39,7 @@ import java.util.List;
  * The elements contained within the grid must be of type Number, String or HistogramData.
  * 
  * @author Christian Glencross
+ * @author Jaroslav Bachorik
  */
 final public class GridDataCommand extends DataCommand<GridDataCommand.GridData>  {
     final public static class GridData {

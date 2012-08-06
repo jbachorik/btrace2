@@ -14,6 +14,9 @@
     <packaging>jar</packaging>
 
     <name>btrace-boot</name>
+    <description>
+        An essential set of binaries to be loaded by the BTrace server.
+    </description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

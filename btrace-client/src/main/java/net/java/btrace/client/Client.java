@@ -24,9 +24,9 @@
  */
 package net.java.btrace.client;
 
+import net.java.btrace.api.core.ValueFormatter;
 import net.java.btrace.annotations.DTrace;
 import net.java.btrace.annotations.DTraceRef;
-import net.java.btrace.api.cli.ValueFormatter;
 import net.java.btrace.api.core.BTraceLogger;
 import net.java.btrace.api.extensions.ExtensionsRepository;
 import net.java.btrace.api.extensions.ExtensionsRepositoryFactory;
@@ -63,7 +63,7 @@ import sun.jvmstat.monitor.MonitoredVm;
 import sun.jvmstat.monitor.VmIdentifier;
 
 /**
- *
+ * @author A.Sundararajan
  * @author Jaroslav Bachorik
  */
 public class Client {
@@ -76,7 +76,7 @@ public class Client {
     private static final String DTRACE_REF_DESC;
 
     static {
-        ResourceBundle rb = ResourceBundle.getBundle("com/sun/btrace/client/Bundle");
+        ResourceBundle rb = ResourceBundle.getBundle("net/java/btrace/client/Bundle");
         PROJECT_VERSION = rb.getString("btrace.version");
 
         try {

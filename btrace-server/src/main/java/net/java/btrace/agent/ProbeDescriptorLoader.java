@@ -61,7 +61,7 @@ final class ProbeDescriptorLoader {
         // check in the cache
         ProbeDescriptor res = probeDescMap.get(namespace);
         if (res != null) {
-            if (Main.isDebug()) Main.debugPrint("probe descriptor cache hit for " + namespace);
+            if (MainOld.isDebug()) MainOld.debugPrint("probe descriptor cache hit for " + namespace);
             return res;
         } else {
             // load probe descriptor for the given namespace
@@ -71,7 +71,7 @@ final class ProbeDescriptorLoader {
             }
             ProbeDescriptor pd = load(file);
             if (pd != null) {
-                if (Main.isDebug()) Main.debugPrint("read probe descriptor for " + namespace);
+                if (MainOld.isDebug()) MainOld.debugPrint("read probe descriptor for " + namespace);
                 probeDescMap.put(namespace, pd);
             }
             return pd;
@@ -82,12 +82,12 @@ final class ProbeDescriptorLoader {
     private static ProbeDescriptor load(File file) {
         try {
             JAXBContext jc = JAXBContext.newInstance("net.java.btrace.annotations:net.java.btrace.runtime");
-            if (Main.isDebug()) Main.debugPrint("reading " + file);
+            if (MainOld.isDebug()) MainOld.debugPrint("reading " + file);
             Unmarshaller u = jc.createUnmarshaller();
             u.setEventHandler(new DefaultValidationEventHandler());
             return (ProbeDescriptor)u.unmarshal(file);
         } catch (JAXBException exp) {
-            if (Main.isDebug()) Main.debugPrint(exp);
+            if (MainOld.isDebug()) MainOld.debugPrint(exp);
             return null;
         }
     }
@@ -97,11 +97,11 @@ final class ProbeDescriptorLoader {
         for (String dir : probeDescDirs) {
             File f = new File(dir, namespace + ".xml");
             if (f.exists() && f.isFile()) {
-                if (Main.isDebug()) Main.debugPrint("probe descriptor for " + namespace + " is " + f);
+                if (MainOld.isDebug()) MainOld.debugPrint("probe descriptor for " + namespace + " is " + f);
                 return f;
             }
         }
-        if (Main.isDebug()) Main.debugPrint("no probe descriptor found for " + namespace);
+        if (MainOld.isDebug()) MainOld.debugPrint("no probe descriptor found for " + namespace);
         return null;
     }
 }

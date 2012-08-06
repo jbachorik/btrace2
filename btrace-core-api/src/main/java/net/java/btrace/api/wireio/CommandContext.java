@@ -33,30 +33,49 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- *
+ * A command execution context.
+ * Services are registered in the context by their FQNs and can be looked-up as such
  * @author Jaroslav Bachorik
+ * @since 2.0
  */
 final public class CommandContext {
     final private ConcurrentMap<Class, Set> contextMap = new ConcurrentHashMap<Class, Set>();
-    
+    /**
+     * Add objects to the context
+     * @param instances Objects to add to the context
+     */
     public void add(Object ... instances) {
         for(Object i : instances) {
             register(i, i.getClass());
         }
     }
-    
+    /**
+     * Remove objects from the context
+     * @param instances The objects to be removed
+     */
     public void remove(Object ... instances) {
         for(Object i : instances) {
             unregister(i, i.getClass());
         }
     }
-    
+    /**
+     * Find a service implementation of the given type
+     * @param <T> Type parameter for the service type
+     * @param clz The class of the service type
+     * @return Returns an instance of a service or <b>NULL</b>
+     */
     public <T> T lookup(Class<? extends T> clz) {
         Iterator<T> iter = lookupAll(clz).iterator();
         if (iter.hasNext()) return iter.next();
         return null;
     }
     
+    /**
+     * Finds all service implementations of the given type
+     * @param <T> Type parameter for the service type
+     * @param clz The class of the service type
+     * @return Returns a collection of all service instances
+     */
     public <T> Collection<T> lookupAll(Class<? extends T> clz) {
         Set<T> insts = contextMap.get(clz);
         return insts != null ? insts : Collections.EMPTY_SET;

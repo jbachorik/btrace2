@@ -30,8 +30,11 @@ import net.java.btrace.api.extensions.ExtensionsRepository;
 import java.lang.reflect.Method;
 
 /**
- *
+ * Extended call target validator.
+ * Allows for method calls to registered and activated extensions from the BTrace scripts.
+ * 
  * @author Jaroslav Bachorik
+ * @since 2.0
  */
 public class CallTargetValidator {
     private ExtensionsRepository repository;

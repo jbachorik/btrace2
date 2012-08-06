@@ -24,7 +24,10 @@
  */
 
 /**
- * BTrace commands API
- * @since 1.3
+ * BTrace WireIO API
+ * <p>
+ * Provides API for the BTrace wire protocol
+ * </p>
+ * @since 2.0
  */
 package net.java.btrace.api.wireio;

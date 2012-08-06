@@ -9,8 +9,10 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 /**
- *
- * @author Jaroslav Bachorik
+ * A command with associated name
+ * 
+ * @author Jaroslav Bachorik <jaroslav.bachorik at oracle.com>
+ * @since 2.0
  */
 abstract public class NamedCommand extends AbstractCommand {
     private String name;

@@ -30,6 +30,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.IOException;
 
+/**
+ * Transfers a simple text message
+ * @author A.Sundararajan
+ * @author Jaroslav Bachorik <jaroslav.bachorik at oracle.com>
+ */
 final public class MessageCommand extends AbstractCommand {
 //    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
     private long time;

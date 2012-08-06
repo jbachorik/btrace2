@@ -36,7 +36,6 @@
         <module>btrace-asm</module>
         <module>btrace-docs</module>
         <module>btrace-instr</module>
-        <module>btrace-cli-api</module>
         <module>btrace-compiler</module>
         <module>btrace-maven-plugin</module>
         <module>btrace-samples</module>

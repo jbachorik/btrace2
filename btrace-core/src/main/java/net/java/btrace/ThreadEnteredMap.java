@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 /**
- *
+ * Optimised, low-contention, thread-value map
  * @author Jaroslav Bachorik <jaroslav.bachorik@sun.com>
  */
 final public class ThreadEnteredMap {

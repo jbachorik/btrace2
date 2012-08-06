@@ -1083,7 +1083,7 @@ public final class BTraceRuntime {
         for (int index = 0; index < timerHandlers.length; index++) {
             Method m = timerHandlers[index];
             try {
-                final String className = "com/sun/btrace/BTraceRunnable$" + index;
+                final String className = "net/java/btrace/BTraceRunnable$" + index;
                 final byte[] buf = gen.generate(m, className);
                 Class cls = AccessController.doPrivileged(
                         new PrivilegedExceptionAction<Class>() {
