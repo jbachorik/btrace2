@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.Kind;
@@ -69,11 +69,11 @@ import net.java.btrace.AnyType;
     )
     public static void onSockReturn() {
         if (port != -1) {
-            println(strcat("server socket at ", str(port)));
+            println("server socket at " + str(port));
             port = -1;
         }
         if (inetAddr != null) {
-            println(strcat("server socket at ", str(inetAddr)));
+            println("server socket at " + str(inetAddr));
             inetAddr = null;
         }
     }
@@ -83,7 +83,7 @@ import net.java.btrace.AnyType;
         name="server-socket-creator"
     )
     public static void onSocket(@Return ServerSocket ssock) {
-        println(strcat("server socket at ", str(ssock)));
+        println("server socket at " + str(ssock));
     }
 
     @OnProbe(
@@ -100,7 +100,7 @@ import net.java.btrace.AnyType;
     )
     public static void onBindReturn() {
         if (sockAddr != null) {
-            println(strcat("server socket bind ", str(sockAddr)));
+            println("server socket bind " + str(sockAddr));
             sockAddr = null;
         }
     }
@@ -111,7 +111,7 @@ import net.java.btrace.AnyType;
     )
     public static void onAcceptReturn(AnyType sock) {
         if (sock != null) {
-            println(strcat("client socket accept ", str(sock)));
+            println("client socket accept " + str(sock));
         }
     }
 }

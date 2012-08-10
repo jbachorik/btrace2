@@ -23,14 +23,14 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.OnEvent;
 import net.java.btrace.annotations.BTrace;
 import net.java.btrace.annotations.Self;
 import static net.java.btrace.ext.Printer.*;
-import static net.java.btrace.ext.Collections.*;
+import static net.java.btrace.ext.collections.Collections.*;
 import static net.java.btrace.ext.Reflective.*;
 import static net.java.btrace.ext.Atomic.*;
 

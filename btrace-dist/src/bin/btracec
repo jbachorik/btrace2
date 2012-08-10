@@ -21,7 +21,7 @@ if [ -f "${BTRACE_LIB}/btrace-cli-${project.version}.jar" ] ; then
           ;;
        esac
 
-        ${JAVA_HOME}/bin/java -cp ${BTRACE_LIB}/btrace-core-api-1.3-SNAPSHOT.jar:${BTRACE_LIB}/btrace-core-${project.version}.jar:${BTRACE_LIB}/btrace-compiler-${project.version}.jar:${BTRACE_LIB}/btrace-asm-${asm.version}.jar:${TOOLS_JAR} com.sun.btrace.compiler.Compiler $*
+        ${JAVA_HOME}/bin/java -cp ${BTRACE_LIB}/btrace-core-api-1.3-SNAPSHOT.jar:${BTRACE_LIB}/btrace-core-${project.version}.jar:${BTRACE_LIB}/btrace-compiler-${project.version}.jar:${BTRACE_LIB}/btrace-asm-${asm.version}.jar:${TOOLS_JAR} net.java.btrace.compiler.Compiler $*
     else
         echo "Please set JAVA_HOME before running this script"
         exit 1

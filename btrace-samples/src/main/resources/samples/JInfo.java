@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.BTrace;
 import static net.java.btrace.ext.Printer.*;

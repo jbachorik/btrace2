@@ -24,6 +24,7 @@
  */
 package net.java.btrace.api.wireio;
 
+import java.io.EOFException;
 import net.java.btrace.api.wireio.Channel;
 import net.java.btrace.api.extensions.ExtensionsRepository;
 import net.java.btrace.api.wireio.AbstractCommand;
@@ -68,10 +69,10 @@ abstract public class SocketChannel extends Channel {
             AbstractCommand c = cFactory.restoreCommand(id, rx, tx);
             c.read(input);
             return c;
+        } catch (EOFException e) {
+            throw e;
         } catch (IOException e) {
-            if (!isClosed.get()) {
-                throw e;
-            }
+            close();
         }
         return AbstractCommand.NULL;
     }
@@ -86,9 +87,7 @@ abstract public class SocketChannel extends Channel {
             cmd.write(output);
             output.flush();
         } catch (IOException e) {
-            if (!isClosed.get()) {
-                throw e;
-            }
+            close();
         }
     }
     

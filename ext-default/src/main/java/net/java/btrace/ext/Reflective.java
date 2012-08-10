@@ -25,12 +25,12 @@
 package net.java.btrace.ext;
 
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.Exceptions;
 import sun.reflect.Reflection;
 
 import static net.java.btrace.ext.Printer.*;
@@ -43,7 +43,8 @@ import static net.java.btrace.ext.Printer.*;
 @BTraceExtension
 public class Reflective {
     @Resource
-    private static Runtime ctx;
+    private static Exceptions exc;
+    
     // standard stack depth decrement for Reflection.getCallerClass() calls
     private static final int STACK_DEC = 4;
     
@@ -131,7 +132,7 @@ public class Reflective {
         try {
             return Class.forName(name, false, cl);
         } catch (ClassNotFoundException exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -298,7 +299,7 @@ public class Reflective {
         try {
             return field.getByte(null);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -314,7 +315,7 @@ public class Reflective {
         try {
             return field.getByte(obj);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -329,7 +330,7 @@ public class Reflective {
         try {
             return field.getShort(null);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -345,7 +346,7 @@ public class Reflective {
         try {
             return field.getShort(obj);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -360,7 +361,7 @@ public class Reflective {
         try {
             return field.getInt(null);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -376,7 +377,7 @@ public class Reflective {
         try {
             return field.getInt(obj);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -391,7 +392,7 @@ public class Reflective {
         try {
             return field.getLong(null);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -407,7 +408,7 @@ public class Reflective {
         try {
             return field.getLong(obj);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -422,7 +423,7 @@ public class Reflective {
         try {
             return field.getFloat(null);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -438,7 +439,7 @@ public class Reflective {
         try {
             return field.getFloat(obj);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -453,7 +454,7 @@ public class Reflective {
         try {
             return field.getDouble(null);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -469,7 +470,7 @@ public class Reflective {
         try {
             return field.getDouble(obj);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -484,7 +485,7 @@ public class Reflective {
         try {
             return field.getBoolean(null);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -500,7 +501,7 @@ public class Reflective {
         try {
             return field.getBoolean(obj);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -515,7 +516,7 @@ public class Reflective {
         try {
             return field.getChar(null);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -531,7 +532,7 @@ public class Reflective {
         try {
             return field.getChar(obj);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -546,7 +547,7 @@ public class Reflective {
         try {
             return field.get(null);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -562,7 +563,7 @@ public class Reflective {
         try {
             return field.get(obj);
         } catch (Exception exp) {
-            throw ctx.translate(exp);
+            throw exc.translate(exp);
         }
     }
 
@@ -638,7 +639,7 @@ public class Reflective {
                     Object val = f.get(null);
                     buf.append(val != null ? val.toString() : val);
                 } catch (Exception exp) {
-                    throw ctx.translate(exp);
+                    throw exc.translate(exp);
                 }
                 buf.append(", ");
             }
@@ -659,7 +660,7 @@ public class Reflective {
                     return field;
                 } catch (Exception exp) {
                     if (throwError) {
-                       throw ctx.translate(exp);
+                       throw exc.translate(exp);
                     } else {
                        return null;
                     }
@@ -678,7 +679,7 @@ public class Reflective {
                     }
                     return fields;
                 } catch (Exception exp) {
-                    throw ctx.translate(exp);
+                    throw exc.translate(exp);
                 }
             }
         });
@@ -700,7 +701,7 @@ public class Reflective {
                     Object val = f.get(obj);
                     buf.append(val != null ? val.toString() : val);
                 } catch (Exception exp) {
-                    throw ctx.translate(exp);
+                    throw exc.translate(exp);
                 }
                 buf.append(", ");
             }

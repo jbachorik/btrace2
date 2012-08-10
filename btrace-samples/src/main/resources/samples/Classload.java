@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.Kind;
@@ -49,7 +49,7 @@ import static net.java.btrace.ext.Threads.*;
      location=@Location(Kind.RETURN)
    )   
    public static void defineclass(@Return Class cl) {
-       println(strcat("loaded ", name(cl)));
+       println("loaded " + name(cl));
        jstack();
        println("==========================");
    }

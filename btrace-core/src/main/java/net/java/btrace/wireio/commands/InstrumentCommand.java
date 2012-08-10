@@ -37,7 +37,7 @@ import java.io.IOException;
  */
 final public class InstrumentCommand extends AbstractCommand {
     final private static String[] EMPTY_ARGS = new String[0];
-    private byte[] code;
+    private byte[] code = new byte[0];
     private String[] args = EMPTY_ARGS;
     
     public InstrumentCommand(int typeId, int rx, int tx) {

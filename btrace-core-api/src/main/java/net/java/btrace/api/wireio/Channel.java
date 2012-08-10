@@ -40,6 +40,8 @@ abstract public class Channel {
      * <b>Closed</b> flag
      */
     protected final AtomicBoolean isClosed = new AtomicBoolean(false);
+    private final AtomicBoolean isInited = new AtomicBoolean(false);
+    
     private static class ResponseHandler<T> implements Response<T> {
         final private CountDownLatch latch = new CountDownLatch(1);
         
@@ -58,38 +60,37 @@ abstract public class Channel {
         }
         
         public T get(long timeout) throws InterruptedException {
-            latch.await(timeout, TimeUnit.MILLISECONDS);
-            return data;
+            if (latch.await(timeout, TimeUnit.MILLISECONDS)) {
+                return data;
+            } else {
+                return null;
+            }
         }
     }
     
     final private ConcurrentHashMap<Integer, ResponseHandler> responseMap = new ConcurrentHashMap<Integer, ResponseHandler>();
     final private BlockingQueue<AbstractCommand> commandQueue = new ArrayBlockingQueue<AbstractCommand>(128000);
     
-    private Thread delayedWriteService = new Thread(new Runnable() {
+    private Thread delayedWriteService = null;
 
-        public void run() {
-            try {
-                while (!isClosed.get()) {
+    protected Channel(boolean useDelayedWrite) {
+        if (useDelayedWrite) {
+            delayedWriteService = new Thread(new Runnable() {
+                public void run() {
                     try {
-                        AbstractCommand cmd = commandQueue.poll(1, TimeUnit.SECONDS);
-                        if (cmd != null) {
-                            writeCommand(cmd);
+                        while (!isClosed.get()) {
+                            try {
+                                AbstractCommand cmd = commandQueue.poll(1, TimeUnit.SECONDS);
+                                if (cmd != null) {
+                                    writeCommand(cmd);
+                                }
+                            } catch (InterruptedException e) {}
                         }
-                    } catch (InterruptedException e) {}
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }, "BTrace Delayed Writer");
-    
-    protected Channel(boolean startDelayedWrite) {
-        if (startDelayedWrite) {
-            delayedWriteService.setDaemon(true);
-            delayedWriteService.start();
-        } else {
-            delayedWriteService = null;
+            }, "BTrace Delayed Writer");
         }
     }
     
@@ -130,11 +131,25 @@ abstract public class Channel {
     abstract protected void doClose();
     
     /**
+     * Startup the channel
+     */
+    final protected void init() {
+        if (isInited.compareAndSet(false, true)) {
+            if (delayedWriteService != null) {
+                delayedWriteService.start();
+            }
+        }
+    }
+    
+    /**
      * Closes the communication channel
      */
     final public void close() {
         if (isClosed.compareAndSet(false, true)) {
             delayedWriteService.interrupt();
+            for(ResponseHandler rh : responseMap.values()) {
+                rh.setResponse(null);
+            }
             doClose();
         }
     }

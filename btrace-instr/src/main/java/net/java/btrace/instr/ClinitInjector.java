@@ -29,6 +29,7 @@ import net.java.btrace.org.objectweb.asm.ClassVisitor;
 import net.java.btrace.org.objectweb.asm.MethodVisitor;
 import net.java.btrace.org.objectweb.asm.Opcodes;
 import net.java.btrace.org.objectweb.asm.Type;
+import net.java.btrace.runtime.BTraceRuntime;
 
 /**
  * This class adapter injects a freshly loaded class with instructions to invoke
@@ -129,7 +130,7 @@ public class ClinitInjector extends ClassVisitor {
         // the name of the currently processed class
         mv.visitLdcInsn(clazz); // NOI18N
         // invocatio nof BTraceRuntime.retransform() method
-        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "net/java/btrace/BTraceRuntime", "retransform", "(Ljava/lang/String;Ljava/lang/Class;)V"); // NOI18N
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(BTraceRuntime.class), "retransform", "(Ljava/lang/String;Ljava/lang/Class;)V"); // NOI18N
         
         return clazz.getSize() + Type.getType(String.class).getSize();
     }

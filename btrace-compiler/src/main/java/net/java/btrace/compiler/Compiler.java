@@ -37,7 +37,6 @@ import net.java.btrace.util.Messages;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -50,6 +49,9 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+import net.java.btrace.org.objectweb.asm.ClassVisitor;
+import net.java.btrace.org.objectweb.asm.MethodVisitor;
+import net.java.btrace.org.objectweb.asm.Opcodes;
 
 /**
  * Compiler for a BTrace program. Note that a BTrace
@@ -69,7 +71,7 @@ public class Compiler {
     public List<String> includeDirs;
     private boolean unsafe;
     private ExtensionsRepository repository;
-
+    
     public Compiler(String includePath, boolean unsafe, ExtensionsRepository repository) {
         this(includePath, unsafe, repository, ToolProvider.getSystemJavaCompiler());
     }
@@ -299,7 +301,33 @@ public class Compiler {
                     dump(name + "_before", classBytes.get(name));
                     ClassReader cr = new ClassReader(classBytes.get(name));
                     ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-                    cr.accept(new Postprocessor(ctValidator, cw), ClassReader.EXPAND_FRAMES + ClassReader.SKIP_DEBUG);
+                    ClassVisitor cv = new ClassVisitor(Opcodes.ASM4, cw) {
+
+                        @Override
+                        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] throwables) {
+                            return new MethodVisitor(Opcodes.ASM4, super.visitMethod(access, name, desc, signature, throwables)) {
+
+                                @Override
+                                public void visitTypeInsn(int opcode, String type) {
+                                    if (opcode == Opcodes.NEW && "java/lang/StringBuilder".equals(type)) {
+                                        visitMethodInsn(Opcodes.INVOKESTATIC, Verifier.INLINED_INSTR_MARKER, Verifier.INLINED_INSTR_START, "()V");
+                                    }
+                                    super.visitTypeInsn(opcode, type);
+                                }
+
+                                @Override
+                                public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+                                    super.visitMethodInsn(opcode, owner, name, desc);
+                                    if ("java/lang/StringBuilder".equals(owner) && "toString".equals(name)) {
+                                        visitMethodInsn(Opcodes.INVOKESTATIC, Verifier.INLINED_INSTR_MARKER, Verifier.INLINED_INSTR_END, "()V");
+                                    }
+                                }
+                            };
+                        }
+                        
+                    };
+                    cr.accept(cv, ClassReader.EXPAND_FRAMES + ClassReader.SKIP_DEBUG);
+//                    cr.accept(new Postprocessor(ctValidator, cw), ClassReader.EXPAND_FRAMES + ClassReader.SKIP_DEBUG);
                     result.put(name, cw.toByteArray());
                     dump(name + "_after", cw.toByteArray());
                 }

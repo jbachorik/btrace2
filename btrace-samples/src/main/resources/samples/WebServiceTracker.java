@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.ProbeMethodName;
 import net.java.btrace.annotations.OnMethod;
@@ -52,7 +52,7 @@ import static net.java.btrace.ext.Strings.*;
    )   
    public static void onWebserviceEntry(@ProbeClassName String pcn, @ProbeMethodName String pmn) {
        print("entering webservice ");
-       println(strcat(strcat(pcn, "."), pmn));
+       println(pcn + "." + pmn);
    }
 
    @OnMethod(
@@ -62,8 +62,8 @@ import static net.java.btrace.ext.Strings.*;
    )   
    public static void onWebserviceReturn(@ProbeClassName String pcn , @ProbeMethodName String pmn, @Duration long d) {
        print("leaving web service ");
-       println(strcat(strcat(pcn, "."), pmn));
-       println(strcat("Time taken (msec) ", str(d / 1000)));
+       println(pcn + "." + pmn);
+       println("Time taken (msec) " + str(d / 1000));
        println("==========================");
    }
 

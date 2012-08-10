@@ -25,12 +25,13 @@
 package net.java.btrace.ext.sys;
 
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
+import net.java.btrace.api.extensions.runtime.Runtime;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.util.List;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.MBeans;
 
 /*
  * Wraps the memory related BTrace utility methods
@@ -41,7 +42,10 @@ import javax.annotation.Resource;
 @BTraceExtension
 public class Memory {
     @Resource
-    private static Runtime ctx;
+    private static MBeans mbeans;
+    
+    @Resource
+    private static Runtime rt;
     
     /**
      * Returns the amount of free memory in the Java Virtual Machine.
@@ -87,14 +91,14 @@ public class Memory {
      * Returns heap memory usage
      */
     public static MemoryUsage heapUsage() {
-        return ctx.getMemoryMBean().getHeapMemoryUsage();
+        return mbeans.getMemoryMBean().getHeapMemoryUsage();
     }
 
     /**
      * Returns non-heap memory usage
      */
     public static MemoryUsage nonHeapUsage() {
-        return ctx.getMemoryMBean().getNonHeapMemoryUsage();
+        return mbeans.getMemoryMBean().getNonHeapMemoryUsage();
     }
 
     /**
@@ -136,7 +140,7 @@ public class Memory {
      * which finalization is pending.
      */
     public static long finalizationCount() {
-        return ctx.getMemoryMBean().getObjectPendingFinalizationCount();
+        return mbeans.getMemoryMBean().getObjectPendingFinalizationCount();
     }
 
     /**
@@ -165,8 +169,8 @@ public class Memory {
      */
     public static void dumpHeap(String fileName, boolean live) {
         try {
-            String name = ctx.getFilePath(fileName);
-            ctx.getHotSpotMBean().dumpHeap(name, live);
+            String name = rt.getFilePath(fileName);
+            mbeans.getHotSpotMBean().dumpHeap(name, live);
         } catch (RuntimeException re) {
             throw re;
         } catch (Exception exp) {
@@ -196,7 +200,7 @@ public class Memory {
      */
     public static long getTotalGcTime() {
         long totalGcTime = 0;
-        for (GarbageCollectorMXBean gcBean : ctx.getGarbageCollectionMBeans()) {
+        for (GarbageCollectorMXBean gcBean : mbeans.getGarbageCollectionMBeans()) {
             totalGcTime += gcBean.getCollectionTime();
         }
         return totalGcTime;
@@ -215,7 +219,7 @@ public class Memory {
         if (poolFormat == null) {
             poolFormat = "%1$s;%2$d;%3$d;%4$d;%5$d";
         }
-        List<MemoryPoolMXBean> memPoolList = ctx.getMemoryPoolMXBeans();
+        List<MemoryPoolMXBean> memPoolList = mbeans.getMemoryPoolMXBeans();
     	Object[][] poolOutput = new Object[memPoolList.size()][5];
 
     	StringBuilder membuffer = new StringBuilder();

@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -109,7 +110,7 @@ public class ServiceLocator {
                         clz = null;
                     }
                 }
-            } while (clz == null && clzIter.hasNext());
+            } while (clzIter.hasNext());
             return null;
         }
 
@@ -214,15 +215,21 @@ public class ServiceLocator {
             while (urls.hasMoreElements()) {
                 is = urls.nextElement().openStream();
                 if (is != null) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                    String line = br.readLine();
-                    if (line.startsWith("#")) {
-                        curpos = Integer.valueOf(line.substring(1));
-                        continue;
-                    }
-                    while (line != null) {
-                        services.add(new ServiceLine(curpos, line));
-                        line = br.readLine();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName("utf-8")));
+                    try {
+                        String line = br.readLine();
+                        if (line.startsWith("#")) {
+                            curpos = Integer.valueOf(line.substring(1));
+                            continue;
+                        }
+                        while (line != null) {
+                            services.add(new ServiceLine(curpos, line));
+                            line = br.readLine();
+                        }
+                    } finally {
+                        try {
+                            br.close();
+                        } catch (Exception e) {}
                     }
                 }
             }

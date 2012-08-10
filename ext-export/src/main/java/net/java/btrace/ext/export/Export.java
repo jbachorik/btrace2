@@ -25,7 +25,6 @@
 package net.java.btrace.ext.export;
 
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -39,6 +38,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Properties;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.Arguments;
 
 /*
  * Wraps the data export related BTrace utility methods
@@ -47,8 +47,28 @@ import javax.annotation.Resource;
 @BTraceExtension
 public class Export {
     @Resource
-    private static Runtime ctx;
+    private static Arguments args;
+    
     private static Properties dotWriterProps;
+    
+    private static String resolveFileName(String name) {
+        if (name.indexOf(File.separatorChar) != -1) {
+            throw new IllegalArgumentException("directories are not allowed");
+        }
+        StringBuilder buf = new StringBuilder();
+        buf.append('.');
+        buf.append(File.separatorChar);
+        buf.append("btrace");
+        if (args.$length() > 0) {
+            buf.append(args.$(0));
+        }
+        buf.append(File.separatorChar);
+        buf.append(args.getClass());
+        new File(buf.toString()).mkdirs();
+        buf.append(File.separatorChar);
+        buf.append(name);
+        return buf.toString();
+    }
     
     /**
      * Serialize a given object into the given file.
@@ -59,10 +79,10 @@ public class Export {
      * @param obj object that has to be serialized.
      * @param fileName name of the file to which the object is serialized.
      */
-    public void serialize(Serializable obj, String fileName) {
+    public static void serialize(Serializable obj, String fileName) {
         try {
             BufferedOutputStream bos = new BufferedOutputStream(
-                new FileOutputStream(ctx.getFilePath(fileName)));
+                new FileOutputStream(resolveFileName(fileName)));
             ObjectOutputStream oos = new ObjectOutputStream(bos);
             oos.writeObject(obj);
             oos.close();
@@ -97,7 +117,7 @@ public class Export {
     public static void writeXML(Object obj, String fileName) {
         try {
             BufferedWriter bw = new BufferedWriter(
-                new FileWriter(ctx.getFilePath(fileName)));
+                new FileWriter(resolveFileName(fileName)));
             XMLSerializer.write(obj, bw);
             bw.close();
         } catch (RuntimeException re) {
@@ -117,7 +137,7 @@ public class Export {
      * @since 1.1
      */
     public static void writeDOT(Object obj, String fileName) {
-        DOTWriter writer = new DOTWriter(ctx.getFilePath(fileName));
+        DOTWriter writer = new DOTWriter(resolveFileName(fileName));
         initDOTWriterProps();
         writer.customize(dotWriterProps);
         writer.addNode(null, obj);

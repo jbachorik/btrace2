@@ -7,7 +7,7 @@ package net.java.btrace.client.commands;
 
 import net.java.btrace.api.core.ValueFormatter;
 import net.java.btrace.api.wireio.Command;
-import net.java.btrace.api.wireio.CommandContext;
+import net.java.btrace.api.core.Lookup;
 import net.java.btrace.spi.wireio.CommandImpl;
 import net.java.btrace.wireio.commands.GridDataCommand;
 import java.io.PrintWriter;
@@ -19,7 +19,7 @@ import java.io.PrintWriter;
 @Command(clazz=GridDataCommand.class)
 public class GridDataCommandImpl extends CommandImpl<GridDataCommand> {    
     @Override
-    public void execute(CommandContext ctx, GridDataCommand cmd) {
+    public void execute(Lookup ctx, GridDataCommand cmd) {
         PrintWriter pw = ctx.lookup(PrintWriter.class);
         ValueFormatter f = ctx.lookup(ValueFormatter.class);
         if (pw != null) {

@@ -30,7 +30,8 @@ package net.java.btrace.api.core;
  */
 final public class BTraceLogger {
     public static boolean isDebug() {
-        return Boolean.getBoolean("com.sun.btrace.debug");
+        return true;
+//        return Boolean.getBoolean("net.java.btrace.debug");
     }
     
     public static void debugPrint(String msg) {

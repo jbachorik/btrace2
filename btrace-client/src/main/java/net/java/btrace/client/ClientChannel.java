@@ -76,6 +76,7 @@ public final class ClientChannel extends SocketChannel {
     @Override
     protected boolean handshake() {
         try {
+            init();
             output.writeUTF(BTRACE_MAGIC);
             output.flush();
             String magic = input.readUTF();

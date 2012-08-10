@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.BTrace;
@@ -39,7 +39,7 @@ import static net.java.btrace.ext.Reflective.*;
         method="<init>"
     ) 
     public static void onnew(@Self Object obj) {
-        println(concat("object of: ", name(classOf(obj))));
-        println(concat("size: ", str(sizeof(obj))));
+        println("object of: " + name(classOf(obj)));
+        println("size: " + str(sizeof(obj)));
     }
 }

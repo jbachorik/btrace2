@@ -23,13 +23,13 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.BTrace;
 import net.java.btrace.annotations.Self;
 import net.java.btrace.annotations.OnTimer;
-import net.java.btrace.ext.Aggregations;
+import net.java.btrace.ext.aggregations.Aggregations;
 import static net.java.btrace.ext.Reflective.*;
 import net.java.btrace.ext.Threads;
 import net.java.btrace.ext.aggregations.Aggregation;

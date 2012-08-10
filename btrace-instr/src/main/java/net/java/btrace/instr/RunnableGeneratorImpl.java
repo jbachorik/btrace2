@@ -28,7 +28,7 @@ package net.java.btrace.instr;
 import static net.java.btrace.org.objectweb.asm.Opcodes.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import net.java.btrace.RunnableGenerator;
+import net.java.btrace.runtime.RunnableGenerator;
 import net.java.btrace.org.objectweb.asm.ClassWriter;
 import net.java.btrace.org.objectweb.asm.MethodVisitor;
 import net.java.btrace.org.objectweb.asm.Type;

@@ -48,9 +48,9 @@ final public class StringMapDataCommand extends DataCommand<Map<String, String>>
         Map<String, String> map = getPayload();
         if (map != null) {
             out.writeInt(map.size());
-            for (String key : map.keySet()) {
-                out.writeUTF(key);
-                out.writeUTF(map.get(key));
+            for (Map.Entry<String, String> e : map.entrySet()) {
+                out.writeUTF(e.getKey());
+                out.writeUTF(e.getValue());
             }
         } else {
             out.writeInt(0);

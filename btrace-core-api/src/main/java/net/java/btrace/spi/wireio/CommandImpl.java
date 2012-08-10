@@ -24,7 +24,7 @@
  */
 package net.java.btrace.spi.wireio;
 
-import net.java.btrace.api.wireio.CommandContext;
+import net.java.btrace.api.core.Lookup;
 import net.java.btrace.api.wireio.AbstractCommand;
 
 /**
@@ -36,7 +36,7 @@ abstract public class CommandImpl<T extends AbstractCommand> {
      * NULL implementation; does nothing
      */
     final public static CommandImpl NULL = new CommandImpl() {
-        public void execute(CommandContext ctx, AbstractCommand cmd) {
+        public void execute(Lookup ctx, AbstractCommand cmd) {
             // do nothing
         }
     };
@@ -46,5 +46,5 @@ abstract public class CommandImpl<T extends AbstractCommand> {
      * @param ctx The {@linkplain CommandContext}
      * @param cmd The command type to execute
      */
-    abstract public void execute(CommandContext ctx, T cmd);
+    abstract public void execute(Lookup ctx, T cmd);
 }

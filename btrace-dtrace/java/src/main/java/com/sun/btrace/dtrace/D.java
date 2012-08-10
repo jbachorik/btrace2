@@ -307,11 +307,11 @@ public class D {
                 dtraceEnabled = true;
             } catch (LinkageError le) {
                 if (loader == null
-                        || loader.getResource("com/sun/btrace") == null) {
+                        || loader.getResource("net/java/btrace") == null) {
                     System.err.println("cannot load libbtrace.so, will miss DTrace probes from BTrace");
                     return;
                 }
-                String path = loader.getResource("com/sun/btrace").toString();
+                String path = loader.getResource("net/java/btrace").toString();
                 path = path.substring(0, path.indexOf("!"));
                 path = path.substring("jar:".length(), path.lastIndexOf('/'));
                 String cpu = System.getProperty("os.arch");

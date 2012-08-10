@@ -26,9 +26,11 @@ package net.java.btrace.ext.sys;
 
 import net.java.btrace.ext.Printer;
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
+import net.java.btrace.api.extensions.runtime.Runtime;
 import java.util.List;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.MBeans;
+import net.java.btrace.api.extensions.runtime.Objects;
 
 /*
  * Wraps the VM related BTrace utility methods
@@ -39,7 +41,11 @@ import javax.annotation.Resource;
 @BTraceExtension
 public class VM {
     @Resource
-    private static Runtime ctx;
+    private static MBeans mbeans;
+    @Resource
+    private static Runtime rt;
+    @Resource
+    private static Objects objects;
     
     /**
      * Returns the input arguments passed to the Java virtual machine
@@ -61,7 +67,7 @@ public class VM {
      * is an argument passed to the Java virtual machine.
      */
     public static List<String> vmArguments() {
-        return ctx.getRuntimeMBean().getInputArguments();
+        return mbeans.getRuntimeMBean().getInputArguments();
     }
 
     /**
@@ -80,7 +86,7 @@ public class VM {
      * @return the Java virtual machine implementation version.
      */
     public static String vmVersion() {
-        return ctx.getRuntimeMBean().getVmVersion();
+        return mbeans.getRuntimeMBean().getVmVersion();
     }
 
     /**
@@ -92,7 +98,7 @@ public class VM {
      * class path mechanism; <tt>false</tt> otherwise.
      */
     public static boolean isBootClassPathSupported() {
-        return ctx.getRuntimeMBean().isBootClassPathSupported();
+        return mbeans.getRuntimeMBean().isBootClassPathSupported();
     }
 
     /**
@@ -114,7 +120,7 @@ public class VM {
      *     if the Java virtual machine does not support this operation.
      */
     public static String bootClassPath() {
-        return ctx.getRuntimeMBean().getBootClassPath();
+        return mbeans.getRuntimeMBean().getBootClassPath();
     }
 
     /**
@@ -150,7 +156,7 @@ public class VM {
      * @return start time of the Java virtual machine in milliseconds.
      */
     public static long vmStartTime() {
-        return ctx.getRuntimeMBean().getStartTime();
+        return mbeans.getRuntimeMBean().getStartTime();
     }
 
     /**
@@ -159,12 +165,12 @@ public class VM {
      * @return uptime of the Java virtual machine in milliseconds.
      */
     public static long vmUptime() {
-        return ctx.getRuntimeMBean().getUptime();
+        return mbeans.getRuntimeMBean().getUptime();
     }
     
     // BTrace exit built-in function
     public static void exit(int exitCode) {
-        ctx.exit(exitCode);
+        rt.exit(exitCode);
     }
     
     /**
@@ -208,7 +214,7 @@ public class VM {
      * @return the shallow object size
      */
     public static long sizeof(Object obj) {
-        return ctx.sizeof(obj);
+        return objects.sizeof(obj);
     }
 
     /**
@@ -222,7 +228,7 @@ public class VM {
      * @return  a hash code value for the given object.
      */
     public static int hash(Object obj) {
-        return ctx.hash(obj);
+        return objects.hash(obj);
     }
 
     /**
@@ -235,7 +241,7 @@ public class VM {
      * @return the hashCode
      */
     public static int identityHashCode(Object obj) {
-        return ctx.identityHashCode(obj);
+        return objects.identityHashCode(obj);
     }
 
     /**
@@ -250,6 +256,6 @@ public class VM {
      *         <code>false</code> otherwise.
      */
     public static boolean compare(Object obj1, Object obj2) {
-        return ctx.compare(obj1, obj2);
+        return objects.compare(obj1, obj2);
     }
 }

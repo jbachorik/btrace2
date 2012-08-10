@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.ProbeMethodName;
 import net.java.btrace.annotations.OnMethod;
@@ -33,7 +33,6 @@ import net.java.btrace.annotations.Location;
 import net.java.btrace.annotations.Self;
 import net.java.btrace.annotations.TargetMethodOrField;
 import static net.java.btrace.ext.Printer.*;
-import static net.java.btrace.ext.Strings.*;
 
 /**
  * This script demonstrates the possibility to intercept
@@ -45,6 +44,6 @@ import static net.java.btrace.ext.Strings.*;
     @OnMethod(clazz="javax.swing.JTextField", method="/.*/",
               location=@Location(value=Kind.CALL, clazz="/.*/", method="/.*/"))
     public static void m(@Self Object self, @TargetMethodOrField String method, @ProbeMethodName String probeMethod) { // all calls to the methods with signature "()"
-        println(strcat(method, strcat(" in ", probeMethod)));
+        println(method + " in " + probeMethod);
     }
 }

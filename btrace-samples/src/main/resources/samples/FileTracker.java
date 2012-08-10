@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.Kind;
@@ -62,7 +62,7 @@ import java.io.FileOutputStream;
     )
     public static void onNewFileInputStreamReturn() {
         if (name != null) {
-            println(strcat("opened for read ", name));
+            println("opened for read " + name);
             name = null;
         }
     }
@@ -83,7 +83,7 @@ import java.io.FileOutputStream;
     )
     public static void OnNewFileOutputStreamReturn() {
         if (name != null) {
-            println(strcat("opened for write ", name));
+            println("opened for write " + name);
             name = null;
         }
     }

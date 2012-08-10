@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.ProbeMethodName;
 import net.java.btrace.annotations.OnMethod;
@@ -35,7 +35,6 @@ import net.java.btrace.annotations.Location;
 import net.java.btrace.annotations.Self;
 import net.java.btrace.annotations.TargetMethodOrField;
 import static net.java.btrace.ext.Printer.*;
-import net.java.btrace.ext.Strings;
 
 /**
  * This script demonstrates the possibility to intercept
@@ -48,7 +47,7 @@ import net.java.btrace.ext.Strings;
               location=@Location(value=Kind.CALL, clazz="/.*/", method="/.*/"))
     public static void n(@Self Object self, @ProbeClassName String pcm, @ProbeMethodName String pmn,
                          @TargetInstance Object instance, @TargetMethodOrField String method, String text) { // all calls to the methods with signature "(String)"
-        println(Strings.strcat("Context: ", Strings.strcat(pcm, Strings.strcat("#", pmn))));
+        println("Context: " + pcm + "#" + pmn);
         print(method);
         print(" ");
         println(text);

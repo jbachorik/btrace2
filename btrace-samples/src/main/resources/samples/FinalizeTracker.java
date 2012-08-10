@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.BTrace;
@@ -51,7 +51,7 @@ import java.lang.reflect.Field;
     method="finalize"
   ) 
   public static void onfinalize(@Self Object me) {
-    println(concat("finalizing ", str(me)));
+    println("finalizing " + str(me));
     printFields(me);
     printFields(get(fdField, me));
     println("==========");
@@ -62,8 +62,8 @@ import java.lang.reflect.Field;
     method="close"
   ) 
   public static void onclose(@Self Object me) {
-    println(concat("closing ", str(me)));
-    println(concat("thread: ", str(currentThread())));
+    println("closing " + str(me));
+    println("thread: " + str(currentThread()));
     printFields(me);
     printFields(get(fdField, me));
     jstack();

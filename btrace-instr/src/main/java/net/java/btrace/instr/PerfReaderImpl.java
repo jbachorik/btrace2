@@ -25,8 +25,8 @@
 
 package net.java.btrace.instr;
 
-import net.java.btrace.PerfReader;
 import java.net.URISyntaxException;
+import net.java.btrace.api.core.PerfReader;
 import sun.jvmstat.monitor.IntegerMonitor;
 import sun.jvmstat.monitor.LongMonitor;
 import sun.jvmstat.monitor.Monitor;

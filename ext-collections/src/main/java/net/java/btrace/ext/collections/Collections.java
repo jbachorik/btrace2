@@ -4,11 +4,7 @@
  */
 package net.java.btrace.ext.collections;
 
-import net.java.btrace.ext.collections.BTraceCollection;
-import net.java.btrace.ext.collections.BTraceDeque;
-import net.java.btrace.ext.collections.BTraceMap;
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
 import net.java.btrace.ext.Printer;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -18,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.Objects;
 
 /*
  * Wraps the collections related BTrace utility methods
@@ -27,7 +24,7 @@ import javax.annotation.Resource;
 public class Collections {
 
     @Resource
-    private static Runtime ctx;
+    private static Objects objs;
 
     // Create a new map
     public static <K, V> Map<K, V> newHashMap() {
@@ -166,7 +163,7 @@ public class Collections {
     public static <E> boolean contains(Collection<E> coll, Object obj) {
         if (isCollection(coll)) {
             for (E e : coll) {
-                if (ctx.compare(e, obj)) {
+                if (objs.compare(e, obj)) {
                     return true;
                 }
             }
@@ -178,7 +175,7 @@ public class Collections {
 
     public static boolean contains(Object[] array, Object value) {
         for (Object each : array) {
-            if (ctx.compare(each, value)) {
+            if (objs.compare(each, value)) {
                 return true;
             }
         }

@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.BTrace;
@@ -56,6 +56,6 @@ import java.awt.Component;
     @OnTimer(2000)
     public static void print() {
         // print the counter
-        println(strcat("component count = ", str(count)));
+        println("component count = " + str(count));
     }
 }

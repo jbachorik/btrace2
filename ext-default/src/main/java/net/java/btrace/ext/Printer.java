@@ -26,7 +26,6 @@
 package net.java.btrace.ext;
 
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
 import net.java.btrace.api.wireio.AbstractCommand;
 import net.java.btrace.wireio.commands.MessageCommand;
 import net.java.btrace.wireio.commands.NumberDataCommand;
@@ -34,6 +33,7 @@ import net.java.btrace.wireio.commands.NumberMapDataCommand;
 import net.java.btrace.wireio.commands.StringMapDataCommand;
 import java.util.Map;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.CommLine;
 
 /**
  *
@@ -42,7 +42,7 @@ import javax.annotation.Resource;
 @BTraceExtension
 public class Printer {
     @Resource
-    private static Runtime ctx;
+    private static CommLine l;
     private static final String NULL_MSG = "<null>";
     public static String LINE_SEPARATOR = System.getProperty("line.separator");
     public static String INDENT = "    ";
@@ -52,7 +52,7 @@ public class Printer {
      * @param timeStamp Flag indicating whether a {@linkplain System#currentTimeMillis()} timestamp should be attached to the message
      */
     public static void print(final String str, final boolean timeStamp) {        
-        ctx.send(MessageCommand.class, new AbstractCommand.Initializer<MessageCommand> () {
+        l.send(MessageCommand.class, new AbstractCommand.Initializer<MessageCommand> () {
 
             public void init(MessageCommand cmd) {
                 cmd.setMessage(str != null ? str : NULL_MSG);
@@ -247,7 +247,7 @@ public class Printer {
      * @param data - the map data
      */
     public static void printStringMap(final String name, final Map<String, String> data) {
-        ctx.send(StringMapDataCommand.class, new AbstractCommand.Initializer<StringMapDataCommand>() {
+        l.send(StringMapDataCommand.class, new AbstractCommand.Initializer<StringMapDataCommand>() {
 
             public void init(StringMapDataCommand cmd) {
                 cmd.setName(name);
@@ -263,7 +263,7 @@ public class Printer {
      * @param value - value of the numerical data
      */
     public static void printNumber(final String name, final Number value) {
-        ctx.send(NumberDataCommand.class, new AbstractCommand.Initializer<NumberDataCommand>() {
+        l.send(NumberDataCommand.class, new AbstractCommand.Initializer<NumberDataCommand>() {
             public void init(NumberDataCommand cmd) {
                 cmd.setName(name);
                 cmd.setPayload(value);
@@ -278,7 +278,7 @@ public class Printer {
      * @param data - the map data
      */
     public static void printNumberMap(final String name, final Map<String, ? extends Number> data) {
-        ctx.send(NumberMapDataCommand.class, new AbstractCommand.Initializer<NumberMapDataCommand>() {
+        l.send(NumberMapDataCommand.class, new AbstractCommand.Initializer<NumberMapDataCommand>() {
             public void init(NumberMapDataCommand cmd) {
                 cmd.setName(name);
                 cmd.setPayload(data);

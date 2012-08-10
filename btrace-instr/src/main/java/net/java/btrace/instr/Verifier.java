@@ -30,7 +30,6 @@ import java.io.FileInputStream;
 import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import net.java.btrace.VerifierException;
 import net.java.btrace.annotations.Duration;
 import net.java.btrace.annotations.Kind;
 import net.java.btrace.annotations.ProbeClassName;

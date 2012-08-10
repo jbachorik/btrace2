@@ -31,6 +31,7 @@
         <module>btrace-parent</module>
         <module>btrace-core</module>
         <module>btrace-core-api</module>
+        <module>btrace-runtime</module>
         <module>btrace-client</module>
         <module>btrace-cli</module>
         <module>btrace-asm</module>
@@ -39,7 +40,8 @@
         <module>btrace-compiler</module>
         <module>btrace-maven-plugin</module>
         <module>btrace-samples</module>
-        <module>btrace-server</module>
+        <module>btrace-agent</module>
+        <module>btrace-boot</module>
         <module>ext-default</module>
         <module>ext-collections</module>
         <module>ext-aggregations</module>

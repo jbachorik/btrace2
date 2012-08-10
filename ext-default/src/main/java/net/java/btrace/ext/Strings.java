@@ -25,11 +25,12 @@
 package net.java.btrace.ext;
 
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
 import java.io.IOException;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.Exceptions;
+import net.java.btrace.api.extensions.runtime.Objects;
 
 /*
  * Wraps the strings related BTrace utility methods
@@ -38,7 +39,10 @@ import javax.annotation.Resource;
 @BTraceExtension
 public class Strings {
     @Resource
-    private static Runtime ctx;
+    private static Objects ctx;
+    
+    @Resource
+    private static Exceptions exc;
     
     public static boolean startsWith(String s, String start) {
         return s.startsWith(start);
@@ -554,7 +558,7 @@ public class Strings {
         try {
             return buffer.append(strToAppend);
         } catch (IOException ex) {
-            ctx.throwException(ex);
+            exc.throwException(ex);
         }
         return buffer;
 

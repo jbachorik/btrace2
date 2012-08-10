@@ -5,7 +5,7 @@
 package net.java.btrace.client.commands;
 
 import net.java.btrace.api.wireio.Command;
-import net.java.btrace.api.wireio.CommandContext;
+import net.java.btrace.api.core.Lookup;
 import net.java.btrace.spi.wireio.CommandImpl;
 import net.java.btrace.wireio.commands.NumberMapDataCommand;
 import java.io.PrintWriter;
@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @Command(clazz=NumberMapDataCommand.class)
 public class NumberMapDataCommandImpl extends CommandImpl<NumberMapDataCommand> {
-    public void execute(CommandContext ctx, NumberMapDataCommand cmd) {
+    public void execute(Lookup ctx, NumberMapDataCommand cmd) {
         PrintWriter pw = ctx.lookup(PrintWriter.class);
         if (pw != null) {
             pw.println("Number map [" + cmd.getName() + "]");

@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.Kind;
@@ -41,10 +41,10 @@ import net.java.btrace.AnyType;
 import static net.java.btrace.ext.Printer.*;
 import static net.java.btrace.ext.Strings.*;
 import static net.java.btrace.ext.Threads.*;
-import static net.java.btrace.ext.Collections.*;
+import static net.java.btrace.ext.collections.Collections.*;
 import static net.java.btrace.ext.sys.Process.*;
 import net.java.btrace.ext.aggregations.Aggregation;
-import net.java.btrace.ext.Aggregations;
+import net.java.btrace.ext.aggregations.Aggregations;
 import net.java.btrace.ext.aggregations.AggregationFunction;
 import net.java.btrace.ext.aggregations.AggregationKey;
 

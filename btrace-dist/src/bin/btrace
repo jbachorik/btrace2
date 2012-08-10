@@ -46,7 +46,7 @@ if [ -f "${BTRACE_LIB}/btrace-cli-${project.version}.jar" ] ; then
           BTRACE_CP=$f:$BTRACE_CP
        done
 
-       ${JAVA_HOME}/bin/java -Dcom.sun.btrace.probeDescPath=. -Dcom.sun.btrace.dumpClasses=false -Dcom.sun.btrace.debug=false -Dcom.sun.btrace.unsafe=false -cp ${BTRACE_CP}:${TOOLS_JAR}:/usr/share/lib/java/dtrace.jar com.sun.btrace.client.Main $*
+       ${JAVA_HOME}/bin/java -Dnet.java.btrace.probeDescPath=. -Dnet.java.btrace.dumpClasses=false -Dnet.java.btrace.debug=false -Dnet.java.btrace.unsafe=false -cp ${BTRACE_CP}:${TOOLS_JAR}:/usr/share/lib/java/dtrace.jar net.java.btrace.client.Main $*
     else
        echo "Please set JAVA_HOME before running this script"
        exit 1

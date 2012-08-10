@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.Kind;
@@ -66,11 +66,11 @@ import java.nio.channels.SocketChannel;
     )
     public static void onSockReturn() {
         if (port != -1) {
-            println(strcat("server socket at ", str(port)));
+            println("server socket at " + str(port));
             port = -1;
         }
         if (inetAddr != null) {
-            println(strcat("server socket at ", str(inetAddr)));
+            println("server socket at " + str(inetAddr));
             inetAddr = null;
         }
     }
@@ -126,7 +126,7 @@ import java.nio.channels.SocketChannel;
         location=@Location(Kind.RETURN)
     )
     public static void onSocket(@Return ServerSocket ssock) {
-        println(strcat("server socket at ", str(ssock)));
+        println("server socket at " + str(ssock));
     }
 
     @OnMethod(
@@ -140,14 +140,14 @@ import java.nio.channels.SocketChannel;
     
     private static void socketBound() {
         if (sockAddr != null) {
-            println(strcat("server socket bind ", str(sockAddr)));
+            println("server socket bind " + str(sockAddr));
             sockAddr = null;
         }
     }
     
     private static void clientSocketAcc(Object obj) {
         if (obj != null) {
-            println(strcat("client socket accept ", str(obj)));
+            println("client socket accept " + str(obj));
         }
     }
 }

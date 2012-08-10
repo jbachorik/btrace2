@@ -25,8 +25,9 @@
 package net.java.btrace.ext.sys;
 
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
+import net.java.btrace.api.extensions.runtime.Runtime;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.Arguments;
 
 /*
  * Wraps the OS related BTrace utility methods
@@ -37,7 +38,9 @@ import javax.annotation.Resource;
 @BTraceExtension
 public class Process {
     @Resource
-    private static Runtime ctx;
+    private static Arguments args;
+    @Resource
+    private static Runtime rt;
     
     /**
      * Returns n'th command line argument. <code>null</code> if not available.
@@ -46,7 +49,7 @@ public class Process {
      * @return n'th command line argument
      */
     public static String $(int n) {
-        return ctx.$(n);
+        return args.$(n);
     }
 
     /**
@@ -65,7 +68,7 @@ public class Process {
      * Returns the number of command line arguments.
      */
     public static int $length() {
-        return ctx.$length();
+        return args.$length();
     }
 
     /**
@@ -77,7 +80,7 @@ public class Process {
      * @param exitCode exit value sent to the client
      */
     public static void exit(int exitCode) {
-        ctx.exit(exitCode);
+        rt.exit(exitCode);
     }
 
     /**

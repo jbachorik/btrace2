@@ -31,7 +31,7 @@ import net.java.btrace.api.core.BTraceLogger;
 import net.java.btrace.api.extensions.ExtensionsRepository;
 import net.java.btrace.api.extensions.ExtensionsRepositoryFactory;
 import net.java.btrace.api.wireio.AbstractCommand;
-import net.java.btrace.api.wireio.CommandContext;
+import net.java.btrace.api.core.Lookup;
 import net.java.btrace.api.wireio.Response;
 import net.java.btrace.api.wireio.Channel;
 import net.java.btrace.org.objectweb.asm.Type;
@@ -131,7 +131,7 @@ public class Client {
     private ExtensionsRepository extRepository;
     private ToolsJarLocator tjLocator;
     private String agentPath;
-    private CommandContext commandCtx;
+    private Lookup commandCtx;
     final private ToolsJarLocator DEFAULT_TJ_LOCATOR;
     final private ExtensionsRepository DEFAULT_REPOSITORY;
     final private AtomicReference<State> state = new AtomicReference<State>(State.OFFLINE);
@@ -206,7 +206,7 @@ public class Client {
         sysCp = tjLocator.locateToolsJar();
 
         vFormatter = new ValueFormatter(extRepository.getClassLoader());
-        commandCtx = new CommandContext();
+        commandCtx = new Lookup();
         commandCtx.add(new PrintWriter(System.out));
         commandCtx.add(this, vFormatter);
     }
@@ -554,7 +554,7 @@ public class Client {
     }
 
     private static String getLibBaseDir() {
-        String tmp = Client.class.getClassLoader().getResource("com/sun/btrace").toString();
+        String tmp = Client.class.getClassLoader().getResource("net/java/btrace").toString();
         tmp = tmp.substring(0, tmp.indexOf("!"));
         tmp = tmp.substring("jar:".length(), tmp.lastIndexOf("/"));
         String baseDir = ".";

@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.OnMethod;
 import net.java.btrace.annotations.BTrace;
@@ -45,6 +45,6 @@ import static net.java.btrace.ext.Strings.*;
         method="/read.*/"
     )
     public static void onread(@ProbeClassName String pcn) {
-        println(strcat("read on ", pcn));
+        println("read on " + pcn);
     }
 }

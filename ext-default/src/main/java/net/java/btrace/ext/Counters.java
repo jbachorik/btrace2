@@ -25,8 +25,8 @@
 package net.java.btrace.ext;
 
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.JStat;
 
 /*
  * Wraps the jvmstat counters related BTrace utility methods
@@ -36,25 +36,25 @@ import javax.annotation.Resource;
 @BTraceExtension
 public class Counters {
     @Resource
-    private static Runtime ctx;
+    private static JStat jstat;
     /**
      * accessing jvmstat (perf) int counter
      */
     public static long perfInt(String name) {
-        return ctx.getPerfReader().perfInt(name);
+        return jstat.getPerfReader().perfInt(name);
     }
 
     /**
      * accessing jvmstat (perf) long counter
      */
     public static long perfLong(String name) {
-        return ctx.getPerfReader().perfLong(name);
+        return jstat.getPerfReader().perfLong(name);
     }
 
     /**
      * accessing jvmstat (perf) String counter
      */
     public static String perfString(String name) {
-        return ctx.getPerfReader().perfString(name);
+        return jstat.getPerfReader().perfString(name);
     }
 }

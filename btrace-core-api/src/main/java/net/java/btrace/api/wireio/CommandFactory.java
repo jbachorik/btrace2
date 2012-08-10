@@ -30,6 +30,8 @@ import net.java.btrace.spi.wireio.CommandImpl;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,7 +55,13 @@ public class CommandFactory {
         static {
             try {
                 implFld = AbstractCommand.class.getDeclaredField("impl");
-                implFld.setAccessible(true);
+                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                    @Override
+                    public Void run() {
+                        implFld.setAccessible(true);
+                        return null;
+                    }
+                });
             } catch (NoSuchFieldException e) {
                 implFld = null;
             } catch (SecurityException e) {

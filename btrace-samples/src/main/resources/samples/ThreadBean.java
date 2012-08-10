@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 /*
  * This sample demonstrates simple preprocessor in BTrace. 

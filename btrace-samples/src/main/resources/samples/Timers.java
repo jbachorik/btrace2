@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.BTrace;
 import net.java.btrace.annotations.OnTimer;
@@ -40,18 +40,18 @@ import static net.java.btrace.ext.sys.VM.*;
 
    // when starting print the target VM version and start time
    static {
-       println(strcat("vm version ", vmVersion()));
-       println(strcat("vm starttime ", str(vmStartTime())));
+       println("vm version " + vmVersion());
+       println("vm starttime " + str(vmStartTime()));
    }
 
    @OnTimer(1000) 
    public static void f() {
-     println(strcat("1000 msec: ", str(vmUptime())));
+     println("1000 msec: " + str(vmUptime()));
    }
 
    @OnTimer(3000) 
    public static void f1() {
-     println(strcat("3000 msec: ", str(millis())));
+     println("3000 msec: " + str(millis()));
    }
 
 }

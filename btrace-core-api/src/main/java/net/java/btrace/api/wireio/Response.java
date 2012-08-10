@@ -46,14 +46,14 @@ public interface Response<T> {
     
     /**
      * Payload accessor.
-     * @return Waits for the result to become available and returns it
+     * @return Waits for the result to become available and returns it. May return <b>NULL</b> if interrupted.
      * @throws InterruptedException 
      */
     T get() throws InterruptedException;
     /**
      * Payload accessor.
      * @param timeout The timeout in <i>ms</i> to wait for the result
-     * @return Waits for the result to become available and returns it
+     * @return Waits for the result to become available and returns it. May return <b>NULL</b> if interrupted.
      * @throws InterruptedException 
      */
     T get(long timeout) throws InterruptedException;

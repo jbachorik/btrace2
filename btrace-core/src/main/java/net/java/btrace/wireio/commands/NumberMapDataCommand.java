@@ -48,9 +48,9 @@ final public class NumberMapDataCommand extends DataCommand<Map<String, ? extend
         Map<String, ? extends Number> map = getPayload();
         if (map != null) {
             out.writeInt(map.size());
-            for (String key : map.keySet()) {
-                out.writeUTF(key);
-                out.writeObject(map.get(key));
+            for (Map.Entry<String, ? extends Number> e : map.entrySet()) {
+                out.writeUTF(e.getKey());
+                out.writeObject(e.getValue());
             }
         } else {
             out.writeInt(0);

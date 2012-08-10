@@ -62,7 +62,7 @@ public class ExtensionsRepositoryFactory {
         
         private String getLibBaseDir() {
             ClassLoader cl = ExtensionsRepository.class.getClassLoader();
-            URL rsrc = cl != null ? cl.getResource("com/sun/btrace") : ClassLoader.getSystemResource("com/sun/btrace");
+            URL rsrc = cl != null ? cl.getResource("net/java/btrace") : ClassLoader.getSystemResource("net/java/btrace");
             if (rsrc != null) {
                 String tmp = rsrc.toString();
                 String baseDir = ".";

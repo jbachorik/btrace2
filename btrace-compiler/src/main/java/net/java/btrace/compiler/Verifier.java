@@ -64,6 +64,19 @@ import com.sun.tools.javac.util.Context;
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class Verifier extends AbstractProcessor
                             implements TaskListener {
+    /**
+     * @since 2.0
+     */
+    final static public String INLINED_INSTR_MARKER = "net/java/btrace/InlineMarker";
+    /**
+     * @since 2.0
+     */
+    final static public String INLINED_INSTR_START = "start";
+    /**
+     * @since 2.0
+     */
+    final static public String INLINED_INSTR_END = "end";
+    
     private boolean unsafe;
     private List<String> classNames =
         new ArrayList<String>();

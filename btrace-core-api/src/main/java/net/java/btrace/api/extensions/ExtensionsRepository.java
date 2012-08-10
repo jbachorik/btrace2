@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -61,10 +63,10 @@ abstract public class ExtensionsRepository {
             StringTokenizer st = new StringTokenizer(permissionsList, ",");
             while (st.hasMoreTokens()) {
                 String permName = st.nextToken();
-                ExtensionPrivilege perm = ExtensionPrivilege.valueOf(permName);
-                if (perm != null) {
+                try {
+                    ExtensionPrivilege perm = ExtensionPrivilege.valueOf(permName);
                     requestedPermissions.add(perm);
-                } else {
+                } catch (IllegalArgumentException e) {
                     System.err.println("*** invalid permission name: " + permName);
                 }
             }
@@ -127,8 +129,7 @@ abstract public class ExtensionsRepository {
      */
     final synchronized public ClassLoader getClassLoader() {
         if (cLoader == null) {
-            List<URL> locs = getExtensionURLs();
-            cLoader = new URLClassLoader(locs.toArray(new URL[locs.size()]), ClassLoader.getSystemClassLoader());
+            cLoader = getClassLoader(ClassLoader.getSystemClassLoader());
         }
         return cLoader;
     }
@@ -138,9 +139,14 @@ abstract public class ExtensionsRepository {
      * @param parent The parent classloader
      * @return {@linkplain ClassLoader} used to load extensions from the repository
      */
-    final public ClassLoader getClassLoader(ClassLoader parent) {
-        List<URL> locs = getExtensionURLs();
-        return new URLClassLoader(locs.toArray(new URL[locs.size()]), parent);
+    final public ClassLoader getClassLoader(final ClassLoader parent) {
+        final List<URL> locs = getExtensionURLs();
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                return new URLClassLoader(locs.toArray(new URL[locs.size()]), parent);
+            }
+        });
     }
     
     /**
@@ -237,21 +243,26 @@ abstract public class ExtensionsRepository {
         return jars;
     }
     
+    final private FileFilter jarFilter = new FileFilter() {
+
+        @Override
+        public boolean accept(File path) {
+            return path.isDirectory() || path.getName().toLowerCase().endsWith(".jar");
+        }
+    };
+    
     private void collectJars(File dir, List<File> jars) {
         if (!dir.exists()) return;
         
-        File[] files = dir.listFiles(new FileFilter() {
-            public boolean accept(File path) {
-                return path.isDirectory() || path.getName().toLowerCase().endsWith(".jar");
-            }
-        });
+        File[] files = dir.listFiles(jarFilter);
         if (files != null) {
             for(File f : files) {
                 if (f.isDirectory()) {
                     collectJars(f, jars);
                 } else {
+                    JarFile jf = null;
                     try {
-                        JarFile jf = new JarFile(f);
+                        jf = new JarFile(f);
                         Attributes attrs = jf.getManifest().getMainAttributes();
                         String extLocationStr = attrs.getValue(BTRACE_EXTENSION_ATTRIBUTE);
                         if (extLocationStr != null) {
@@ -269,7 +280,12 @@ abstract public class ExtensionsRepository {
                                 }
                             }
                         }
-                    } catch (IOException e) {}
+                    } catch (IOException e) {
+                    } finally {
+                        try {
+                            jf.close();
+                        } catch (Exception e){}
+                    }
                 }
             }
         }

@@ -36,7 +36,7 @@ import java.util.ResourceBundle;
 public final class Messages {
     private static ResourceBundle messages;
     static {
-        messages = ResourceBundle.getBundle("com.sun.btrace.resources.messages", Locale.getDefault());
+        messages = ResourceBundle.getBundle("net.java.btrace.resources.messages", Locale.getDefault());
     }
 
     private Messages() {}

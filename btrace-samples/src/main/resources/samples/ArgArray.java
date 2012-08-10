@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.ProbeMethodName;
 import net.java.btrace.annotations.OnMethod;

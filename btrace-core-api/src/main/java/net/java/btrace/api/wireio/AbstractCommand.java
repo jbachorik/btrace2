@@ -25,12 +25,11 @@
 
 package net.java.btrace.api.wireio;
 
-import net.java.btrace.api.wireio.CommandContext;
+import net.java.btrace.api.core.Lookup;
 import net.java.btrace.spi.wireio.CommandImpl;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
 
 /**
  * Represents the base class for command types.
@@ -46,7 +45,7 @@ import java.io.Serializable;
  * @author Jaroslav Bachorik <jaroslav.bachorik at oracle.com>
  * @since 2.0
  */
-public abstract class AbstractCommand implements Serializable {
+public abstract class AbstractCommand {
     transient final private int type;
     transient final private int rx, tx;
     
@@ -108,7 +107,7 @@ public abstract class AbstractCommand implements Serializable {
      * Executes the command with the given context
      * @param ctx The execution context - a command can use it to search for specific services and information
      */
-    final public void execute(CommandContext ctx) {
+    final public void execute(Lookup ctx) {
         impl.execute(ctx, this);
     }
     

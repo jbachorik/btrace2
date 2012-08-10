@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.Where;
 import net.java.btrace.annotations.OnMethod;
@@ -52,7 +52,7 @@ import static net.java.btrace.ext.sys.VM.*;
         location=@Location(value=Kind.SYNC_ENTRY, where=Where.AFTER) 
     )
     public static void onSyncEntry(Object obj) {
-        println(strcat("after synchronized entry: ", identityStr(obj)));
+        println("after synchronized entry: " + identityStr(obj));
     }
 
     @OnMethod(
@@ -61,6 +61,6 @@ import static net.java.btrace.ext.sys.VM.*;
         location=@Location(Kind.SYNC_EXIT) 
     )
     public static void onSyncExit(Object obj) {
-        println(strcat("before synchronized exit: ", identityStr(obj)));
+        println("before synchronized exit: " + identityStr(obj));
     }
 } 

@@ -25,7 +25,7 @@
 
 package net.java.btrace.instr;
 
-import net.java.btrace.PerfReader;
+import net.java.btrace.api.core.PerfReader;
 
 /**
  * Dummy perf reader that throws UnsupportedOperationException always.

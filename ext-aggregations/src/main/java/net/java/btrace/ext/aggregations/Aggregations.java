@@ -25,13 +25,13 @@
 package net.java.btrace.ext.aggregations;
 
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
 import net.java.btrace.api.wireio.AbstractCommand;
 import net.java.btrace.wireio.commands.GridDataCommand;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.CommLine;
 
 /*
  * Wraps the aggregations related BTrace utility methods
@@ -44,7 +44,7 @@ import javax.annotation.Resource;
 public class Aggregations {
 
     @Resource
-    private static Runtime ctx;
+    private static CommLine l;
 
     /**
      * Creates a new aggregation based on the given aggregation function type.
@@ -226,7 +226,7 @@ public class Aggregations {
     }
     
     private static void printAggregation(final String name, final String format, final List<Object[]> data) {
-        ctx.send(GridDataCommand.class, new AbstractCommand.Initializer<GridDataCommand>() {
+        l.send(GridDataCommand.class, new AbstractCommand.Initializer<GridDataCommand>() {
             public void init(GridDataCommand cmd) {
                 cmd.setName(name);
                 cmd.setPayload(new GridDataCommand.GridData(format, data));

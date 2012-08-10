@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.ProbeMethodName;
 import net.java.btrace.annotations.OnMethod;
@@ -42,7 +42,7 @@ import static net.java.btrace.ext.Printer.*;
         method="/.*/"
     )
     public static void m(@ProbeClassName String probeClass, @ProbeMethodName String probeMethod) {
-        print(Strings.strcat("entered ", probeClass));
-        println(Strings.strcat(".", probeMethod));
+        print("entered " + probeClass);
+        println("." + probeMethod);
     }
 } 

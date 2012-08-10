@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.samples;
+package samples;
 
 import net.java.btrace.annotations.ProbeMethodName;
 import net.java.btrace.annotations.OnMethod;
@@ -48,8 +48,8 @@ public class AllLines {
         location=@Location(value=Kind.LINE, line=-1)
     )
     public static void online(@ProbeClassName String pcn, @ProbeMethodName String pmn, int line) {
-        print(strcat(pcn, "."));
-        print(strcat(pmn, ":"));
+        print(pcn + ".");
+        print(pmn + ":");
         println(line);
     } 
 }

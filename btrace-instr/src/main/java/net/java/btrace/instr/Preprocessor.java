@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import static net.java.btrace.org.objectweb.asm.Opcodes.*;
 import static net.java.btrace.instr.Constants.*;
-import net.java.btrace.BTraceRuntime;
+import net.java.btrace.runtime.BTraceRuntime;
 import net.java.btrace.annotations.Export;
 import net.java.btrace.annotations.Property;
 import net.java.btrace.annotations.TLS;
@@ -71,6 +71,7 @@ import net.java.btrace.org.objectweb.asm.Type;
  *       to insert BTraceRuntime.enter/leave and also to call
  *       BTraceRuntime.handleException on exception catch
  *    7. add a field to store client's BTraceRuntime instance
+ *    8. strip the synthetic method calls to BTrace inline markers
  *
  * 
  * @author A. Sundararajan
@@ -742,6 +743,13 @@ public class Preprocessor extends ClassVisitor {
                     super.visitFieldInsn(opcode, owner, fieldName, desc);
                 }
 
+                @Override
+                public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+                    if (!net.java.btrace.compiler.Verifier.INLINED_INSTR_MARKER.equals(owner)) {
+                        super.visitMethodInsn(opcode, owner, name, desc);
+                    }
+                }
+
                 public void visitVarInsn(int opcode, int var) {
                     super.visitVarInsn(opcode, var + nextVar);
                 }
@@ -775,7 +783,7 @@ public class Preprocessor extends ClassVisitor {
 
                 public void visitMaxs(int maxStack, int maxLocals) {
                     visitLabel(handler);
-                    if (isBTraceHandler) {
+                    if (isClassInitializer || isBTraceHandler) {
                         visitMethodInsn(INVOKESTATIC, BTRACE_RUNTIME,
                                         BTRACE_RUNTIME_HANDLE_EXCEPTION,
                                         BTRACE_RUNTIME_HANDLE_EXCEPTION_DESC);

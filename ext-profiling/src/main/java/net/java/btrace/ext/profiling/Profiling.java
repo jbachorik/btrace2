@@ -26,10 +26,10 @@
 package net.java.btrace.ext.profiling;
 
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.extensions.Runtime;
 import net.java.btrace.api.wireio.AbstractCommand;
 import net.java.btrace.wireio.commands.GridDataCommand;
 import javax.annotation.Resource;
+import net.java.btrace.api.extensions.runtime.CommLine;
 
 /**
  * Profiling support. It is a highly specialized aggregation (therefore not
@@ -41,10 +41,10 @@ import javax.annotation.Resource;
 @BTraceExtension
 public class Profiling {
     @Resource
-    private static Runtime ctx;
+    private static CommLine l;
     
     public static void printSnapshot(final String name, final Profiler.Snapshot snapshot) {
-        ctx.send(GridDataCommand.class, new AbstractCommand.Initializer<GridDataCommand>() {
+        l.send(GridDataCommand.class, new AbstractCommand.Initializer<GridDataCommand>() {
             public void init(GridDataCommand cmd) {
                 cmd.setName(name);
                 cmd.setPayload(new GridDataCommand.GridData(null, snapshot.getGridData()));
@@ -61,7 +61,7 @@ public class Profiling {
      * @see String#format(java.lang.String, java.lang.Object[])
      */
     public static void printSnapshot(final String name, final Profiler.Snapshot snapshot, final String format) {
-        ctx.send(GridDataCommand.class, new AbstractCommand.Initializer<GridDataCommand>() {
+        l.send(GridDataCommand.class, new AbstractCommand.Initializer<GridDataCommand>() {
             public void init(GridDataCommand cmd) {
                 cmd.setName(name);
                 cmd.setPayload(new GridDataCommand.GridData(format, snapshot.getGridData()));

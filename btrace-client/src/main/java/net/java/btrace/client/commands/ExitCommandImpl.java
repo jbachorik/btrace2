@@ -7,7 +7,7 @@ package net.java.btrace.client.commands;
 
 import net.java.btrace.api.core.BTraceLogger;
 import net.java.btrace.api.wireio.Command;
-import net.java.btrace.api.wireio.CommandContext;
+import net.java.btrace.api.core.Lookup;
 import net.java.btrace.client.Client;
 import net.java.btrace.spi.wireio.CommandImpl;
 import net.java.btrace.api.wireio.Channel;
@@ -21,7 +21,7 @@ import java.io.PrintWriter;
  */
 @Command(clazz=ExitCommand.class)
 public class ExitCommandImpl extends CommandImpl<ExitCommand> {
-    public void execute(CommandContext ctx, ExitCommand cmd) {
+    public void execute(Lookup ctx, ExitCommand cmd) {
         PrintWriter pw = ctx.lookup(PrintWriter.class);
         if (pw != null) {
             pw.println();
@@ -37,6 +37,11 @@ public class ExitCommandImpl extends CommandImpl<ExitCommand> {
                 }
             } catch (IOException e) {
                 BTraceLogger.debugPrint(e);
+            }
+            try {
+                Thread.sleep(500); // let the other side some time to handle the response
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
             c.agentExit(cmd.getExitCode());
         }
