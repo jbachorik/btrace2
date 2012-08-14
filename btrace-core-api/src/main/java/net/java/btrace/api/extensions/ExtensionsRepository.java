@@ -48,6 +48,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 /**
  * Represents a repository location of a set of extensions
@@ -83,7 +84,7 @@ abstract public class ExtensionsRepository {
     
     private static final String BTRACE_EXTENSION_ATTRIBUTE = "BTrace-Extension";
     private static final String BTRACE_PRIVILEGES_ATTRIBUTE = "BTrace-Privileges";
-    private ClassLoader cLoader = null;
+    private ClassLoader cLoader = null, pLoader = null;
     
     final private Object extensionsLock = new Object();
     // @GuardedBy extensionsLock
@@ -95,10 +96,20 @@ abstract public class ExtensionsRepository {
     final private Set<ExtensionPrivilege> privileges = EnumSet.noneOf(ExtensionPrivilege.class);
     
     ExtensionsRepository(Location l) {
-        this.location = l;
+        this(null, l);
     }
     
     ExtensionsRepository(Location l, Set<ExtensionPrivilege> permissions) {
+        this(null, l, permissions);
+    }
+    
+    ExtensionsRepository(ClassLoader parentCl, Location l) {
+        this.pLoader = parentCl != null ? parentCl : ClassLoader.getSystemClassLoader();
+        this.location = l;
+    }
+    
+    ExtensionsRepository(ClassLoader parentCl, Location l, Set<ExtensionPrivilege> permissions) {
+        this.pLoader = parentCl != null ? parentCl : ClassLoader.getSystemClassLoader();
         this.location = l;
         this.privileges.addAll(permissions);
     }
@@ -129,7 +140,7 @@ abstract public class ExtensionsRepository {
      */
     final synchronized public ClassLoader getClassLoader() {
         if (cLoader == null) {
-            cLoader = getClassLoader(ClassLoader.getSystemClassLoader());
+            cLoader = getClassLoader(pLoader);
         }
         return cLoader;
     }
@@ -254,39 +265,42 @@ abstract public class ExtensionsRepository {
     private void collectJars(File dir, List<File> jars) {
         if (!dir.exists()) return;
         
-        File[] files = dir.listFiles(jarFilter);
-        if (files != null) {
-            for(File f : files) {
-                if (f.isDirectory()) {
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles(jarFilter);
+            if (files != null) {
+                for(File f : files) {
                     collectJars(f, jars);
-                } else {
-                    JarFile jf = null;
-                    try {
-                        jf = new JarFile(f);
-                        Attributes attrs = jf.getManifest().getMainAttributes();
-                        String extLocationStr = attrs.getValue(BTRACE_EXTENSION_ATTRIBUTE);
-                        if (extLocationStr != null) {
-                            Location extLocation = Location.valueOf(extLocationStr.toUpperCase());
-                            if (location == Location.BOTH || extLocation == Location.BOTH || location == extLocation) {
-                                if (!hasSignature(attrs)) {
-                                    System.err.println("*** attempting to load an extension from unsigned jar: " + jf.getName() + " @" + extLocation.name());
-                                }
-                                Set<ExtensionPrivilege> requestedPrivileges = getRequestedPrivileges(attrs);
-                                if (privileges.containsAll(requestedPrivileges)) {
-                                    jars.add(f);
-                                } else {
-                                    requestedPrivileges.removeAll(privileges);
-                                    System.err.println("*** attempting to load an extension with not allowed privileges: " + requestedPrivileges);
-                                }
-                            }
+                }
+            }
+        } else {
+            JarFile jf = null;
+            try {
+                jf = new JarFile(dir);
+                Manifest mf = jf.getManifest();
+                if (mf == null) return;
+                
+                Attributes attrs = mf.getMainAttributes();
+                String extLocationStr = attrs.getValue(BTRACE_EXTENSION_ATTRIBUTE);
+                if (extLocationStr != null) {
+                    Location extLocation = Location.valueOf(extLocationStr.toUpperCase());
+                    if (location == Location.BOTH || extLocation == Location.BOTH || location == extLocation) {
+                        if (!hasSignature(attrs)) {
+                            System.err.println("*** attempting to load an extension from unsigned jar: " + jf.getName() + " @" + extLocation.name());
                         }
-                    } catch (IOException e) {
-                    } finally {
-                        try {
-                            jf.close();
-                        } catch (Exception e){}
+                        Set<ExtensionPrivilege> requestedPrivileges = getRequestedPrivileges(attrs);
+                        if (privileges.containsAll(requestedPrivileges)) {
+                            jars.add(dir);
+                        } else {
+                            requestedPrivileges.removeAll(privileges);
+                            System.err.println("*** attempting to load an extension with not allowed privileges: " + requestedPrivileges);
+                        }
                     }
                 }
+            } catch (IOException e) {
+            } finally {
+                try {
+                    jf.close();
+                } catch (Exception e){}
             }
         }
     }

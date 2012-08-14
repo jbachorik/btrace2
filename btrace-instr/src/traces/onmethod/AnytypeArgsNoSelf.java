@@ -25,7 +25,7 @@
 
 package traces.onmethod;
 
-import net.java.btrace.AnyType;
+import net.java.btrace.api.types.AnyType;
 import net.java.btrace.annotations.BTrace;
 import net.java.btrace.annotations.OnMethod;
 

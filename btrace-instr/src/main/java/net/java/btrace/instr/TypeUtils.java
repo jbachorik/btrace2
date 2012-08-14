@@ -25,7 +25,7 @@
 
 package net.java.btrace.instr;
 
-import net.java.btrace.AnyType;
+import net.java.btrace.api.types.AnyType;
 import static net.java.btrace.org.objectweb.asm.Opcodes.*;
 import java.util.Map;
 import java.util.HashMap;

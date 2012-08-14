@@ -25,8 +25,8 @@
 
 package traces.issues;
 
-import net.java.btrace.AnyType;
 import net.java.btrace.annotations.*;
+import net.java.btrace.api.types.AnyType;
 
 @BTrace public class BTRACE87 {
     @OnMethod(

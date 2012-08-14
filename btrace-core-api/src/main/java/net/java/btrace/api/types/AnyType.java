@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace;
+package net.java.btrace.api.types;
 
 /**
  * This interface type is used in BTrace programs

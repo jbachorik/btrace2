@@ -124,18 +124,20 @@ public class CommandFactory {
             Command ann = svc.getClass().getAnnotation(Command.class);
             if (ann != null) {
                 Class<? extends AbstractCommand> cmdClz = ann.clazz();
-                Constructor<? extends AbstractCommand> constructor = cmdClz.getDeclaredConstructor(int.class, int.class, int.class);
-                constructor.setAccessible(true);
-                
-                Integer cmdId = mapper.get(cmdClz);
-                if (cmdId == null) {
-                    cmdId = cnt++;
+                if (!mapByType.containsKey(cmdClz)) {
+                    Constructor<? extends AbstractCommand> constructor = cmdClz.getDeclaredConstructor(int.class, int.class, int.class);
+                    constructor.setAccessible(true);
+
+                    Integer cmdId = mapper.get(cmdClz);
+                    if (cmdId == null) {
+                        cmdId = cnt++;
+                    }
+                    FactoryMethod fm = new FactoryMethod(svc, constructor, cmdId); 
+                    mapById.put(cmdId, fm);
+                    mapByType.put(cmdClz, fm);
+
+                    lastTypeId = cnt;
                 }
-                FactoryMethod fm = new FactoryMethod(svc, constructor, cmdId); 
-                mapById.put(cmdId, fm);
-                mapByType.put(cmdClz, fm);
-                
-                lastTypeId = cnt;
             }
         }
     }

@@ -109,7 +109,19 @@ public class ExtensionsRepositoryFactory {
      * @return Returns a new instance of {@linkplain ExtensionsRepository}
      */
     public static ExtensionsRepository fixed(ExtensionsRepository.Location location, final String userExtPath) {
-        return new ExtensionsRepository(location) {
+        return fixed(null, location, userExtPath);
+    }
+    
+    /**
+     * Creates an {@linkplain ExtensionsRepository} instance from the given path
+     * @param cLoader An optional classloader to delegate classloading to
+     * @param location Desired execution {@linkplain ExtensionsRepository.Location}
+     * @param userExtPath The repository path in the form of {@linkplain File#pathSeparator} 
+     * delimited list of jars and folders containing the extensions
+     * @return Returns a new instance of {@linkplain ExtensionsRepository}
+     */
+    public static ExtensionsRepository fixed(ClassLoader cLoader, ExtensionsRepository.Location location, final String userExtPath) {
+        return new ExtensionsRepository(cLoader, location) {
 
             @Override
             public String getExtensionsPath() {
