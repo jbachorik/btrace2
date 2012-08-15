@@ -147,6 +147,14 @@ abstract public class Channel {
     final public void close() {
         if (isClosed.compareAndSet(false, true)) {
             delayedWriteService.interrupt();
+            try {
+                // drain the queue
+                for (AbstractCommand cmd : commandQueue) {
+                    writeCommand(cmd);
+                }
+            } catch (IOException e) {
+                BTraceLogger.debugPrint(e);
+            }
             for(ResponseHandler rh : responseMap.values()) {
                 rh.setResponse(null);
             }

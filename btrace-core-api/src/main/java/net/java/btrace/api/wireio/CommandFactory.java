@@ -76,6 +76,10 @@ public class CommandFactory {
             this.constructor.setAccessible(true);
         }
         
+        private void updateImpl(CommandImpl<T> impl) {
+            this.impl = impl;
+        }
+        
         public T newInstance(int rx, int tx) {
             try {
                 T instance = constructor.newInstance(type, rx, tx);
@@ -137,6 +141,8 @@ public class CommandFactory {
                     mapByType.put(cmdClz, fm);
 
                     lastTypeId = cnt;
+                } else {
+                    mapByType.get(cmdClz).updateImpl(svc);
                 }
             }
         }
