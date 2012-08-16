@@ -43,7 +43,7 @@ import net.java.btrace.runtime.BTraceRuntimeBridge;
  */
 public class ExtensionRuntimeProcessor extends StaticInitMerger {
     private static final String CLINIT = "<clinit>";
-    private static final String CINIT = "<init>";
+    private static final String INIT = "<init>";
     
     private static final String BTRACEEXTENSION_DESC = Type.getDescriptor(BTraceExtension.class);
     private static final String RESOURCE_DESC = Type.getDescriptor(Resource.class);

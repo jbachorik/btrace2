@@ -2,18 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>btrace-parent</artifactId>
+        <artifactId>extensions</artifactId>
         <groupId>net.java.btrace</groupId>
         <version>2.0-SNAPSHOT</version>
-        <relativePath>../btrace-parent</relativePath>
     </parent>
     <groupId>net.java.btrace</groupId>
-    <artifactId>btrace-ext-default</artifactId>
+    <artifactId>btrace-ext-export</artifactId>
     <packaging>jar</packaging>
-    <name>btrace-ext-default</name>
+    <name>btrace-ext-export</name>
+    
     <description>
-        The basic set of BTrace extensions: Atomic, Counters, Numbers, Printer, References, Reflective, Strings, Threads, Time
+        Export the collected data to various external formats
     </description>
+    
     <build>
         <plugins>
             <plugin>
@@ -31,7 +32,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>btrace-core</artifactId>
+            <artifactId>btrace-core-api</artifactId>
             <version>2.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-Sign</actionName>
+            <displayName>Sign</displayName>
+            <goals>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <sign.keystore>/home/jbachorik/.keystores/default.jks</sign.keystore>
+                <sign.alias>BTrace</sign.alias>
+                <sign.storepass>dazdovka</sign.storepass>
+                <sign.keypass>dazdovka</sign.keypass>
+            </properties>
+            <activatedProfiles>
+                <activatedProfile>s</activatedProfile>
+            </activatedProfiles>
+        </action>
+        <action>
+            <actionName>CUSTOM-Signed</actionName>
+            <displayName>Signed</displayName>
+            <goals>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <sign.keystore>/home/jbachorik/.keystores/default.jks</sign.keystore>
+                <sign.alias>BTrace</sign.alias>
+                <sign.storepass>dazdovka</sign.storepass>
+                <sign.keypass>dazdovka</sign.keypass>
+                
+                
+                
+                
+                
+            </properties>
+            <activatedProfiles>
+                <activatedProfile>signed</activatedProfile>
+            </activatedProfiles>
+        </action>
+    </actions>

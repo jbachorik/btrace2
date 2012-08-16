@@ -284,7 +284,7 @@ abstract public class ExtensionsRepository {
                 if (extLocationStr != null) {
                     Location extLocation = Location.valueOf(extLocationStr.toUpperCase());
                     if (location == Location.BOTH || extLocation == Location.BOTH || location == extLocation) {
-                        if (!hasSignature(attrs)) {
+                        if (mf.getEntries().isEmpty()) {
                             System.err.println("*** attempting to load an extension from unsigned jar: " + jf.getName() + " @" + extLocation.name());
                         }
                         Set<ExtensionPrivilege> requestedPrivileges = getRequestedPrivileges(attrs);

@@ -2,18 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>btrace-parent</artifactId>
+        <artifactId>extensions</artifactId>
         <groupId>net.java.btrace</groupId>
         <version>2.0-SNAPSHOT</version>
-        <relativePath>../btrace-parent</relativePath>
     </parent>
     <groupId>net.java.btrace</groupId>
-    <artifactId>btrace-ext-sys</artifactId>
+    <artifactId>btrace-ext-profiling</artifactId>
     <packaging>jar</packaging>
-    <name>btrace-ext-sys</name>
+    <name>btrace-ext-profiling</name>
+    
     <description>
-        Gives BTrace access to various system information
+        BTrace low-overhead profiling support
     </description>
+    
     <build>
         <plugins>
             <plugin>
@@ -31,8 +32,14 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>btrace-ext-default</artifactId>
+            <artifactId>btrace-core</artifactId>
             <version>2.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <properties>

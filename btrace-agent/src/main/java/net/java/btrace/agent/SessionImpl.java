@@ -34,7 +34,6 @@ import net.java.btrace.api.wireio.Response;
 import net.java.btrace.instr.ClassFilter;
 import net.java.btrace.instr.ClassRenamer;
 import net.java.btrace.instr.ClinitInjector;
-import net.java.btrace.instr.ExtensionRuntimeProcessor;
 import net.java.btrace.instr.InstrumentUtils;
 import net.java.btrace.instr.Instrumentor;
 import net.java.btrace.instr.MethodRemover;

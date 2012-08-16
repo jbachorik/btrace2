@@ -42,12 +42,12 @@
         <module>btrace-samples</module>
         <module>btrace-agent</module>
         <module>btrace-boot</module>
-        <module>ext-default</module>
-        <module>ext-collections</module>
-        <module>ext-aggregations</module>
-        <module>ext-sys</module>
-        <module>ext-profiling</module>
-        <module>ext-export</module>
+        <module>extensions/ext-default</module>
+        <module>extensions/ext-collections</module>
+        <module>extensions/ext-aggregations</module>
+        <module>extensions/ext-sys</module>
+        <module>extensions/ext-profiling</module>
+        <module>extensions/ext-export</module>
         <module>btrace-dist</module>
     </modules>
     <distributionManagement>
