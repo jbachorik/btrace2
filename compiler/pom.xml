@@ -1,0 +1,65 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>compiler</artifactId>
+    <packaging>jar</packaging>
+
+    <name>BTrace Compiler</name>
+    <parent>
+        <groupId>net.java.btrace</groupId>
+        <artifactId>btrace-parent</artifactId>
+        <relativePath>../btrace-parent</relativePath>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
+    <description>
+        BTrace script compiler
+    </description>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <excludes>
+                        <exclude>test/traces/**/*.java</exclude>
+                        <exclude>resources/**/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sun.jdk</groupId>
+            <artifactId>tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <version>4.0</version>
+            <artifactId>asm-util</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>asm</artifactId>
+            <version>4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>core-api</artifactId>
+            <version>2.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>

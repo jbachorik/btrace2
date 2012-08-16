@@ -2,18 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>btrace-parent</artifactId>
+        <artifactId>extensions</artifactId>
         <groupId>net.java.btrace</groupId>
         <version>2.0-SNAPSHOT</version>
-        <relativePath>../btrace-parent</relativePath>
     </parent>
     <groupId>net.java.btrace</groupId>
-    <artifactId>extensions</artifactId>
-    <packaging>pom</packaging>
-    <name>extensions</name>
+    <artifactId>ext-export</artifactId>
+    <packaging>jar</packaging>
+    <name>Export (Extension)</name>
+    
     <description>
-        Extensions parent POM
+        Export the collected data to various external formats
     </description>
+    
     <build>
         <plugins>
             <plugin>
@@ -38,23 +39,4 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <profiles>
-        <profile>
-            <id>signed</id>
-            <activation>
-                <property>
-                    <name>signed</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jarsigner-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

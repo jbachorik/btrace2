@@ -41,12 +41,12 @@
     <dependencies>
         <dependency>
             <groupId>net.java.btrace</groupId>
-            <artifactId>btrace-core</artifactId>
+            <artifactId>core</artifactId>
             <version>1.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.java.btrace</groupId>
-            <artifactId>btrace-ext-default</artifactId>
+            <artifactId>ext-default</artifactId>
             <version>1.3-SNAPSHOT</version>
         </dependency>
         <dependency>

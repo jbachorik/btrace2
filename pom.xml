@@ -29,26 +29,26 @@
     
     <modules>
         <module>btrace-parent</module>
-        <module>btrace-core</module>
-        <module>btrace-core-api</module>
-        <module>btrace-runtime</module>
-        <module>btrace-client</module>
-        <module>btrace-cli</module>
-        <module>btrace-asm</module>
-        <module>btrace-docs</module>
-        <module>btrace-instr</module>
-        <module>btrace-compiler</module>
-        <module>btrace-maven-plugin</module>
-        <module>btrace-samples</module>
-        <module>btrace-agent</module>
-        <module>btrace-boot</module>
-        <module>extensions/ext-default</module>
-        <module>extensions/ext-collections</module>
-        <module>extensions/ext-aggregations</module>
-        <module>extensions/ext-sys</module>
-        <module>extensions/ext-profiling</module>
-        <module>extensions/ext-export</module>
-        <module>btrace-dist</module>
+        <module>core</module>
+        <module>core-api</module>
+        <module>runtime</module>
+        <module>client</module>
+        <module>cli</module>
+        <module>asm</module>
+        <module>docs</module>
+        <module>instr</module>
+        <module>compiler</module>
+        <module>maven-plugin</module>
+        <module>samples</module>
+        <module>agent</module>
+        <module>boot</module>
+        <module>extensions/default</module>
+        <module>extensions/collections</module>
+        <module>extensions/aggregations</module>
+        <module>extensions/sys</module>
+        <module>extensions/profiling</module>
+        <module>extensions/export</module>
+        <module>dist</module>
     </modules>
     <distributionManagement>
         <snapshotRepository>
