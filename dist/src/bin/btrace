@@ -10,7 +10,7 @@ fi
 
 BTRACE_LIB=$BTRACE_HOME/lib
 
-if [ -f "${BTRACE_LIB}/btrace-cli-${project.version}.jar" ] ; then
+if [ -f "${BTRACE_LIB}/cli-${project.version}.jar" ] ; then
     if [ "${JAVA_HOME}" != "" ]; then
        case "`uname`" in
           Darwin*)

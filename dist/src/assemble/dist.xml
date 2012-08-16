@@ -19,7 +19,7 @@
         </dependencySet>
         <dependencySet>
             <includes>
-                <include>net.java.btrace:btrace-samples</include>
+                <include>net.java.btrace:samples</include>
             </includes>
             <unpackOptions>
                 <includes>
@@ -32,7 +32,7 @@
         </dependencySet>
         <dependencySet>
             <includes>
-                <include>net.java.btrace:btrace-docs</include>
+                <include>net.java.btrace:docs</include>
             </includes>
             <unpackOptions>
                 <includes>
@@ -54,12 +54,12 @@
         <dependencySet>
             <useTransitiveDependencies>true</useTransitiveDependencies>
             <includes>
-                <include>net.java.btrace:btrace-ext-default</include>
-                <include>net.java.btrace:btrace-ext-aggregations</include>
-                <include>net.java.btrace:btrace-ext-collections</include>
-                <include>net.java.btrace:btrace-ext-export</include>
-                <include>net.java.btrace:btrace-ext-profiling</include>
-                <include>net.java.btrace:btrace-ext-sys</include>
+                <include>net.java.btrace:ext-default</include>
+                <include>net.java.btrace:ext-aggregations</include>
+                <include>net.java.btrace:ext-collections</include>
+                <include>net.java.btrace:ext-export</include>
+                <include>net.java.btrace:ext-profiling</include>
+                <include>net.java.btrace:ext-sys</include>
             </includes>
             <outputDirectory>btrace/lib/ext</outputDirectory>
             <unpack>false</unpack>
@@ -68,12 +68,12 @@
         </dependencySet>
         <dependencySet>
             <includes>
-                <include>net.java.btrace:btrace-cli</include>
-                <include>net.java.btrace:btrace-core</include>
-                <include>net.java.btrace:btrace-core-api</include>
-                <include>net.java.btrace:btrace-client</include>
-                <include>net.java.btrace:btrace-compiler</include>
-                <include>net.java.btrace:btrace-asm</include>
+                <include>net.java.btrace:cli</include>
+                <include>net.java.btrace:core</include>
+                <include>net.java.btrace:core-api</include>
+                <include>net.java.btrace:client</include>
+                <include>net.java.btrace:compiler</include>
+                <include>net.java.btrace:asm</include>
             </includes>
             <outputDirectory>btrace/lib</outputDirectory>
             <unpack>false</unpack>
