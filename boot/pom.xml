@@ -35,10 +35,11 @@
                             <includes>
                                 <include>net/java/btrace/runtime/*</include>
                                 <include>net/java/btrace/annotations/*</include>
-                                <include>net/java/btrace/api/**</include>
+                                <include>net/java/btrace/api/extensions/**</include>
+                                <include>net/java/btrace/api/core/*</include>
+                                <include>net/java/btrace/api/wireio/*</include>
                                 <include>net/java/btrace/spi/**</include>
                                 <include>net/java/btrace/wireio/**</include>
-                                <include>net/java/btrace/commands/*</include>
                             </includes>
                         </filter>
                     </filters>

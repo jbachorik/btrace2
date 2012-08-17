@@ -328,7 +328,7 @@ final public class Server {
         }
         Iterator<SessionImpl> iter = sSessions.iterator();
         while (iter.hasNext()) {
-            iter.next().onShutdown(0);
+            iter.next().shutdown(0);
         }
     }
     

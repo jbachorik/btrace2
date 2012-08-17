@@ -22,9 +22,10 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package net.java.btrace.runtime;
+package net.java.btrace.agent;
 
 import java.util.Observable;
+import net.java.btrace.runtime.ShutdownHandler;
 
 /**
  * A session represents one connection between client and agent executing
@@ -32,7 +33,7 @@ import java.util.Observable;
  * the traced application.
  * @author Jaroslav Bachorik
  */
-abstract public class Session extends Observable {
+abstract public class Session extends Observable implements ShutdownHandler {
     /**
      * An enum describing the session state
      */
@@ -82,10 +83,4 @@ abstract public class Session extends Observable {
     final public boolean detach() {
         return detach(null);
     }
-    
-    /**
-     * This method is invoked on explicit shutdown (eg. the traced application exits)
-     * @param exitCode The code the traced application exits with
-     */
-    abstract public void onShutdown(int exitCode);
 }

@@ -287,21 +287,21 @@ public final class BTraceRuntime {
     private final ExtensionsRepository repository;
 //    private final Thread dataLinkThread;
     private final Channel channel;
-    private final Session session;
+    private final ShutdownHandler shutdown;
 
     private BTraceRuntime() {
         instrumentation = null;
         repository = null;
 //        dataLinkThread = null;
         channel = null;
-        session = null;
+        shutdown = null;
     }
 
     /**
      * Creates a newly configured BTrace runtime instance
      * Intended to be used only from within the BTrace. Trying to instantiate
      * BTraceRuntime from any other class will result in IllegalArgumentException
-     * @param session The associated {@linkplain Session} instance
+     * @param shutdown The associated {@linkplain RuntimeShutdownHandler} instance
      * @param runtimeName A runtime name - it is taken from the BTrace script used
      * @param args Arguments passed to the BTrace agent
      * @param inst {@linkplain Instrumentation} instance
@@ -309,7 +309,7 @@ public final class BTraceRuntime {
      * 
      * @throws IllegalArgumentException if called from outside of the BTrace core
      */
-    public BTraceRuntime(Session session, final String runtimeName, String[] args, Channel commChannel,
+    public BTraceRuntime(ShutdownHandler shutdown, final String runtimeName, String[] args, Channel commChannel,
 //            final CommandListener cmdListener,
             Instrumentation inst, ExtensionsRepository extRepository) {
         if (!Reflection.getCallerClass(2).getName().startsWith("net.java.btrace")) {
@@ -323,7 +323,7 @@ public final class BTraceRuntime {
         this.repository = extRepository;
         this.channel = commChannel;
         runtimes.put(runtimeName, this);
-        this.session = session;
+        this.shutdown = shutdown;
     }
 
     public static String getClassName() {
@@ -940,21 +940,11 @@ public final class BTraceRuntime {
     private static <T extends AbstractCommand> Response<T> send(Class<? extends T> cmdClass, AbstractCommand.Initializer<T> init, BTraceRuntime rt) {
         try {
             return rt.channel.sendCommand(cmdClass, init);
-//            T cmd = rt.channel.prepareCommand(cmdClass, init);
-//            boolean speculated = rt.specQueueManager.send(cmd);
-//            if (!speculated) {
-//                rt.queue.put(cmd);
-//            }
         } catch (IOException ie) {
             ie.printStackTrace();
         }
         return null;
     }
-    
-//    public static CommandFactory getCommandFactory() {
-//        BTraceRuntime rt = getCurrent();
-//        return rt.channel != null ? rt.channel.getCommandFactory() : null;
-//    }
 
     public int speculation() {
         return specQueueManager.speculation();
@@ -1136,7 +1126,7 @@ public final class BTraceRuntime {
             }
         }
 
-        if (session == null) {
+        if (shutdown == null) {
             shutdown();
                 
             try {
@@ -1156,7 +1146,7 @@ public final class BTraceRuntime {
 
                 @Override
                 public void run() {
-                    session.onShutdown(exitCode);
+                    shutdown.shutdown(exitCode);
                 }
             });
             

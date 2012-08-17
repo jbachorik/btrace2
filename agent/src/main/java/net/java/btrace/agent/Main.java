@@ -29,6 +29,7 @@ import net.java.btrace.util.Messages;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.instrument.Instrumentation;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.jar.JarFile;
 import net.java.btrace.instr.OnMethod;
 import net.java.btrace.instr.OnProbe;
 import net.java.btrace.instr.ProbeDescriptor;
@@ -48,41 +50,7 @@ import net.java.btrace.instr.ProbeDescriptor;
 public class Main {
     public static final int BTRACE_DEFAULT_PORT = 2020;
     
-    private static volatile Instrumentation inst;
-        // #BTRACE-42: Non-daemon thread prevents traced application from exiting
-    private static final ThreadFactory daemonizedThreadFactory = new ThreadFactory() {
-
-        ThreadFactory delegate = Executors.defaultThreadFactory();
-
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread result = delegate.newThread(r);
-            result.setDaemon(true);
-            return result;
-        }
-    };
     private static final Map<String, String> argMap = new HashMap<String, String>();
-    private static final ExecutorService serializedExecutor = Executors.newSingleThreadExecutor(daemonizedThreadFactory);
-    private static final Map<Server, Thread> shutdownHooks = new HashMap<Server, Thread>();
-    
-    static {
-        BTraceLogger.class.getClass();
-    }
-    
-    private static void registerExitHook(final Server s) {
-        final Thread[] shutdownHook = new Thread[1];
-        shutdownHook[0] = new Thread(
-            new Runnable() {
-
-                public void run() {
-                    s.shutdown();
-                    shutdownHooks.remove(s);
-                }
-            }
-        );
-        Runtime.getRuntime().addShutdownHook(shutdownHook[0]);
-        shutdownHooks.put(s, shutdownHook[0]);
-    }
     
     public static void agentmain(String args, Instrumentation inst) {
         doMain(args, inst);
@@ -92,8 +60,32 @@ public class Main {
         doMain(args, inst);
     }
     
+    private static void setupBootstrap(String args, Instrumentation inst) throws IOException {
+        String blPath = null;
+
+        String bootlibKey = "bootstrap=";
+        int blStart = args.indexOf(bootlibKey);
+        if (blStart > -1) {
+            int blEnd = args.indexOf(",", blStart);
+            if (blEnd > -1) {
+                blPath = args.substring(blStart + bootlibKey.length(), blEnd).trim();
+            }
+        }
+        if (blPath == null) {
+            ClassLoader cl = Main.class.getClassLoader();
+            if (cl == null) {
+                cl = ClassLoader.getSystemClassLoader();
+            }
+            URL blPathURL = cl.getResource(Main.class.getName().replace('.', '/') + ".class");
+            blPath = blPathURL.toString().replace("jar:file:", "");
+            blPath = blPath.substring(0, blPath.indexOf(".jar!") + 4).replace("btrace-agent", "btrace-boot"); // NOI18N
+        }
+        inst.appendToBootstrapClassLoaderSearch(new JarFile(blPath));
+    }
+    
     private static void doMain(String args, Instrumentation inst) {
         try {
+            setupBootstrap(args, inst);
             Server s = Server.getDefault();
             if (!s.isRunning()) {
                 BTraceLogger.debugPrint("parsing command line arguments");

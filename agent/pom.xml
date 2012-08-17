@@ -34,14 +34,13 @@
                             <artifact>*:*</artifact>
                             <includes>
                                 <include>net/java/btrace/agent/**</include>
-                                <include>net/java/btrace/api/core/**</include>
+                                <include>net/java/btrace/api/types/**</include>
                                 <include>net/java/btrace/commands/*</include>
                                 <include>net/java/btrace/org/objectweb/asm/*</include>
                                 <include>net/java/btrace/org/objectweb/asm/signature/*</include>
                                 <include>net/java/btrace/org/objectweb/asm/commons/StaticInitMerger*</include>
                                 <include>net/java/btrace/resources/**</include>
                                 <include>net/java/btrace/instr/**</include>
-                                <include>net/java/btrace/spi/core/**</include>
                                 <include>net/java/btrace/util/**</include>
                                 <include>META-INF/services/net.java.btrace.spi.wireio.CommandImpl</include>
                                 <include>META-INF/MANIFEST.MF</include>
@@ -54,7 +53,6 @@
                           <manifestEntries>
                             <Premain-Class>net.java.btrace.agent.Main</Premain-Class>
                             <Agent-Class>net.java.btrace.agent.Main</Agent-Class>
-                            <Boot-Class-Path>btrace-boot-${project.version}.jar</Boot-Class-Path>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
                           </manifestEntries>

@@ -41,7 +41,7 @@ public class ExtensionsRepositoryFactory {
     
     private static final class DefaultExtensionsRepository extends ExtensionsRepository {
         public DefaultExtensionsRepository(Location l) {
-            super(l);
+            super(ExtensionsRepositoryFactory.class.getClassLoader(), l);
         }
         
         @Override

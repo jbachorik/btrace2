@@ -27,6 +27,7 @@ package net.java.btrace.client;
 import java.io.Console;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 import net.java.btrace.api.core.BTraceLogger;
@@ -80,7 +81,30 @@ public final class Main {
 //        out = (con != null) ? con.writer() : new PrintWriter(System.out);
     }
 
+    private static String getJarFor(String clz) {
+        ClassLoader cl =  Main.class.getClassLoader();
+        URL resURL = cl.getResource(clz);
+        if (resURL == null)  return null;
+        
+        String jarPath = resURL.toString().replace("jar:file:", "");
+        jarPath = jarPath.substring(0, jarPath.indexOf(".jar!") + 4);
+        
+        return jarPath;
+    }
+    
     public static void main(String[] args) {
+        String bootstrap = getJarFor("net/java/btrace/api/core/BTraceRuntime.class");
+        String agentpath = getJarFor("net/java/btrace/agent/Main.class");
+        
+        String defaultExtPath = getJarFor("net/java/btrace/ext/Printer.class") + File.pathSeparator + 
+                         getJarFor("net/java/btrace/ext/profiling/Profiler.class") + File.pathSeparator +
+                         getJarFor("net/java/btrace/ext/aggregations/Aggregations.class") + File.pathSeparator +
+                         getJarFor("net/java/btrace/ext/collections/Collections.class") + File.pathSeparator + 
+                         getJarFor("net/java/btrace/ext/export/Export.class") + File.separator + 
+                         getJarFor("net/java/btrace/ext/sys/Memory.class");
+        
+        defaultExtPath = defaultExtPath.replace("null" + File.pathSeparator, "");
+        
         if (args.length < 2) {
             usage();
         }
@@ -157,7 +181,7 @@ public final class Main {
             if (!new File(fileName).exists()) {
                 errorExit("File not found: " + fileName, 1);
             }
-            ExtensionsRepository extRepository = getRepository(extPath);
+            ExtensionsRepository extRepository = getRepository(defaultExtPath.isEmpty() ? extPath : defaultExtPath + File.pathSeparator + extPath);
             Compiler compiler = new Compiler(UNSAFE, extRepository);
             byte[] code = compiler.compile(fileName, classPath, includePath);
             if (code == null) {
@@ -165,6 +189,12 @@ public final class Main {
             }
 
             Client client = Client.forProcess(Integer.valueOf(pid));
+            if (agentpath != null) {
+                client.setAgentPath(agentpath);
+            }
+            if (bootstrap != null) {
+                client.setBootstrapPath(bootstrap);
+            }
             client.setProbeDescPath(PROBE_DESC_PATH);
             client.setExtRepository(extRepository);
             client.setTrackRetransforms(TRACK_RETRANSFORM);

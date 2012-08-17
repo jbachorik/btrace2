@@ -24,7 +24,6 @@
  */
 package net.java.btrace.agent;
 
-import net.java.btrace.runtime.Session;
 import net.java.btrace.runtime.BTraceRuntime;
 import net.java.btrace.api.core.BTraceLogger;
 import net.java.btrace.api.extensions.BTraceExtension;
@@ -46,7 +45,7 @@ import net.java.btrace.org.objectweb.asm.ClassVisitor;
 import net.java.btrace.org.objectweb.asm.ClassWriter;
 import net.java.btrace.org.objectweb.asm.Opcodes;
 import net.java.btrace.api.wireio.Channel;
-import net.java.btrace.runtime.Session.State;
+import net.java.btrace.agent.Session.State;
 import net.java.btrace.wireio.commands.ErrorCommand;
 import net.java.btrace.wireio.commands.ExitCommand;
 import net.java.btrace.wireio.commands.RetransformClassNotification;
@@ -64,12 +63,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
+import net.java.btrace.runtime.ShutdownHandler;
 
 /**
  *
  * @author Jaroslav Bachorik
  */
-final public class SessionImpl extends Session {
+final public class SessionImpl extends Session implements ShutdownHandler {
 
     final private static ExecutorService handlerPool = Executors.newCachedThreadPool();
     final private Channel channel;
@@ -286,7 +286,7 @@ final public class SessionImpl extends Session {
     }
 
     @Override
-    public void onShutdown(final int exitCode) {
+    public void shutdown(final int exitCode) {
         if (setState(State.CONNECTED, State.DISCONNECTING)) {
             try {
                 Response<Void> r = channel.sendCommand(ExitCommand.class, new AbstractCommand.Initializer<ExitCommand>() {

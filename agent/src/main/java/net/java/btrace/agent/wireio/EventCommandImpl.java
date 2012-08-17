@@ -7,7 +7,7 @@ package net.java.btrace.agent.wireio;
 import net.java.btrace.api.wireio.Command;
 import net.java.btrace.api.core.Lookup;
 import net.java.btrace.spi.wireio.CommandImpl;
-import net.java.btrace.runtime.Session;
+import net.java.btrace.agent.Session;
 import net.java.btrace.wireio.commands.EventCommand;
 
 
