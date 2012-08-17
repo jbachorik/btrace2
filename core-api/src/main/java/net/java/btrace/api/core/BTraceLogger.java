@@ -24,6 +24,9 @@
  */
 package net.java.btrace.api.core;
 
+import java.io.File;
+import java.io.FileOutputStream;
+
 /**
  *
  * @author Jaroslav Bachorik
@@ -34,6 +37,10 @@ final public class BTraceLogger {
 //        return Boolean.getBoolean("net.java.btrace.debug");
     }
     
+    public static boolean isDumpClasses() {
+        return true;
+    }
+    
     public static void debugPrint(String msg) {
         if (isDebug()) System.out.println("btrace DEBUG:" + msg);
     }
@@ -41,5 +48,47 @@ final public class BTraceLogger {
     public static void debugPrint(Throwable th) {
         System.err.println("btrace ERROR: " + th);
         th.printStackTrace(System.err);
+    }
+    
+    public static void dumpClass(String className, byte[] code) {
+        if (isDumpClasses()) {
+            try {
+                String dumpDir = getDumpDir();
+                className = className.replace(".", File.separator).replace("/", File.separator);
+                int index = className.lastIndexOf(File.separatorChar);
+                StringBuilder buf = new StringBuilder();
+                if (!dumpDir.equals(".")) {
+                    buf.append(dumpDir);
+                    buf.append(File.separatorChar);
+                }
+                String dir = buf.toString();
+                if (index != -1) {
+                    dir += className.substring(0, index);
+                }
+                new File(dir).mkdirs();
+                String file;
+                if (index != -1) {
+                    file = className.substring(index + 1);
+                } else {
+                    file = className;
+                }
+                file += ".class";
+                new File(dir).mkdirs();
+                File out = new File(dir, file);
+                FileOutputStream fos = new FileOutputStream(out);
+                try {
+                    fos.write(code);
+                } finally {
+                    fos.close();
+                }
+            } catch (Exception exp) {
+                exp.printStackTrace();
+            }
+        }
+    }
+    
+    private static String getDumpDir() {
+        return "/tmp";
+//        return System.getProperty("net.java.btrace.dumpDir", ".");
     }
 }

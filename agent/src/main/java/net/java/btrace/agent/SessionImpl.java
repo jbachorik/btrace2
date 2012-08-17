@@ -106,7 +106,7 @@ final public class SessionImpl extends Session {
                 InstrumentUtils.accept(cr, injector);
                 if (injector.isTransformed()) {
                     byte[] instrumentedCode = cw.toByteArray();
-                    MainOld.dumpClass(className, cname + "_clinit", instrumentedCode); // NOI18N
+                    BTraceLogger.dumpClass(cname + "_clinit", instrumentedCode); // NOI18N
                     return instrumentedCode;
                 }
             } else {
@@ -200,7 +200,7 @@ final public class SessionImpl extends Session {
             ClassReader reader = new ClassReader(traceCode);
             ClassVisitor visitor = new Preprocessor(writer);
             String traceName = BTraceRuntime.getValidTraceClassName(className);
-            MainOld.dumpClass(traceName + "_orig", traceName + "_orig", traceCode); // NOI18N
+            BTraceLogger.dumpClass(traceName + "_orig", traceCode); // NOI18N
             if (!traceName.equals(className)) {
                 BTraceLogger.debugPrint("class " + className + " renamed to " + traceName); // NOI18N
                 // FIXME
@@ -217,14 +217,14 @@ final public class SessionImpl extends Session {
                 capturedError = th;
                 return false;
             }
-            MainOld.dumpClass(className + "_proc", className + "_proc", traceCode); // NOI18N
+            BTraceLogger.dumpClass(className + "_proc", traceCode); // NOI18N
             SessionImpl.this.btraceCode = traceCode;
             BTraceLogger.debugPrint("creating BTraceRuntime instance for " + className); // NOI18N
             SessionImpl.this.runtime = new BTraceRuntime(this, className, args, channel, server.getInstrumentation(), server.getExtensionRepository());
             BTraceLogger.debugPrint("created BTraceRuntime instance for " + className); // NOI18N
             BTraceLogger.debugPrint("removing @OnMethod, @OnProbe methods"); // NOI18N
             byte[] codeBuf = removeMethods(traceCode);
-            MainOld.dumpClass(className, traceName, codeBuf);
+            BTraceLogger.dumpClass(traceName, codeBuf);
             BTraceLogger.debugPrint("removed @OnMethod, @OnProbe methods"); // NOI18N
             // This extra BTraceRuntime.enter is needed to
             // check whether we have already entered before.
@@ -409,7 +409,7 @@ final public class SessionImpl extends Session {
 
     private void verify(byte[] buf) {
         ClassReader reader = new ClassReader(buf);
-        Verifier verifier = new Verifier(new ClassVisitor(Opcodes.ASM4){}, MainOld.isUnsafe(), server.getExtensionRepository());
+        Verifier verifier = new Verifier(new ClassVisitor(Opcodes.ASM4){}, false, server.getExtensionRepository());
         BTraceLogger.debugPrint("verifying BTrace class"); // NOI18N
         InstrumentUtils.accept(reader, verifier);
         className = verifier.getClassName().replace('/', '.');
@@ -418,7 +418,7 @@ final public class SessionImpl extends Session {
         onProbes = verifier.getOnProbes();
         if (onProbes != null && !onProbes.isEmpty()) {
             // map @OnProbe's to @OnMethod's and store
-            onMethods.addAll(MainOld.mapOnProbes(onProbes));
+            onMethods.addAll(Main.mapOnProbes(onProbes));
         }
         for (OnMethod om : onMethods) {
             if (om.getClazz().startsWith("+")) {
@@ -523,7 +523,7 @@ final public class SessionImpl extends Session {
             BTraceLogger.debugPrint(th);
             return null;
         }
-        MainOld.dumpClass(className, cname, instrumentedCode);
+        BTraceLogger.dumpClass(cname, instrumentedCode);
         return instrumentedCode;
     }
 }

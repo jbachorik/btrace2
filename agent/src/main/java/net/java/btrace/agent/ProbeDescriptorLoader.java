@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.HashMap;
 import javax.xml.bind.*;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
+import net.java.btrace.api.core.BTraceLogger;
 
 /**
  * This class loads BTrace probe descriptor XML files and
@@ -61,7 +62,7 @@ final class ProbeDescriptorLoader {
         // check in the cache
         ProbeDescriptor res = probeDescMap.get(namespace);
         if (res != null) {
-            if (MainOld.isDebug()) MainOld.debugPrint("probe descriptor cache hit for " + namespace);
+            BTraceLogger.debugPrint("probe descriptor cache hit for " + namespace);
             return res;
         } else {
             // load probe descriptor for the given namespace
@@ -71,7 +72,7 @@ final class ProbeDescriptorLoader {
             }
             ProbeDescriptor pd = load(file);
             if (pd != null) {
-                if (MainOld.isDebug()) MainOld.debugPrint("read probe descriptor for " + namespace);
+                BTraceLogger.debugPrint("read probe descriptor for " + namespace);
                 probeDescMap.put(namespace, pd);
             }
             return pd;
@@ -82,12 +83,12 @@ final class ProbeDescriptorLoader {
     private static ProbeDescriptor load(File file) {
         try {
             JAXBContext jc = JAXBContext.newInstance("net.java.btrace.annotations:net.java.btrace.runtime");
-            if (MainOld.isDebug()) MainOld.debugPrint("reading " + file);
+            BTraceLogger.debugPrint("reading " + file);
             Unmarshaller u = jc.createUnmarshaller();
             u.setEventHandler(new DefaultValidationEventHandler());
             return (ProbeDescriptor)u.unmarshal(file);
         } catch (JAXBException exp) {
-            if (MainOld.isDebug()) MainOld.debugPrint(exp);
+            BTraceLogger.debugPrint(exp);
             return null;
         }
     }
@@ -97,11 +98,11 @@ final class ProbeDescriptorLoader {
         for (String dir : probeDescDirs) {
             File f = new File(dir, namespace + ".xml");
             if (f.exists() && f.isFile()) {
-                if (MainOld.isDebug()) MainOld.debugPrint("probe descriptor for " + namespace + " is " + f);
+                BTraceLogger.debugPrint("probe descriptor for " + namespace + " is " + f);
                 return f;
             }
         }
-        if (MainOld.isDebug()) MainOld.debugPrint("no probe descriptor found for " + namespace);
+        BTraceLogger.debugPrint("no probe descriptor found for " + namespace);
         return null;
     }
 }

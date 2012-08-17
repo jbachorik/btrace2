@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import net.java.btrace.api.core.BTraceLogger;
 
 /**
  * This class represents various strategies available for dumping BTrace
@@ -121,7 +122,7 @@ abstract public class TraceOutputWriter extends Writer {
                 writerLock.writeLock().lock();
                 currentFileWriter = getNextWriter();
             } catch (IOException e) {
-                MainOld.debugPrint(e);
+                BTraceLogger.debugPrint(e);
             } finally {
                 writerLock.writeLock().unlock();
             }
@@ -184,7 +185,7 @@ abstract public class TraceOutputWriter extends Writer {
         try {
             instance = new SimpleFileOutput(output);
         } catch (IOException e) {
-            MainOld.debugPrint(e);
+            BTraceLogger.debugPrint(e);
         }
         return instance;
     }
@@ -201,7 +202,7 @@ abstract public class TraceOutputWriter extends Writer {
         try {
             instance = new TimeBasedRollingFileWriter(null, interval, unit);
         } catch (IOException e) {
-            MainOld.debugPrint(e);
+            BTraceLogger.debugPrint(e);
         }
         return instance;
     }
@@ -219,7 +220,7 @@ abstract public class TraceOutputWriter extends Writer {
         try {
             instance = new TimeBasedRollingFileWriter(output, maxRolls, interval, unit);
         } catch (IOException e) {
-            MainOld.debugPrint(e);
+            BTraceLogger.debugPrint(e);
         }
         return instance;
     }

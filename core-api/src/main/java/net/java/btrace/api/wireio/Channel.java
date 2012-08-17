@@ -42,32 +42,6 @@ abstract public class Channel {
     protected final AtomicBoolean isClosed = new AtomicBoolean(false);
     private final AtomicBoolean isInited = new AtomicBoolean(false);
     
-    private static class ResponseHandler<T> implements Response<T> {
-        final private CountDownLatch latch = new CountDownLatch(1);
-        
-        volatile private T data;
-        
-        private ResponseHandler() {}
-        
-        private void setResponse(T data) {
-            this.data = data;
-            latch.countDown();
-        }
-        
-        public T get() throws InterruptedException {
-            latch.await();
-            return data;
-        }
-        
-        public T get(long timeout) throws InterruptedException {
-            if (latch.await(timeout, TimeUnit.MILLISECONDS)) {
-                return data;
-            } else {
-                return null;
-            }
-        }
-    }
-    
     final private ConcurrentHashMap<Integer, ResponseHandler> responseMap = new ConcurrentHashMap<Integer, ResponseHandler>();
     final private BlockingQueue<AbstractCommand> commandQueue = new ArrayBlockingQueue<AbstractCommand>(128000);
     
