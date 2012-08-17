@@ -57,18 +57,27 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Queue;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarFile;
 import net.java.btrace.api.extensions.BTraceExtension;
+import net.java.btrace.api.wireio.Response;
+import net.java.btrace.api.wireio.ResponseHandler;
 import net.java.btrace.instr.ExtensionRuntimeProcessor;
 
 /**
@@ -92,7 +101,7 @@ final public class Server {
                 // class not yet defined
                 bytecode = injectExtensionContext(classfileBuffer);
             }
-            if (bytecode != null) MainOld.dumpClass(className, className, bytecode);
+            if (bytecode != null) BTraceLogger.dumpClass(className, bytecode);
             return bytecode;
         }
     };
@@ -224,7 +233,9 @@ final public class Server {
         }
     });
     
-    private volatile boolean interrupted = false;
+    private Queue<ResponseHandler<Boolean>> stateReqQueue = new ConcurrentLinkedQueue<ResponseHandler<Boolean>>();
+    
+    private volatile boolean running = false;
     
     private Instrumentation instr;
     private ExtensionsRepository repository;
@@ -257,6 +268,18 @@ final public class Server {
         }
     }
     
+    public boolean isRunning() throws InterruptedException {
+        if (!running) return false;
+        
+        ResponseHandler<Boolean> r = new ResponseHandler<Boolean>();
+        stateReqQueue.add(r);
+        return r.get();
+    }
+    
+    public Settings getSetting() {
+        return currentSettings;
+    }
+    
     /**
      * Starts a {@linkplain Server} for a particular application identified
      * by {@linkplain Instrumentation} instance
@@ -264,7 +287,7 @@ final public class Server {
      * @param settings BTrace server settings (a {@linkplain Settings} instance
      * @throws IOException 
      */
-    public void run(Instrumentation instr, Settings settings) throws IOException {
+    public void run(Instrumentation instr, Settings settings) throws IOException {      
         // need to capture the class loads of extensions
         instr.addTransformer(extensionTransformer, true);
         
@@ -377,7 +400,7 @@ final public class Server {
             BTraceLogger.debugPrint(re);
         }
     }
-
+    
     private void loadBTraceScript(final byte[] traceCode, boolean traceToStdOut, String scriptOutputFile, long fileRollMilliseconds) {
         final PrintWriter traceWriter;
         if (traceToStdOut) {
@@ -423,12 +446,8 @@ final public class Server {
     }
     
     private void startSocketServer(final int port) throws IOException {
-        interrupted = false;
-        
         final ServerSocket ss = new ServerSocket(port);
         ss.setSoTimeout(1000);
-        // fresh start == socket server started, no client connected yet
-        final AtomicBoolean freshStart = new AtomicBoolean(true);
         
         final Thread shutdownThread = new Thread(new Runnable() {
             @Override
@@ -443,30 +462,34 @@ final public class Server {
 
             @Override
             public void run() {
+                running = true;
                 boolean wasTimeout = false;
                 System.setProperty(BTRACE_PORT_KEY, String.valueOf(port));
-                while (!interrupted) {
+                while (running) {
                     try {
+                        while (!stateReqQueue.isEmpty()) {
+                            ResponseHandler<Boolean> r = stateReqQueue.poll();
+                            if (r != null) {
+                                r.setResponse(running);
+                            }
+                        }
                         if (!wasTimeout) {
                             BTraceLogger.debugPrint("wating for client");
                         }
                         final Socket s = ss.accept();
-                        freshStart.compareAndSet(true, false);
                         wasTimeout = false;
                         BTraceLogger.debugPrint("client accepted");
                         Channel ch = ServerChannel.open(s, getExtensionRepository());
                         addServerSession(ch);
                     } catch (SocketTimeoutException e) {
                         wasTimeout = true;
-                        if (!freshStart.get()) {
-                            synchronized(sessions) {
-                                if (sessions.isEmpty()) {
-                                    interrupted = true;
-                                }
+                        synchronized(sessions) {
+                            if (sessions.isEmpty()) {
+                                running = false;
                             }
                         }
                     } catch (IOException e) {
-                        interrupted = true;
+                        running = false;
                     }
                 }
                 BTraceLogger.debugPrint("Leaving BTrace Socket Server");

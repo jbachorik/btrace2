@@ -382,45 +382,49 @@ public class Client {
             }
 
             BTraceLogger.debugPrint("attached to " + pid);
-            BTraceLogger.debugPrint("loading " + agentPath);
+            if (serverPort == -1) {
+                BTraceLogger.debugPrint("loading " + agentPath);
 
-            String agentArgs = "port=" + port;
-            if (BTraceLogger.isDebug()) {
-                agentArgs += ",debug=true";
-            }
-            if (unsafe) {
-                agentArgs += ",unsafe=true";
-            }
-            if (dumpClasses) {
-                agentArgs += ",dumpClasses=true";
-                agentArgs += ",dumpDir=" + dumpDir;
-            }
-            if (trackRetransforms) {
-                agentArgs += ",trackRetransforms=true";
-            }
-            if (bootCp != null) {
-                agentArgs += ",bootClassPath=" + bootCp;
-            }
-            if (sysCp == null) {
-                sysCp = tjLocator.locateToolsJar();
-            }
-            agentArgs += ",systemClassPath=" + sysCp;
-            agentArgs += ",probeDescPath=" + probeDescPath;
-            if (extRepository != DEFAULT_REPOSITORY) {
-                agentArgs += ",extPath=" + extRepository.getExtensionsPath();
-            }
-            BTraceLogger.debugPrint("agent args: " + agentArgs);
+                String agentArgs = "port=" + port;
+                if (BTraceLogger.isDebug()) {
+                    agentArgs += ",debug=true";
+                }
+                if (unsafe) {
+                    agentArgs += ",unsafe=true";
+                }
+                if (dumpClasses) {
+                    agentArgs += ",dumpClasses=true";
+                    agentArgs += ",dumpDir=" + dumpDir;
+                }
+                if (trackRetransforms) {
+                    agentArgs += ",trackRetransforms=true";
+                }
+                if (bootCp != null) {
+                    agentArgs += ",bootClassPath=" + bootCp;
+                }
+                if (sysCp == null) {
+                    sysCp = tjLocator.locateToolsJar();
+                }
+                agentArgs += ",systemClassPath=" + sysCp;
+                agentArgs += ",probeDescPath=" + probeDescPath;
+                if (extRepository != DEFAULT_REPOSITORY) {
+                    agentArgs += ",extPath=" + extRepository.getExtensionsPath();
+                }
+                BTraceLogger.debugPrint("agent args: " + agentArgs);
 
-            try {
-                vm.loadAgent(agentPath, agentArgs);
+                try {
+                    vm.loadAgent(agentPath, agentArgs);
+                    setState(State.ATTACHED);
+                    BTraceLogger.debugPrint("loaded " + agentPath);
+                } catch (AgentLoadException e) {
+                    setState(State.OFFLINE);
+                    throw new IOException(e);
+                } catch (AgentInitializationException e) {
+                    setState(State.OFFLINE);
+                    throw new IOException(e);
+                }
+            } else {
                 setState(State.ATTACHED);
-                BTraceLogger.debugPrint("loaded " + agentPath);
-            } catch (AgentLoadException e) {
-                setState(State.OFFLINE);
-                throw new IOException(e);
-            } catch (AgentInitializationException e) {
-                setState(State.OFFLINE);
-                throw new IOException(e);
             }
         }
     }
