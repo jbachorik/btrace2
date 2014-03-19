@@ -37,6 +37,7 @@ import net.java.btrace.util.Messages;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -346,25 +347,25 @@ public class Compiler {
     }
 
     private void dump(String name, byte[] code) {
-//        if (BTraceLogger.isDebug()) {
-//            OutputStream os = null;
-//            try {
-//                name = name.replace(".", "/") + ".class";
-//                File f = new File("/tmp/" + name);
-//                if (!f.exists()) {
-//                    f.getParentFile().createNewFile();
-//                }
-//                os = new FileOutputStream(f);
-//                os.write(code);
-//            } catch (IOException e) {
-//
-//            } finally {
-//                if (os != null) {
-//                    try {
-//                        os.close();
-//                    } catch (IOException e) {}
-//                }
-//            }
-//        }
+        if (BTraceLogger.isDebug()) {
+            OutputStream os = null;
+            try {
+                name = name.replace(".", "/") + ".class";
+                File f = new File("/tmp/" + name);
+                if (!f.exists()) {
+                    f.getParentFile().createNewFile();
+                }
+                os = new FileOutputStream(f);
+                os.write(code);
+            } catch (IOException e) {
+
+            } finally {
+                if (os != null) {
+                    try {
+                        os.close();
+                    } catch (IOException e) {}
+                }
+            }
+        }
     }
 }
