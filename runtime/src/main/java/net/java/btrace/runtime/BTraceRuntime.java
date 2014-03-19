@@ -24,6 +24,7 @@
  */
 package net.java.btrace.runtime;
 
+import net.java.btrace.api.server.ShutdownHandler;
 import net.java.btrace.annotations.OnError;
 import net.java.btrace.annotations.OnEvent;
 import net.java.btrace.annotations.OnExit;
@@ -81,6 +82,7 @@ import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import net.java.btrace.api.core.PerfReader;
 import net.java.btrace.api.wireio.Response;
+import net.java.btrace.util.BTraceThreadFactory;
 import sun.misc.Perf;
 import sun.misc.Unsafe;
 import sun.reflect.Reflection;
@@ -96,7 +98,7 @@ import sun.reflect.Reflection;
  * @author KLynch
  */
 public final class BTraceRuntime {
-    private static final String ALLOWED_CLIENT = "net.java.btrace.agent.Session";
+    private static final String ALLOWED_CLIENT = "net.java.btrace.server.Session";
     private static final String HOTSPOT_BEAN_NAME = "com.sun.management:type=HotSpotDiagnostic";
     // we need Unsafe to load BTrace class bytes as
     // bootstrap class
@@ -774,15 +776,7 @@ public final class BTraceRuntime {
             synchronized (this) {
                 if (threadPool == null) {
                     threadPool = Executors.newFixedThreadPool(1,
-                            new ThreadFactory() {
-
-                                @Override
-                                public Thread newThread(Runnable r) {
-                                    Thread th = new Thread(r);
-                                    th.setDaemon(true);
-                                    return th;
-                                }
-                            });
+                            new BTraceThreadFactory("BTrace Runtime"));
                 }
             }
         }

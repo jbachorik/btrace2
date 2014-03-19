@@ -22,10 +22,9 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package net.java.btrace.agent;
+package net.java.btrace.api.server;
 
 import java.util.Observable;
-import net.java.btrace.runtime.ShutdownHandler;
 
 /**
  * A session represents one connection between client and agent executing

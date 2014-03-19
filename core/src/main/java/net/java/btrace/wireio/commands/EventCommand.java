@@ -25,9 +25,9 @@
 
 package net.java.btrace.wireio.commands;
 
+import java.io.ObjectOutput ;
 import net.java.btrace.api.wireio.AbstractCommand;
 import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.io.IOException;
 
 /**
@@ -64,7 +64,7 @@ final public class EventCommand extends AbstractCommand {
         return event != null ? event : "";
     }
     
-    final public void write(ObjectOutput out) throws IOException {
+    final public void write(ObjectOutput  out) throws IOException {
         out.writeUTF(event);
     }
 

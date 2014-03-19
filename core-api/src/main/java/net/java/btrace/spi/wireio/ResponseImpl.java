@@ -22,56 +22,20 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+package net.java.btrace.spi.wireio;
 
-package net.java.btrace.wireio.commands;
-
-import java.io.ObjectOutput ;
-import net.java.btrace.api.wireio.AbstractCommand;
-import java.io.ObjectInput;
-import java.io.IOException;
+import net.java.btrace.api.core.Lookup;
+import net.java.btrace.api.wireio.Channel;
+import net.java.btrace.api.wireio.DataCommand;
 
 /**
- * Command for processing an encountered {@linkplain Throwable}
  *
- * @author A.Sundararajan
- * @author Jaroslav Bachorik
+ * @author Jaroslav Bachorik <jaroslav.bachorik at oracle.com>
  */
-final public class ErrorCommand extends AbstractCommand {
-    private Throwable cause;
-    
-    public ErrorCommand(int typeId, int rx, int tx) {
-        super(typeId, rx, tx);
-    }
+abstract public class ResponseImpl<T extends DataCommand> extends CommandImpl<T> {
 
     @Override
-    final public boolean canBeSpeculated() {
-        return super.canBeSpeculated();
-    }
-    
-    @Override
-    final public void write(ObjectOutput  out) throws IOException {
-        out.writeObject(cause);
-    }
-
-    @Override
-    final public void read(ObjectInput in)
-        throws IOException, ClassNotFoundException {
-        cause = (Throwable) in.readObject();
-    }
-
-    /**
-     * 
-     * @return The wrapped exception
-     */
-    final public Throwable getCause() {
-        return cause;
-    }
-
-    /**
-     * 
-     * @param cause The exception to wrap
-     */
-    final public void setCause(Throwable cause) {
-        this.cause = cause;
+    final public void execute(Lookup ctx, T cmd) {
+        // response does not do any custom processing
     }
 }

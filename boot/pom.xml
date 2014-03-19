@@ -34,12 +34,21 @@
                             <artifact>*:*</artifact>
                             <includes>
                                 <include>net/java/btrace/runtime/*</include>
+                                <include>net/java/btrace/server/**</include>
                                 <include>net/java/btrace/annotations/*</include>
-                                <include>net/java/btrace/api/extensions/**</include>
-                                <include>net/java/btrace/api/core/*</include>
-                                <include>net/java/btrace/api/wireio/*</include>
+                                <include>net/java/btrace/api/**</include>
                                 <include>net/java/btrace/spi/**</include>
                                 <include>net/java/btrace/wireio/**</include>
+                                <include>net/java/btrace/org/objectweb/asm/*</include>
+                                <include>net/java/btrace/org/objectweb/asm/signature/*</include>
+                                <include>net/java/btrace/org/objectweb/asm/commons/StaticInitMerger*</include>
+                                <include>net/java/btrace/commands/*</include>
+                                <include>net/java/btrace/resources/**</include>
+                                <include>net/java/btrace/instr/**</include>
+                                <include>net/java/btrace/util/**</include>
+                                
+                                <include>META-INF/services/net.java.btrace.spi.wireio.CommandImpl</include>
+                                <include>META-INF/services/net.java.btrace.spi.server.*</include>
                             </includes>
                         </filter>
                     </filters>
@@ -79,6 +88,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>runtime</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>instr</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -24,10 +24,20 @@
  */
 package net.java.btrace.client;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.Console;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 import net.java.btrace.api.core.BTraceLogger;
@@ -35,6 +45,13 @@ import net.java.btrace.api.extensions.ExtensionsRepository;
 import net.java.btrace.api.extensions.ExtensionsRepositoryFactory;
 import net.java.btrace.util.Messages;
 import java.util.concurrent.atomic.AtomicInteger;
+import jline.Terminal;
+import jline.TerminalFactory;
+import jline.console.ConsoleReader;
+import jline.console.completer.Completer;
+import jline.console.completer.FileNameCompleter;
+import net.java.btrace.jps.JpsProxy;
+import net.java.btrace.jps.JpsVM;
 
 /**
  * This is the main class for a simple command line
@@ -52,7 +69,6 @@ public final class Main {
     public static final String DUMP_DIR;
     public static final String PROBE_DESC_PATH;
     public static final int BTRACE_DEFAULT_PORT = 2020;
-    private static final Console con;
 
     static {
         DEBUG = Boolean.getBoolean("net.java.btrace.debug");
@@ -76,8 +92,7 @@ public final class Main {
         if (DUMP_CLASSES) {
             BTraceLogger.debugPrint("dumpDir is " + DUMP_DIR);
         }
-        PROBE_DESC_PATH = System.getProperty("net.java.btrace.probeDescPath", ".");
-        con = System.console();
+        PROBE_DESC_PATH = System.getProperty("net.java.btrace.probeDescPath", ".");        
 //        out = (con != null) ? con.writer() : new PrintWriter(System.out);
     }
 
@@ -92,7 +107,46 @@ public final class Main {
         return jarPath;
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        String pid = null;
+        String fileName = null;
+        
+        final ConsoleReader cr = new ConsoleReader();
+        
+        if (args.length == 0) {
+            cr.getPrompt();
+            do {
+                cr.println("Select a process to attach to:");
+                int counter = 0;
+                List<JpsVM> vms = new ArrayList<JpsVM>();
+                for(JpsVM vm : JpsProxy.getRunningVMs()) {
+                    vms.add(vm);
+                    cr.println((counter++ + 1) + ") " + vm.getPid() + "\t" + vm.getMainClass());
+                }
+                cr.setPrompt("Please, make a choice:");
+                cr.flush();
+                int ch = cr.readCharacter();
+
+                int option = Integer.parseInt(String.valueOf((char)ch));
+                
+                if (option > 0 && option <= counter) {
+                    pid = String.valueOf(vms.get(option - 1).getPid());
+                    cr.println("Attaching to: " + vms.get(option - 1).getMainClass() + "(PID=" +  pid + ")");
+                    cr.flush();
+                }
+            } while (pid == null);
+            
+            Completer c = new FileNameCompleter();
+            cr.addCompleter(c);
+            do {
+                cr.setPrompt("Select the script to deploy: ");
+                cr.flush();
+                fileName = cr.readLine();
+            } while (fileName == null);
+            cr.removeCompleter(c);
+            cr.setPrompt(pid);
+        }
+        
         String bootstrap = getJarFor("net/java/btrace/api/core/BTraceRuntime.class");
         String agentpath = getJarFor("net/java/btrace/agent/Main.class");
         
@@ -105,7 +159,7 @@ public final class Main {
         
         defaultExtPath = defaultExtPath.replace("null" + File.pathSeparator, "");
         
-        if (args.length < 2) {
+        if (pid == null && fileName == null && args.length < 2) {
             usage();
         }
 
@@ -118,6 +172,7 @@ public final class Main {
         boolean portDefined = false;
         boolean classpathDefined = false;
         boolean includePathDefined = false;
+        boolean quiet = false;
 
         for (;;) {
             if (args[count].charAt(0) == '-') {
@@ -146,6 +201,11 @@ public final class Main {
                         || args[count].equals("-extpath")) {
                     extPath = args[++count];
                     BTraceLogger.debugPrint("accepting extensions path " + extPath);
+                } else if (args[count].equals("-q")
+                        || args[count].equals("-quiet")) {
+                    count++;
+                    quiet = true;
+                    BTraceLogger.debugPrint("setting quiet mode");
                 } else {
                     usage();
                 }
@@ -170,8 +230,12 @@ public final class Main {
             usage();
         }
 
-        String pid = args[count];
-        String fileName = args[count + 1];
+        if (pid == null) {
+            pid = args[count];
+        }
+        if (fileName == null) {
+            fileName = args[count + 1];
+        }
         String[] btraceArgs = new String[args.length - count];
         if (btraceArgs.length > 0) {
             System.arraycopy(args, count, btraceArgs, 0, btraceArgs.length);
@@ -188,13 +252,17 @@ public final class Main {
                 errorExit("BTrace compilation failed", 1);
             }
 
-            Client client = Client.forProcess(Integer.valueOf(pid));
+            final Client client = Client.forPID(Integer.valueOf(pid));
             if (agentpath != null) {
                 client.setAgentPath(agentpath);
             }
             if (bootstrap != null) {
                 client.setBootstrapPath(bootstrap);
             }
+            
+            final ClientWriter cw = new ClientWriter(System.out);
+            client.setPrintWriter(cw);
+            
             client.setProbeDescPath(PROBE_DESC_PATH);
             client.setExtRepository(extRepository);
             client.setTrackRetransforms(TRACK_RETRANSFORM);
@@ -205,9 +273,69 @@ public final class Main {
             client.attach();
             
             registerExitHook(client);
-            if (con != null) {
-                registerSignalHandler(client);
-            }
+            
+            Thread t = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        while (true) {
+                            cr.println("*** BTrace CLI Ready ***\nPress Ctrl-o to access the menu.");
+                            cr.flush();
+                            int ch = cr.readCharacter();
+                            if (ch == 15) { // CTRL-o
+                                try {
+                                    cw.park();
+                                    cr.println("Please enter your option:");
+                                    cr.println("\t1. exit\n\t2. send an event\n\t3. send a named event\n\n\t0. continue");
+                                    cr.flush();
+                                    int option = cr.readCharacter('1', '2', '3', '0');
+                                    if (option == '1') {
+                                        System.exit(0);
+                                    } else if (option == '2') {
+                                        BTraceLogger.debugPrint("sending event command");
+                                        sendEvent(client);
+                                    } else if (option == '3') {
+                                        cr.setPrompt("Please enter the event name: ");
+                                        String name = cr.readLine();
+                                        if (name != null) {
+                                            BTraceLogger.debugPrint("sending event command");
+                                            sendEvent(client, name);
+                                        }
+                                    } else if (option == '0') {
+                                        BTraceLogger.debugPrint("continuing");
+                                    } else {
+                                        cr.println("invalid option!");
+                                    }
+                                } finally {
+                                    cw.unpark();
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        BTraceLogger.debugPrint(e);
+                    } catch (InterruptedException e) {
+                        BTraceLogger.debugPrint(e);
+                    }
+                    System.exit(0);
+                }
+            });
+            t.setDaemon(true);
+            t.start();
+            
+//            Console con = System.console();
+//            if (con == null && !quiet) {
+//                try {
+//                    Constructor<Console> constr = Console.class.getDeclaredConstructor();
+//                    constr.setAccessible(true);
+//                    con = (Console) constr.newInstance();
+//                } catch (Exception e) {
+//                    // ignore
+//                }
+//            }
+//            if (con != null) {
+//                registerSignalHandler(client, con);
+//            }
             BTraceLogger.debugPrint("submitting the BTrace program");
             client.submit(fileName, code, args);
         } catch (IOException exp) {
@@ -239,7 +367,24 @@ public final class Main {
         );
     }
 
-    private static void registerSignalHandler(final Client client) {
+    private static void registerSignalHandler(final Client client, final Console con) {
+        try {
+            Method clearHdl = Hashtable.class.getMethod("clear");
+            
+            Field handlersFld = Signal.class.getDeclaredField("handlers");
+            Field signalsFld = Signal.class.getDeclaredField("signals");
+            handlersFld.setAccessible(true);
+            signalsFld.setAccessible(true);
+            
+            Object handlersObj = handlersFld.get(null);
+            Object signalsObj = signalsFld.get(null);
+            
+            clearHdl.invoke(signalsObj);
+            clearHdl.invoke(handlersObj);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         BTraceLogger.debugPrint("registering signal handler for SIGINT");
         Signal.handle(new Signal("INT"),
             new SignalHandler() {

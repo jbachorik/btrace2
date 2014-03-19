@@ -25,22 +25,13 @@
 package net.java.btrace.commands;
 
 import net.java.btrace.api.wireio.Command;
-import net.java.btrace.api.core.Lookup;
-import net.java.btrace.api.wireio.ResponseCommand;
-import net.java.btrace.spi.wireio.CommandImpl;
-import net.java.btrace.api.wireio.Channel;
+import net.java.btrace.wireio.commands.ACKCommand;
+import net.java.btrace.spi.wireio.ResponseImpl;
 
 /**
  *
  * @author Jaroslav Bachorik
  */
-@Command(clazz=ResponseCommand.class)
-public class ResponseCommandImpl extends CommandImpl<ResponseCommand> {
-    @Override
-    public void execute(Lookup ctx, ResponseCommand cmd) {
-        Channel ch = ctx.lookup(Channel.class);
-        if (ch != null) {
-            ch.responseReceived(cmd);
-        }
-    }
+@Command(clazz=ACKCommand.class)
+public class ACKCommandImpl extends ResponseImpl<ACKCommand> {
 }

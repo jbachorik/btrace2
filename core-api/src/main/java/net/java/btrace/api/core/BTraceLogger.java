@@ -32,9 +32,12 @@ import java.io.FileOutputStream;
  * @author Jaroslav Bachorik
  */
 final public class BTraceLogger {
+    public static void setDebug(boolean val) {
+        System.setProperty("net.java.btrace.debug", String.valueOf(val));
+    }
     public static boolean isDebug() {
-        return true;
-//        return Boolean.getBoolean("net.java.btrace.debug");
+//        return true;
+        return Boolean.getBoolean("net.java.btrace.debug");
     }
     
     public static boolean isDumpClasses() {

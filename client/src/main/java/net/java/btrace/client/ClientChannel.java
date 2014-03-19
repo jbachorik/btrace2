@@ -36,7 +36,7 @@ import net.java.btrace.api.wireio.ObjectInputStreamEx;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
+import java.io.ObjectOutput ;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
@@ -55,7 +55,7 @@ public final class ClientChannel extends SocketChannel {
 
     public static Channel open(Socket skt, ExtensionsRepository extRep) {
         try {
-            ObjectOutputStream oos = new ObjectOutputStream(skt.getOutputStream());
+            ObjectOutput  oos = new ObjectOutputStream(skt.getOutputStream());
             ObjectInputStream ois = new ObjectInputStreamEx(skt.getInputStream(), extRep.getClassLoader());
             
             ClientChannel ch = new ClientChannel(ois, oos, extRep);

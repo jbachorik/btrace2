@@ -31,13 +31,13 @@ public class Compiler {
     public byte[] compile(String fileName, String classPath, String includePath) {
         byte[] code = null;
         File file = new File(fileName);
-        if (fileName.endsWith(".java")) {
+        if (fileName.toLowerCase().endsWith(".java")) {
             net.java.btrace.compiler.Compiler compiler = new net.java.btrace.compiler.Compiler(includePath, unsafe, extRepository);
             StringBuilder cpBuilder = new StringBuilder(classPath);
             cpBuilder.append(File.pathSeparator).append(System.getProperty("java.class.path"));
             cpBuilder.append(File.pathSeparator).append(extRepository.getClassPath());
             
-            BTraceLogger.debugPrint("compiling " + fileName);
+            BTraceLogger.debugPrint("compiling *" + fileName + "*");
             BTraceLogger.debugPrint("compiler classpath = " + cpBuilder.toString());
             Map<String, byte[]> classes = compiler.compile(file, writer, ".", cpBuilder.toString());
             if (classes == null) {
@@ -65,6 +65,7 @@ public class Compiler {
                 }
                 BTraceLogger.debugPrint("read " + fileName);
             } catch (IOException exp) {
+                exp.printStackTrace();
                 writer.println(exp.getMessage());
                 return null;
             }

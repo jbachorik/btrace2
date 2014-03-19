@@ -4,9 +4,9 @@
  */
 package net.java.btrace.api.wireio;
 
+import java.io.ObjectOutput ;
 import java.io.IOException;
 import java.io.ObjectInput;
-import java.io.ObjectOutput;
 
 /**
  * A command with associated name
@@ -35,7 +35,7 @@ abstract public class NamedCommand extends AbstractCommand {
     }
 
     @Override
-    public void write(ObjectOutput out) throws IOException {
+    public void write(ObjectOutput  out) throws IOException {
         out.writeUTF(name == null ? "" : name);
     }
 }

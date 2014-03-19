@@ -22,10 +22,8 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package net.java.btrace.agent;
+package net.java.btrace.server;
 
-import net.java.btrace.agent.wireio.ServerChannel;
-import net.java.btrace.agent.wireio.LocalChannel;
 import net.java.btrace.api.core.BTraceLogger;
 import net.java.btrace.api.extensions.ExtensionsRepository;
 import net.java.btrace.api.extensions.ExtensionsRepositoryFactory;
@@ -51,10 +49,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Queue;
@@ -62,32 +57,32 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarFile;
+import net.java.btrace.api.core.ServiceProvider;
 import net.java.btrace.api.extensions.BTraceExtension;
-import net.java.btrace.api.wireio.Response;
+import net.java.btrace.api.server.Server;
+import net.java.btrace.api.server.Server.Settings;
+import net.java.btrace.api.server.Session;
 import net.java.btrace.api.wireio.ResponseHandler;
 import net.java.btrace.instr.ExtensionRuntimeProcessor;
+import net.java.btrace.server.wireio.LocalChannel;
+import net.java.btrace.server.wireio.ServerChannel;
+import net.java.btrace.spi.server.ServerImpl;
+import net.java.btrace.util.BTraceThreadFactory;
 
 /**
  *
  * @author Jaroslav Bachorik
  */
-final public class Server {
-    private static final int BTRACE_DEFAULT_PORT = 2020;
-    private static final String BTRACE_PORT_KEY = "btrace.port";
-    
+@ServiceProvider(service=ServerImpl.class)
+final public class BTraceServer implements ServerImpl {
     final private static ClassFileTransformer extensionTransformer = new ClassFileTransformer() {
         @Override
         public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
@@ -115,123 +110,7 @@ final public class Server {
         ClassWriter.class.getClass();
     }
     
-    public static final class Settings {
-        final public boolean debugMode;
-        final public boolean trackRetransforms;
-        final public String scriptOutputFile;
-        final public long fileRollMilliseconds;
-        final public boolean unsafeMode;
-        final public boolean dumpClasses;
-        final public String dumpDir;
-        final public boolean stdOut;
-        final public String probeDescPath;
-        final public String script;
-        final public String scriptDir;
-        final public String extPath;
-        final public boolean noSocketServer;
-        final public String bootClassPath;
-        final public String systemClassPath;
-        final public int port;
-
-        private Settings(boolean debugMode, boolean trackRetransforms, String scriptOutputFile, 
-                         long fileRollMilliseconds, boolean unsafeMode, boolean dumpClasses, 
-                         String dumpDir, boolean stdOut, String probeDescPath, String script, 
-                         String scriptDir, String extPath, boolean noServer, String bootClassPath,
-                         String systemClassPath, int port) {
-            this.debugMode = debugMode;
-            this.trackRetransforms = trackRetransforms;
-            this.scriptOutputFile = scriptOutputFile;
-            this.fileRollMilliseconds = fileRollMilliseconds;
-            this.unsafeMode = unsafeMode;
-            this.dumpClasses = dumpClasses;
-            this.dumpDir = dumpDir;
-            this.stdOut = stdOut;
-            this.probeDescPath = probeDescPath;
-            this.script = script;
-            this.scriptDir = scriptDir;
-            this.extPath = extPath;
-            this.noSocketServer = noServer;
-            this.bootClassPath = bootClassPath;
-            this.systemClassPath = systemClassPath;
-            this.port = port;
-        }
-        
-        public static Settings from(Map<String, String> args) {
-            String p = args.get("debug");
-            boolean debugMode = p != null && !"false".equals(p.toLowerCase());
-            p = args.get("trackRetransforms");
-            boolean trackRetransforms = p != null && !"false".equals(p);
-            String scriptOutputFile = args.get("scriptOutputFile");
-            p = args.get("fileRollMilliseconds");
-            long fileRollMilliseconds = -1;
-            if (p != null && p.length() > 0) {
-                try {
-                    fileRollMilliseconds = Long.parseLong(p);
-                } catch (NumberFormatException nfe) {
-                    fileRollMilliseconds = -1;
-                }
-            }
-            p = args.get("unsafe");
-            boolean unsafeMode = "true".equals(p);
-            p = args.get("dumpClasses");
-            boolean dumpClasses = p != null && !"false".equals(p);
-            String dumpDir = null;
-            if (dumpClasses) {
-                dumpDir = args.get("dumpDir");
-                if (dumpDir == null) {
-                    dumpDir = ".";
-                }
-            }
-
-            p = args.get("stdout");
-            boolean traceToStdOut = p != null && !"false".equals(p);
-
-            String probeDescPath = args.get("probeDescPath");
-            if (probeDescPath == null) {
-                probeDescPath = ".";
-            }
-//        ProbeDescriptorLoader.init(probeDescPath);
-            p = args.get("script");
-            String script = p;
-            
-            p = args.get("scriptdir");
-            String scriptDir = p;
-
-            String extPath = args.get("extPath");
-            
-            
-            p = args.get("noServer");
-            boolean noServer = p != null && !"false".equals(p);
-            
-            
-            String bootClassPath = args.get("bootClassPath");
-            String systemClassPath = args.get("systemClassPath");
-            
-            p = args.get("port");
-            int port = p != null ? Integer.valueOf(p) : BTRACE_DEFAULT_PORT;
-            return new Settings(debugMode, trackRetransforms, scriptOutputFile, 
-                                fileRollMilliseconds, unsafeMode, dumpClasses, 
-                                dumpDir, traceToStdOut, probeDescPath, script, 
-                                scriptDir, extPath, noServer, bootClassPath,
-                                systemClassPath, port);
-        }
-        
-        @Override
-        public String toString() {
-            return "BTrace Server Settings{" + "debugMode=" + debugMode + ", trackRetransforms=" + trackRetransforms + ", scriptOutputFile=" + scriptOutputFile + ", fileRollMilliseconds=" + fileRollMilliseconds + ", unsafeMode=" + unsafeMode + ", dumpClasses=" + dumpClasses + ", dumpDir=" + dumpDir + ", stdOut=" + stdOut + ", probeDescPath=" + probeDescPath + ", script=" + script + ", scriptDir=" + scriptDir + ", extPath=" + extPath + '}';
-        }
-    }
-    
-    private static class Singleton {
-        private static final Server INSTANCE = new Server();
-    }
-    
-    final private static ExecutorService localClientProcessor = Executors.newCachedThreadPool(new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "BTrace Local Client");
-        }
-    });
+    final private static ExecutorService localClientProcessor = Executors.newCachedThreadPool(new BTraceThreadFactory("BTrace Local Client"));
     
     private Queue<ResponseHandler<Boolean>> stateReqQueue = new ConcurrentLinkedQueue<ResponseHandler<Boolean>>();
     
@@ -239,21 +118,11 @@ final public class Server {
     
     private Instrumentation instr;
     private ExtensionsRepository repository;
-    private Settings currentSettings;
+    private Server.Settings currentSettings;
     
     // @GuardedBy sessions
-    final private Set<SessionImpl> sessions = new HashSet<SessionImpl>();
-    
-    private Server() {}
-    
-    /**
-     * Singleton getter for {@linkplain Server}
-     * @return Returns a singleton instance of {@linkplain Server}
-     */
-    public static Server getDefault() {
-        return Singleton.INSTANCE;
-    }
-    
+    final private Set<SessionImpl> sessions = new CopyOnWriteArraySet<SessionImpl>();
+
     private static byte[] injectExtensionContext(byte[] target) {
         try {
             ClassWriter writer = InstrumentUtils.newClassWriter(target);
@@ -268,6 +137,7 @@ final public class Server {
         }
     }
     
+    @Override
     public boolean isRunning() throws InterruptedException {
         if (!running) return false;
         
@@ -275,8 +145,9 @@ final public class Server {
         stateReqQueue.add(r);
         return r.get();
     }
-    
-    public Settings getSetting() {
+
+    @Override
+    public Settings getSettings() {
         return currentSettings;
     }
     
@@ -287,7 +158,7 @@ final public class Server {
      * @param settings BTrace server settings (a {@linkplain Settings} instance
      * @throws IOException 
      */
-    public void run(Instrumentation instr, Settings settings) throws IOException {      
+    public void start(Instrumentation instr, Server.Settings settings) throws IOException {      
         // need to capture the class loads of extensions
         instr.addTransformer(extensionTransformer, true);
         
@@ -306,7 +177,7 @@ final public class Server {
         startProvidedScripts(settings);
         
         if (!settings.noSocketServer) {
-            int runningServerPort = Integer.valueOf(System.getProperty(BTRACE_PORT_KEY, "-1"));
+            int runningServerPort = Integer.valueOf(System.getProperty(Server.BTRACE_PORT_KEY, "-1"));
             if (runningServerPort != -1 && runningServerPort != settings.port) {
                 BTraceLogger.debugPrint("Can not start BTrace socket server on port " + settings.port + ". There is already a server running on port " + runningServerPort);
             } else {
@@ -322,13 +193,8 @@ final public class Server {
      * Called upon the target application shutdown. Performs all the necessary cleanup.
      */
     public void shutdown() {
-        Collection<SessionImpl> sSessions = new ArrayList<SessionImpl>();
-        synchronized(sessions) {
-            sSessions.addAll(sessions);
-        }
-        Iterator<SessionImpl> iter = sSessions.iterator();
-        while (iter.hasNext()) {
-            iter.next().shutdown(0);
+        for(Session s : sessions) {
+            s.shutdown(0);
         }
     }
     
@@ -400,6 +266,11 @@ final public class Server {
             BTraceLogger.debugPrint(re);
         }
     }
+
+    @Override
+    public List<Session> getSessions() {
+        return new ArrayList<Session>(sessions);
+    }
     
     private void loadBTraceScript(final byte[] traceCode, boolean traceToStdOut, String scriptOutputFile, long fileRollMilliseconds) {
         final PrintWriter traceWriter;
@@ -464,7 +335,7 @@ final public class Server {
             public void run() {
                 running = true;
                 boolean wasTimeout = false;
-                System.setProperty(BTRACE_PORT_KEY, String.valueOf(port));
+                System.setProperty(Server.BTRACE_PORT_KEY, String.valueOf(port));
                 while (running) {
                     try {
                         while (!stateReqQueue.isEmpty()) {
@@ -483,18 +354,14 @@ final public class Server {
                         addServerSession(ch);
                     } catch (SocketTimeoutException e) {
                         wasTimeout = true;
-                        synchronized(sessions) {
-                            if (sessions.isEmpty()) {
-                                running = false;
-                            }
-                        }
+                        running = !sessions.isEmpty();
                     } catch (IOException e) {
                         running = false;
                     }
                 }
                 BTraceLogger.debugPrint("Leaving BTrace Socket Server");
                 try {
-                    System.getProperties().remove(BTRACE_PORT_KEY);
+                    System.getProperties().remove(Server.BTRACE_PORT_KEY);
                     ss.close();
                 } catch (IOException e) {
                     BTraceLogger.debugPrint(e);
@@ -509,7 +376,7 @@ final public class Server {
         }, "BTrace Socket Server").start();
     }
 
-    private void startProvidedScripts(Settings settings) {
+    private void startProvidedScripts(Server.Settings settings) {
         if (settings.script != null) {
             StringTokenizer tokenizer = new StringTokenizer(settings.script, ",");
 
@@ -541,7 +408,7 @@ final public class Server {
         return repository;
     }
     
-    private void setupBootClassPath(Settings ss) {
+    private void setupBootClassPath(Server.Settings ss) {
         StringBuilder bpcpBuilder = new StringBuilder(ss.bootClassPath != null ? ss.bootClassPath : "");
         bpcpBuilder.append(File.pathSeparator).append(repository.getClassPath());
 
@@ -563,7 +430,7 @@ final public class Server {
         }
     }
     
-    private void setupSystemClassPath(Settings ss) {
+    private void setupSystemClassPath(Server.Settings ss) {
         if (ss.systemClassPath != null) {
             StringTokenizer tokenizer = new StringTokenizer(ss.systemClassPath, File.pathSeparator);
             try {
@@ -599,10 +466,8 @@ final public class Server {
     }
     
     private SessionImpl addServerSession(Channel ch, final CountDownLatch initLatch) throws IOException {
-        SessionImpl session = new SessionImpl(ch, Server.this);
-        synchronized(sessions) {
-            sessions.add(session);
-        }
+        SessionImpl session = new SessionImpl(ch, getExtensionRepository(), getInstrumentation());
+        sessions.add(session);
         session.addObserver(new Observer() {
             @Override
             public void update(Observable oSession, Object oldState) {

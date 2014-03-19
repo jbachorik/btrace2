@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.agent;
+package net.java.btrace.server;
 
 import java.io.File;
 import java.io.FileWriter;

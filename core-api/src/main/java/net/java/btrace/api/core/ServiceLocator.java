@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  *
@@ -157,6 +158,16 @@ public class ServiceLocator {
         };
     }
     
+    public static <T> T loadService(final Class<? extends T> clz) {
+        return loadService(clz, Thread.currentThread().getContextClassLoader());
+    }
+    
+    public static <T> T loadService(final Class<? extends T> clz, final ClassLoader ... loaders) {
+        Iterator<T> i = new InstantiatingIterator<T>(clz.getName(), loaders);
+        if (i.hasNext()) return i.next();
+        return null;
+    }
+    
     private static class ServiceLine implements Comparable<ServiceLine> {
         private int position;
         private String serviceName;
@@ -234,6 +245,7 @@ public class ServiceLocator {
                 }
             }
         } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             try {
                 is.close();

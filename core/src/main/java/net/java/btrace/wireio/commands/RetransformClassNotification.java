@@ -27,8 +27,8 @@ package net.java.btrace.wireio.commands;
 
 import net.java.btrace.api.wireio.AbstractCommand;
 import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.io.IOException;
+import java.io.ObjectOutput;
 
 /**
  * This command is sent out as a notification that a class

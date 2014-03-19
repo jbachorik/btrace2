@@ -25,11 +25,11 @@
 
 package net.java.btrace.api.wireio;
 
+import java.io.ObjectOutput ;
 import net.java.btrace.api.core.Lookup;
 import net.java.btrace.spi.wireio.CommandImpl;
 import java.io.IOException;
 import java.io.ObjectInput;
-import java.io.ObjectOutput;
 
 /**
  * Represents the base class for command types.
@@ -53,7 +53,7 @@ public abstract class AbstractCommand {
     
     public static final AbstractCommand NULL = new AbstractCommand(-1, 1, -1) {
         @Override
-        public void write(ObjectOutput out) throws IOException {
+        public void write(ObjectOutput  out) throws IOException {
         }
 
         @Override
@@ -125,7 +125,7 @@ public abstract class AbstractCommand {
      * @param out The output to write the command contents to
      * @throws IOException 
      */
-    abstract public void write(ObjectOutput out) throws IOException;
+    abstract public void write(ObjectOutput  out) throws IOException;
     /**
      * De-serializes the command.
      * To be overridden by subclasses

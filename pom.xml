@@ -49,6 +49,7 @@
         <module>extensions/profiling</module>
         <module>extensions/export</module>
         <module>dist</module>
+        <module>jps-api</module>
     </modules>
     <distributionManagement>
         <snapshotRepository>

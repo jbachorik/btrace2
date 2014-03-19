@@ -22,41 +22,43 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package net.java.btrace.agent.wireio;
+package net.java.btrace.server.wireio;
 
 import net.java.btrace.api.core.BTraceLogger;
 import net.java.btrace.api.wireio.Command;
 import net.java.btrace.api.core.Lookup;
 import net.java.btrace.spi.wireio.CommandImpl;
 import net.java.btrace.api.wireio.Channel;
-import net.java.btrace.agent.Session;
-import net.java.btrace.wireio.commands.InstrumentCommand;
+import net.java.btrace.api.server.Session;
+import net.java.btrace.wireio.commands.ExitCommand;
 import java.io.IOException;
+import net.java.btrace.wireio.commands.ACKCommand;
 
 /**
  *
  * @author Jaroslav Bachorik
  */
-@Command(clazz=InstrumentCommand.class)
-public class InstrumentCommandImpl extends CommandImpl<InstrumentCommand> {
+@Command(clazz=ExitCommand.class)
+public class ExitCommandImpl extends CommandImpl<ExitCommand> {
     @Override
-    public void execute(Lookup ctx, InstrumentCommand cmd) {
+    public void execute(Lookup ctx, final ExitCommand cmd) {
+        BTraceLogger.debugPrint("received exit command with exit code " + cmd.getExitCode());
         Session s = ctx.lookup(Session.class);
-        Channel ch = ctx.lookup(Channel.class);
+        final Channel ch = ctx.lookup(Channel.class);
         if (s != null && ch != null) {
-            try {
-                try {
-                    ch.sendResponse(cmd, s.loadTraceClass(cmd.getCode(), cmd.getArguments()));
-                } catch (IOException e) {
-                    BTraceLogger.debugPrint(e);
+            BTraceLogger.debugPrint("detaching session");
+            s.detach(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ch.sendResponse(cmd, ACKCommand.class, true);
+                    } catch (IOException e) {
+                        BTraceLogger.debugPrint(e);
+                    } finally {
+                        ch.close();
+                    }
                 }
-            } catch (Exception e) {                
-                try {
-                    ch.sendResponse(cmd, false);
-                } catch (IOException ioe) {
-                    BTraceLogger.debugPrint(ioe);
-                }
-            }
+            });
         }
     }
 }

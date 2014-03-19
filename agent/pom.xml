@@ -34,16 +34,9 @@
                             <artifact>*:*</artifact>
                             <includes>
                                 <include>net/java/btrace/agent/**</include>
-                                <include>net/java/btrace/api/types/**</include>
-                                <include>net/java/btrace/commands/*</include>
-                                <include>net/java/btrace/org/objectweb/asm/*</include>
-                                <include>net/java/btrace/org/objectweb/asm/signature/*</include>
-                                <include>net/java/btrace/org/objectweb/asm/commons/StaticInitMerger*</include>
-                                <include>net/java/btrace/resources/**</include>
-                                <include>net/java/btrace/instr/**</include>
-                                <include>net/java/btrace/util/**</include>
-                                <include>META-INF/services/net.java.btrace.spi.wireio.CommandImpl</include>
                                 <include>META-INF/MANIFEST.MF</include>
+                                <include>META-INF/services/net.java.btrace.spi.wireio.CommandImpl</include>
+                                <include>META-INF/services/net.java.btrace.spi.server.*</include>
                             </includes>
                         </filter>
                     </filters>
@@ -83,22 +76,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>instr</artifactId>
-            <version>2.0-SNAPSHOT</version>
+            <artifactId>core-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>asm</artifactId>
-            <version>4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
-            <version>2.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>runtime</artifactId>
+            <artifactId>btrace-boot</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

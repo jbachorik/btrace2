@@ -22,42 +22,33 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package net.java.btrace.agent.wireio;
+package net.java.btrace.wireio.commands;
 
-import net.java.btrace.api.core.BTraceLogger;
-import net.java.btrace.api.wireio.Command;
-import net.java.btrace.api.core.Lookup;
-import net.java.btrace.spi.wireio.CommandImpl;
-import net.java.btrace.api.wireio.Channel;
-import net.java.btrace.agent.Session;
-import net.java.btrace.wireio.commands.ExitCommand;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput ;
+import net.java.btrace.api.wireio.Response;
+import net.java.btrace.api.wireio.ResponseCommand;
 
 /**
- *
- * @author Jaroslav Bachorik
+ * A {@linkplain Response} as a command
+ * @author Jaroslav Bachorik <jaroslav.bachorik at oracle.com>
+ * @since 2.0
  */
-@Command(clazz=ExitCommand.class)
-public class ExitCommandImpl extends CommandImpl<ExitCommand> {
+final public class ACKCommand extends ResponseCommand<Boolean> {
+    public ACKCommand(int type, int rx, int tx) {
+        super(type, rx, tx);
+    }
+
     @Override
-    public void execute(Lookup ctx, final ExitCommand cmd) {
-        BTraceLogger.debugPrint("received exit command with exit code " + cmd.getExitCode());
-        Session s = ctx.lookup(Session.class);
-        final Channel ch = ctx.lookup(Channel.class);
-        if (s != null && ch != null) {
-            BTraceLogger.debugPrint("detaching session");
-            s.detach(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        ch.sendResponse(cmd, null);
-                    } catch (IOException e) {
-                        BTraceLogger.debugPrint(e);
-                    } finally {
-                        ch.close();
-                    }
-                }
-            });
-        }
+    public void read(ObjectInput in) throws ClassNotFoundException, IOException {
+        super.read(in);
+        setPayload(in.readBoolean());
+    }
+
+    @Override
+    public void write(ObjectOutput  out) throws IOException {
+        super.write(out);
+        out.writeBoolean(getPayload());
     }
 }

@@ -65,6 +65,7 @@ abstract public class Channel {
                     }
                 }
             }, "BTrace Delayed Writer");
+            delayedWriteService.setDaemon(true);
         }
     }
     
@@ -172,6 +173,7 @@ abstract public class Channel {
         }
         return Response.NULL;
     }
+    
     /**
      * Sends a response of the given type
      * @param <T> The response type type
@@ -179,8 +181,8 @@ abstract public class Channel {
      * @param data The response payload
      * @throws IOException 
      */
-    final public <T> void sendResponse(AbstractCommand cmd, T data) throws IOException {
-        ResponseCommand<T> response = getCommandFactory().createResponse(data, cmd.getRx());
+    final public <T> void sendResponse(AbstractCommand cmd, Class<? extends DataCommand<T>> clz, T data) throws IOException {
+        AbstractCommand response = getCommandFactory().createResponse(data, clz, cmd.getRx());
         if (response != null) {
             try {
                 commandQueue.put(response);
@@ -188,7 +190,7 @@ abstract public class Channel {
                 Thread.currentThread().interrupt();
             }
         } else {
-            BTraceLogger.debugPrint("can not instantiate " + ResponseCommand.class + " command!");
+            BTraceLogger.debugPrint("can not instantiate " + clz + " command!");
         }
     }
     
@@ -212,7 +214,7 @@ abstract public class Channel {
      * @param <T> The response command type
      * @param cmd The response command received
      */
-    final public <T> void responseReceived(ResponseCommand<T> cmd) {
+    final public <T> void responseReceived(DataCommand<T> cmd) {
         ResponseHandler<T> t = responseMap.get(cmd.getTx());
         t.setResponse(cmd.getPayload());
     }

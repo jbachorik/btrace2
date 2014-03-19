@@ -24,14 +24,11 @@
  */
 package net.java.btrace.api.wireio;
 
+import java.io.ObjectOutput ;
 import java.io.EOFException;
-import net.java.btrace.api.wireio.Channel;
 import net.java.btrace.api.extensions.ExtensionsRepository;
-import net.java.btrace.api.wireio.AbstractCommand;
-import net.java.btrace.api.wireio.CommandFactory;
 import java.io.IOException;
 import java.io.ObjectInput;
-import java.io.ObjectOutput;
 
 /**
  * A {@linkplain Channel} implementation using sockets for communication
@@ -48,11 +45,11 @@ abstract public class SocketChannel extends Channel {
     final protected static String BTRACE_MAGIC="BTRACE";
     
     final protected ObjectInput input;
-    final protected ObjectOutput output;
+    final protected ObjectOutput  output;
     private CommandFactory cFactory;
     final protected ExtensionsRepository extRep;
     
-    protected SocketChannel(ObjectInput oi, ObjectOutput oo, ExtensionsRepository extRep) {
+    protected SocketChannel(ObjectInput oi, ObjectOutput  oo, ExtensionsRepository extRep) {
         super(oi != null && oo != null);
         this.input = oi;
         this.output = oo;
@@ -63,12 +60,18 @@ abstract public class SocketChannel extends Channel {
     final public AbstractCommand readCommand() throws IOException, ClassNotFoundException {
         if (input == null) return null;
         try {
-            int id = input.readInt();
-            int rx = input.readInt();
-            int tx = input.readInt();
-            AbstractCommand c = cFactory.restoreCommand(id, rx, tx);
-            c.read(input);
-            return c;
+            while (true) {
+                int id = input.readInt();
+                int rx = input.readInt();
+                int tx = input.readInt();
+                AbstractCommand c = cFactory.restoreCommand(id, rx, tx);
+                c.read(input);
+                if (c instanceof ResponseCommand) { // implicitly process the response
+                    responseReceived((ResponseCommand)c);
+                    continue;
+                }
+                return c;
+            }
         } catch (EOFException e) {
             throw e;
         } catch (IOException e) {

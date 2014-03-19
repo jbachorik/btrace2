@@ -30,18 +30,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.instrument.Instrumentation;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.jar.JarFile;
-import net.java.btrace.instr.OnMethod;
-import net.java.btrace.instr.OnProbe;
-import net.java.btrace.instr.ProbeDescriptor;
+import net.java.btrace.api.server.Server;
 
 /**
  *
@@ -49,8 +41,6 @@ import net.java.btrace.instr.ProbeDescriptor;
  */
 public class Main {
     public static final int BTRACE_DEFAULT_PORT = 2020;
-    
-    private static final Map<String, String> argMap = new HashMap<String, String>();
     
     public static void agentmain(String args, Instrumentation inst) {
         doMain(args, inst);
@@ -89,9 +79,16 @@ public class Main {
             Server s = Server.getDefault();
             if (!s.isRunning()) {
                 BTraceLogger.debugPrint("parsing command line arguments");
-                Server.Settings ss = parseArgs(args);
+                Map<String, String> argMap = mapArgs(args);
+                String p = argMap.get("help");
+                if (p != null) {
+                    usage();
+                    return;
+                }
+                Server.Settings ss = Server.Settings.from(argMap);
+                
                 BTraceLogger.debugPrint("parsed command line arguments");
-                s.run(inst, ss);
+                s.start(inst, ss);
             } else {
                 BTraceLogger.debugPrint("server already running with settings: " + s.getSetting());
             }
@@ -107,12 +104,13 @@ public class Main {
         System.exit(0);
     }
 
-    private static Server.Settings parseArgs(String args) {
+    private static Map<String, String> mapArgs(String args) {
         if (args == null) {
             args = "";
         }
         String[] pairs = args.split(",");
-        argMap.clear();
+        
+        Map<String, String> argMap = new HashMap<String, String>();
         for (String s : pairs) {
             int i = s.indexOf('=');
             String key, value = "";
@@ -126,15 +124,8 @@ public class Main {
             }
             argMap.put(key, value);
         }
-
-        String p = argMap.get("help");
-        if (p != null) {
-            usage();
-        }
         
-        Server.Settings s = Server.Settings.from(argMap);
-        BTraceLogger.debugPrint(s.toString());
-        return s;
+        return argMap;
     }
 
     // This is really a *private* interface to Glassfish monitoring.
@@ -142,46 +133,5 @@ public class Main {
     // Keeping this only for compatibility sake; GF should switch to using net.java.btrace.agent.Server#loadBTraceScript() method
     public static void handleFlashLightClient(byte[] code, PrintWriter writer) {
         Server.getDefault().loadBTraceScript(code, writer);
-    }
-    
-    /**
-     * Maps a list of @OnProbe's to a list @OnMethod's using
-     * probe descriptor XML files.
-     */
-    static List<OnMethod> mapOnProbes(List<OnProbe> onProbes) {
-        List<OnMethod> res = new ArrayList<OnMethod>();
-        for (OnProbe op : onProbes) {
-            String ns = op.getNamespace();
-            BTraceLogger.debugPrint("about to load probe descriptor for " + ns);
-            
-            // load probe descriptor for this namespace
-            ProbeDescriptor probeDesc = ProbeDescriptorLoader.load(ns);
-            if (probeDesc == null) {
-                BTraceLogger.debugPrint("failed to find probe descriptor for " + ns);
-                continue;
-            }
-            // find particular probe mappings using "local" name
-            OnProbe foundProbe = probeDesc.findProbe(op.getName());
-            if (foundProbe == null) {
-                BTraceLogger.debugPrint("no probe mappings for " + op.getName());
-                continue;
-            }
-            BTraceLogger.debugPrint("found probe mappings for " + op.getName());
-
-            Collection<OnMethod> omColl = foundProbe.getOnMethods();
-            for (OnMethod om : omColl) {
-                // copy the info in a new OnMethod so that
-                // we can set target method name and descriptor
-                // Note that the probe descriptor cache is used
-                // across BTrace sessions. So, we should not update
-                // cached OnProbes (and their OnMethods).
-                OnMethod omn = new OnMethod();
-                omn.copyFrom(om);
-                omn.setTargetName(op.getTargetName());
-                omn.setTargetDescriptor(op.getTargetDescriptor());
-                res.add(omn);
-            }
-        }
-        return res;
     }
 }

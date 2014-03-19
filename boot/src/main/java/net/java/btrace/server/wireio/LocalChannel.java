@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package net.java.btrace.agent.wireio;
+package net.java.btrace.server.wireio;
 
 import net.java.btrace.api.extensions.ExtensionsRepository;
 import net.java.btrace.api.wireio.AbstractCommand;
@@ -30,6 +30,7 @@ import net.java.btrace.api.wireio.CommandFactory;
 import net.java.btrace.api.wireio.Channel;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
+import net.java.btrace.api.wireio.ResponseCommand;
 
 /**
  *
@@ -82,7 +83,15 @@ abstract public class LocalChannel extends Channel {
     @Override
     final public AbstractCommand readCommand() throws IOException, ClassNotFoundException {
         try {
-            return in.take();
+            AbstractCommand cmd;
+            while (true) {
+                cmd = in.take();
+                if (cmd instanceof ResponseCommand) { // implicitly process the response
+                    responseReceived((ResponseCommand)cmd);
+                    continue;
+                }
+                return cmd;
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

@@ -231,10 +231,10 @@ public class CommandFactory {
      * @param tx The TX value of the command to create the response for
      * @return A new instance of <b>&lt;T&gt;</b> or <b>NULL</b> if the factory can not handle this type
      */
-    public <T> ResponseCommand<T> createResponse(T data, int tx) {
-        FactoryMethod<ResponseCommand<T>> fm = mapByType.get(ResponseCommand.class);
+    public <T> DataCommand<T> createResponse(T data, Class<? extends DataCommand<T>> clz, int tx) {
+        FactoryMethod<DataCommand<T>> fm = mapByType.get(clz);
         if (fm != null) {
-            ResponseCommand<T> cmd = fm.newInstance(incCounter(), tx);
+            DataCommand<T> cmd = fm.newInstance(incCounter(), tx);
             cmd.setPayload(data);
             return cmd;
         }

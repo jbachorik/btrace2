@@ -34,6 +34,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutput ;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Properties;
@@ -83,7 +84,7 @@ public class Export {
         try {
             BufferedOutputStream bos = new BufferedOutputStream(
                 new FileOutputStream(resolveFileName(fileName)));
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            ObjectOutput  oos = new ObjectOutputStream(bos);
             oos.writeObject(obj);
             oos.close();
         } catch (RuntimeException re) {

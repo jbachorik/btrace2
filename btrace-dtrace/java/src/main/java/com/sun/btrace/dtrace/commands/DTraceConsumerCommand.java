@@ -27,7 +27,7 @@ package com.sun.btrace.dtrace.commands;
 
 import com.sun.btrace.api.wireio.AbstractCommand;
 import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.DataOutput;
 import java.io.IOException;
 import org.opensolaris.os.dtrace.Consumer;
 import org.opensolaris.os.dtrace.ConsumerEvent;

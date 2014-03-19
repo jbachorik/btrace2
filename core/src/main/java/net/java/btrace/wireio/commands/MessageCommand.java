@@ -27,8 +27,8 @@ package net.java.btrace.wireio.commands;
 
 import net.java.btrace.api.wireio.AbstractCommand;
 import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.io.IOException;
+import java.io.ObjectOutput;
 
 /**
  * Transfers a simple text message
@@ -49,11 +49,13 @@ final public class MessageCommand extends AbstractCommand {
         return super.canBeSpeculated();
     }
     
+    @Override
     final public void write(ObjectOutput out) throws IOException {
         out.writeLong(time);
         out.writeUTF(msg != null? msg : "");
     }
 
+    @Override
     final public void read(ObjectInput in) 
                    throws ClassNotFoundException, IOException {
         time = in.readLong();

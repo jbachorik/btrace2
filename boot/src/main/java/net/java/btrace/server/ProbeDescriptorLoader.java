@@ -23,7 +23,7 @@
  * questions.
  */
 
-package net.java.btrace.agent;
+package net.java.btrace.server;
 
 import net.java.btrace.instr.ProbeDescriptor;
 import java.io.File;

@@ -25,9 +25,9 @@
 
 package net.java.btrace.wireio.commands;
 
+import java.io.ObjectOutput ;
 import net.java.btrace.api.wireio.AbstractCommand;
 import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.io.IOException;
 
 /**
@@ -51,7 +51,7 @@ final public class ExitCommand extends AbstractCommand {
         return false;
     }
 
-    final public void write(ObjectOutput out) throws IOException {
+    final public void write(ObjectOutput  out) throws IOException {
         out.writeInt(exitCode);
     }
 

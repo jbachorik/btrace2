@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.java.btrace.runtime;
+package net.java.btrace.api.server;
 
 /**
  *

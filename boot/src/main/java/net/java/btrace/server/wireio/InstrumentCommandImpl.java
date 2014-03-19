@@ -22,56 +22,42 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+package net.java.btrace.server.wireio;
 
-package net.java.btrace.wireio.commands;
-
-import java.io.ObjectOutput ;
-import net.java.btrace.api.wireio.AbstractCommand;
-import java.io.ObjectInput;
+import net.java.btrace.api.core.BTraceLogger;
+import net.java.btrace.api.wireio.Command;
+import net.java.btrace.api.core.Lookup;
+import net.java.btrace.spi.wireio.CommandImpl;
+import net.java.btrace.api.wireio.Channel;
+import net.java.btrace.api.server.Session;
+import net.java.btrace.wireio.commands.InstrumentCommand;
 import java.io.IOException;
+import net.java.btrace.wireio.commands.ACKCommand;
 
 /**
- * Command for processing an encountered {@linkplain Throwable}
  *
- * @author A.Sundararajan
  * @author Jaroslav Bachorik
  */
-final public class ErrorCommand extends AbstractCommand {
-    private Throwable cause;
-    
-    public ErrorCommand(int typeId, int rx, int tx) {
-        super(typeId, rx, tx);
-    }
-
+@Command(clazz=InstrumentCommand.class)
+public class InstrumentCommandImpl extends CommandImpl<InstrumentCommand> {
     @Override
-    final public boolean canBeSpeculated() {
-        return super.canBeSpeculated();
-    }
-    
-    @Override
-    final public void write(ObjectOutput  out) throws IOException {
-        out.writeObject(cause);
-    }
-
-    @Override
-    final public void read(ObjectInput in)
-        throws IOException, ClassNotFoundException {
-        cause = (Throwable) in.readObject();
-    }
-
-    /**
-     * 
-     * @return The wrapped exception
-     */
-    final public Throwable getCause() {
-        return cause;
-    }
-
-    /**
-     * 
-     * @param cause The exception to wrap
-     */
-    final public void setCause(Throwable cause) {
-        this.cause = cause;
+    public void execute(Lookup ctx, InstrumentCommand cmd) {
+        Session s = ctx.lookup(Session.class);
+        Channel ch = ctx.lookup(Channel.class);
+        if (s != null && ch != null) {
+            try {
+                try {
+                    ch.sendResponse(cmd, ACKCommand.class, s.loadTraceClass(cmd.getCode(), cmd.getArguments()));
+                } catch (IOException e) {
+                    BTraceLogger.debugPrint(e);
+                }
+            } catch (Exception e) {                
+                try {
+                    ch.sendResponse(cmd, ACKCommand.class, false);
+                } catch (IOException ioe) {
+                    BTraceLogger.debugPrint(ioe);
+                }
+            }
+        }
     }
 }
