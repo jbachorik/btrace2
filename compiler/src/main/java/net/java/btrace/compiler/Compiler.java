@@ -254,6 +254,10 @@ public class Compiler {
             options.add("-sourcepath");
             options.add(sourcePath);
         }
+        options.add("-source");
+        options.add("1.6");
+        options.add("-target");
+        options.add("1.6");
 
         classPath = (classPath != null ? classPath + File.pathSeparator : File.pathSeparator) + repository.getClassPath();
         if (classPath != null) {
@@ -324,10 +328,10 @@ public class Compiler {
                                 }
                             };
                         }
-                        
+
                     };
-                    cr.accept(cv, ClassReader.EXPAND_FRAMES + ClassReader.SKIP_DEBUG);
-//                    cr.accept(new Postprocessor(ctValidator, cw), ClassReader.EXPAND_FRAMES + ClassReader.SKIP_DEBUG);
+//                    cr.accept(cv, ClassReader.EXPAND_FRAMES + ClassReader.SKIP_DEBUG);
+                    cr.accept(new Postprocessor(ctValidator, cw), ClassReader.EXPAND_FRAMES + ClassReader.SKIP_DEBUG);
                     result.put(name, cw.toByteArray());
                     dump(name + "_after", cw.toByteArray());
                 }

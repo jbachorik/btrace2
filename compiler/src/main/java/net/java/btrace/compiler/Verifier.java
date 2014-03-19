@@ -100,7 +100,6 @@ public class Verifier extends AbstractProcessor
     public void init(ProcessingEnvironment pe) {
         super.init(pe);
         treeUtils = Trees.instance(pe);
-        prepareContext(((JavacProcessingEnvironment)pe).getContext());
     }
 
     public boolean process(Set<? extends TypeElement> annotations,
@@ -116,6 +115,7 @@ public class Verifier extends AbstractProcessor
         if (ct != null) {
             compUnits.add(ct);
         }
+        listener.finished(e);
     }
 
     List<String> getClassNames() {
@@ -178,23 +178,6 @@ public class Verifier extends AbstractProcessor
         Boolean value = unsafe? Boolean.TRUE : 
             ct.accept(new VerifierVisitor(this, topElement), null);
         return value == null? true : value.booleanValue();
-    }
-
-    /**
-     * adds a listener for attribution.
-     */
-    private void prepareContext(Context context) {
-        TaskListener otherListener = context.get(TaskListener.class);
-        if (otherListener == null) {
-            context.put(TaskListener.class, listener);
-        } else {
-            // handle cases of multiple listeners
-            context.put(TaskListener.class, (TaskListener)null);
-            TaskListeners listeners = new TaskListeners();
-            listeners.add(otherListener);
-            listeners.add(listener);
-            context.put(TaskListener.class, listeners);
-        }
     }
 
     /**
