@@ -47,14 +47,14 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <version>4.0</version>
+            <version>5.0</version>
             <artifactId>asm-util</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>asm</artifactId>
-            <version>4.0</version>
+            <version>5.0</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

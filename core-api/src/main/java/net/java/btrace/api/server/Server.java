@@ -27,10 +27,8 @@ package net.java.btrace.api.server;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.instrument.Instrumentation;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.java.btrace.api.core.BTraceLogger;
 import net.java.btrace.api.core.ServiceLocator;
 import net.java.btrace.spi.server.ServerImpl;
 
@@ -41,7 +39,7 @@ import net.java.btrace.spi.server.ServerImpl;
 final public class Server {
     public static final int BTRACE_DEFAULT_PORT = 2020;
     public static final String BTRACE_PORT_KEY = "btrace.port";
-    
+
     public static final class Settings {
         final public boolean debugMode;
         final public boolean trackRetransforms;
@@ -60,9 +58,9 @@ final public class Server {
         final public String systemClassPath;
         final public int port;
 
-        private Settings(boolean debugMode, boolean trackRetransforms, String scriptOutputFile, 
-                         long fileRollMilliseconds, boolean unsafeMode, boolean dumpClasses, 
-                         String dumpDir, boolean stdOut, String probeDescPath, String script, 
+        private Settings(boolean debugMode, boolean trackRetransforms, String scriptOutputFile,
+                         long fileRollMilliseconds, boolean unsafeMode, boolean dumpClasses,
+                         String dumpDir, boolean stdOut, String probeDescPath, String script,
                          String scriptDir, String extPath, boolean noServer, String bootClassPath,
                          String systemClassPath, int port) {
             this.debugMode = debugMode;
@@ -82,7 +80,7 @@ final public class Server {
             this.systemClassPath = systemClassPath;
             this.port = port;
         }
-        
+
         public static Settings from(Map<String, String> args) {
             String p = args.get("debug");
             boolean debugMode = p != null && !"false".equals(p.toLowerCase());
@@ -120,45 +118,45 @@ final public class Server {
 //        ProbeDescriptorLoader.init(probeDescPath);
             p = args.get("script");
             String script = p;
-            
+
             p = args.get("scriptdir");
             String scriptDir = p;
 
             String extPath = args.get("extPath");
-            
-            
+
+
             p = args.get("noServer");
             boolean noServer = p != null && !"false".equals(p);
-            
-            
+
+
             String bootClassPath = args.get("bootClassPath");
             String systemClassPath = args.get("systemClassPath");
-            
+
             p = args.get("port");
             int port = p != null ? Integer.valueOf(p) : BTRACE_DEFAULT_PORT;
-            return new Settings(debugMode, trackRetransforms, scriptOutputFile, 
-                                fileRollMilliseconds, unsafeMode, dumpClasses, 
-                                dumpDir, traceToStdOut, probeDescPath, script, 
+            return new Settings(debugMode, trackRetransforms, scriptOutputFile,
+                                fileRollMilliseconds, unsafeMode, dumpClasses,
+                                dumpDir, traceToStdOut, probeDescPath, script,
                                 scriptDir, extPath, noServer, bootClassPath,
                                 systemClassPath, port);
         }
-        
+
         @Override
         public String toString() {
             return "BTrace Server Settings{" + "debugMode=" + debugMode + ", trackRetransforms=" + trackRetransforms + ", scriptOutputFile=" + scriptOutputFile + ", fileRollMilliseconds=" + fileRollMilliseconds + ", unsafeMode=" + unsafeMode + ", dumpClasses=" + dumpClasses + ", dumpDir=" + dumpDir + ", stdOut=" + stdOut + ", probeDescPath=" + probeDescPath + ", script=" + script + ", scriptDir=" + scriptDir + ", extPath=" + extPath + '}';
         }
     }
-    
+
     final private ServerImpl impl;
-    
+
     private Server(ServerImpl impl) {
         this.impl = impl;
     }
-    
+
     private static class Singleton {
         final private static Server INSTANCE = new Server(ServiceLocator.loadService(ServerImpl.class, ClassLoader.getSystemClassLoader()));
     }
-    
+
     /**
      * Singleton getter for {@linkplain Server}
      * @return Returns a singleton instance of {@linkplain Server}
@@ -166,16 +164,16 @@ final public class Server {
     public static Server getDefault() {
         return Singleton.INSTANCE;
     }
-    
+
     /**
      * Server state check
      * @return <b>TRUE</b> if the server is alive, <b>FALSE</b> otherwise
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     public boolean isRunning() throws InterruptedException {
         return impl.isRunning();
     }
-    
+
     /**
      * Server settings getter
      * @return The used server settings
@@ -183,25 +181,25 @@ final public class Server {
     public Settings getSetting() {
         return impl.getSettings();
     }
-    
+
     /**
      * Starts a {@linkplain Server} for a particular application identified
      * by {@linkplain Instrumentation} instance
      * @param instr The {@linkplain Instrumentation} instance obtained from the target application
      * @param settings BTrace server settings (a {@linkplain Settings} instance
-     * @throws IOException 
+     * @throws IOException
      */
-    public void start(Instrumentation instr, Settings settings) throws IOException {      
+    public void start(Instrumentation instr, Settings settings) throws IOException {
         impl.start(instr, settings);
     }
-    
+
     /**
      * Called upon the target application shutdown. Performs all the necessary cleanup.
      */
     public void shutdown() {
         impl.shutdown();
     }
-    
+
     /**
      * Loads the BTrace script in the form of a pre-compiled and pre-verified
      * bytecode. Links the script and starts a new {@linkplain Session}
@@ -212,7 +210,7 @@ final public class Server {
     public void loadBTraceScript(final byte[] traceCode, final PrintWriter writer) {
         impl.loadBTraceScript(traceCode, writer);
     }
-    
+
     public List<Session> getSessions() {
         return impl.getSessions();
     }

@@ -79,7 +79,7 @@ public class JpsProxy {
             }
 
             for (Object jvm : jvms) {
-                int lvmid = ((Integer) jvm).intValue();
+                int lvmid = ((Integer) jvm);
 
                 if (selfName.startsWith(lvmid + "@")) { // myself
 
@@ -150,7 +150,7 @@ public class JpsProxy {
 
     // invoke MonitoredVmUtil.isAttachable(MonitoredVm vm) using reflection (JDK 6 only code)
     private static Method monitoredVmUtil_isAttachable;
-    
+
     static {
         try {
             monitoredVmUtil_isAttachable = MonitoredVmUtil.class.getMethod("isAttachable",new Class[]{MonitoredVm.class}); // NOI18N
@@ -160,13 +160,13 @@ public class JpsProxy {
             ex.printStackTrace();
         }
     }
-    
+
     private static boolean isAttachable(MonitoredVm vm) {
         Object ret;
         try {
             ret = monitoredVmUtil_isAttachable.invoke(null, new Object[] {vm});
             if (ret instanceof Boolean) {
-                return ((Boolean)ret).booleanValue();
+                return ((Boolean)ret);
             }
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();

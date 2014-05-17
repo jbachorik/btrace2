@@ -35,7 +35,7 @@ import java.io.PrintWriter;
  *
  * @author Jaroslav Bachorik
  */
-@Command(clazz=MessageCommand.class)
+@Command(clazz=MessageCommand.class, async=true)
 public class MessageCommandImpl extends CommandImpl<MessageCommand> {
     @Override
     public void execute(Lookup ctx, MessageCommand cmd) {

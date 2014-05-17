@@ -40,6 +40,7 @@ import java.io.ObjectOutput ;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
+import net.java.btrace.api.wireio.Command;
 
 /**
  * The client side of the BTrace communication channel
@@ -85,7 +86,7 @@ public final class ClientChannel extends SocketChannel {
                 int minVer = input.readInt();
                 if (majVer < Version.MAJOR || (majVer == Version.MAJOR && minVer <= Version.MINOR)) {
                     output.writeBoolean(true);
-                    CommandFactory cf = CommandFactory.getInstance(extRep.getClassLoader(getMyLoader()));
+                    CommandFactory cf = CommandFactory.getInstance(extRep.getClassLoader(getMyLoader()), Command.Target.CLIENT);
                     List<Class<? extends AbstractCommand>> supportedCmds = cf.listSupportedCommands();
                     if (BTraceLogger.isDebug()) {
                         BTraceLogger.debugPrint("sending list of supported commands (" + supportedCmds.size() + ")");

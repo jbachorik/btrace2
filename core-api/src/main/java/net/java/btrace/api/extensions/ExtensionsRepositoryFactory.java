@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import net.java.btrace.api.core.BTraceLogger;
 
 /**
  * Factory for {@linkplain ExtensionsRepository} instances
@@ -38,12 +39,12 @@ import java.util.Set;
  */
 public class ExtensionsRepositoryFactory {
     private final static String EXTPATH_PROP = "btrace.extensions.path";
-    
+
     private static final class DefaultExtensionsRepository extends ExtensionsRepository {
         public DefaultExtensionsRepository(Location l) {
             super(ExtensionsRepositoryFactory.class.getClassLoader(), l);
         }
-        
+
         @Override
         public String getExtensionsPath() {
             String userExtPath = System.getProperty(EXTPATH_PROP);
@@ -59,7 +60,7 @@ public class ExtensionsRepositoryFactory {
             }
             return null;
         }
-        
+
         private String getLibBaseDir() {
             ClassLoader cl = ExtensionsRepository.class.getClassLoader();
             URL rsrc = cl != null ? cl.getResource("net/java/btrace") : ClassLoader.getSystemResource("net/java/btrace");
@@ -77,17 +78,23 @@ public class ExtensionsRepositoryFactory {
                         }
                     }
                 }
+
+                int libPos = baseDir.lastIndexOf("/lib/");
+                if (libPos > -1) {
+                    baseDir = baseDir.substring(0, libPos + 4);
+                }
+
                 return baseDir + "/ext/";
             }
             return null;
 
         }
     }
-    
+
     private static final ExtensionsRepository DEFAULT_SERVER = new DefaultExtensionsRepository(ExtensionsRepository.Location.SERVER);
     private static final ExtensionsRepository DEFAULT_CLIENT = new DefaultExtensionsRepository(ExtensionsRepository.Location.CLIENT);
     private static final ExtensionsRepository DEFAULT_BOTH = new DefaultExtensionsRepository(ExtensionsRepository.Location.BOTH);
-    
+
     /**
      * The built-in extension repository - located in <i>(&lt;btrace_dist&gt;/lib/ext)</i>
      * @param location Desired execution {@linkplain ExtensionsRepository.Location}
@@ -100,23 +107,23 @@ public class ExtensionsRepositoryFactory {
             default: return DEFAULT_BOTH;
         }
     }
-    
+
     /**
      * Creates an {@linkplain ExtensionsRepository} instance from the given path
      * @param location Desired execution {@linkplain ExtensionsRepository.Location}
-     * @param userExtPath The repository path in the form of {@linkplain File#pathSeparator} 
+     * @param userExtPath The repository path in the form of {@linkplain File#pathSeparator}
      * delimited list of jars and folders containing the extensions
      * @return Returns a new instance of {@linkplain ExtensionsRepository}
      */
     public static ExtensionsRepository fixed(ExtensionsRepository.Location location, final String userExtPath) {
         return fixed(null, location, userExtPath);
     }
-    
+
     /**
      * Creates an {@linkplain ExtensionsRepository} instance from the given path
      * @param cLoader An optional classloader to delegate classloading to
      * @param location Desired execution {@linkplain ExtensionsRepository.Location}
-     * @param userExtPath The repository path in the form of {@linkplain File#pathSeparator} 
+     * @param userExtPath The repository path in the form of {@linkplain File#pathSeparator}
      * delimited list of jars and folders containing the extensions
      * @return Returns a new instance of {@linkplain ExtensionsRepository}
      */
@@ -129,7 +136,7 @@ public class ExtensionsRepositoryFactory {
             }
         };
     }
-    
+
     /**
      * Creates a new instance of {@linkplain ExtensionsRepository} which is a result of composition of other repositories
      * @param location Desired execution {@linkplain ExtensionsRepository.Location}

@@ -88,7 +88,7 @@ final public class BTraceServer implements ServerImpl {
         public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
             byte[] bytecode = null;
             if (classBeingRedefined != null) {
-                // class already defined; retransforming   
+                // class already defined; retransforming
                 if (classBeingRedefined.getAnnotation(BTraceExtension.class) != null) {
                     bytecode = injectExtensionContext(classfileBuffer);
                 }
@@ -100,7 +100,7 @@ final public class BTraceServer implements ServerImpl {
             return bytecode;
         }
     };
-    
+
     // sensitive classes preload
     static {
         ClassFilter.class.getClass();
@@ -109,17 +109,17 @@ final public class BTraceServer implements ServerImpl {
         ClassReader.class.getClass();
         ClassWriter.class.getClass();
     }
-    
+
     final private static ExecutorService localClientProcessor = Executors.newCachedThreadPool(new BTraceThreadFactory("BTrace Local Client"));
-    
+
     private Queue<ResponseHandler<Boolean>> stateReqQueue = new ConcurrentLinkedQueue<ResponseHandler<Boolean>>();
-    
+
     private volatile boolean running = false;
-    
+
     private Instrumentation instr;
     private ExtensionsRepository repository;
     private Server.Settings currentSettings;
-    
+
     // @GuardedBy sessions
     final private Set<SessionImpl> sessions = new CopyOnWriteArraySet<SessionImpl>();
 
@@ -136,11 +136,11 @@ final public class BTraceServer implements ServerImpl {
             return null;
         }
     }
-    
+
     @Override
     public boolean isRunning() throws InterruptedException {
         if (!running) return false;
-        
+
         ResponseHandler<Boolean> r = new ResponseHandler<Boolean>();
         stateReqQueue.add(r);
         return r.get();
@@ -150,54 +150,56 @@ final public class BTraceServer implements ServerImpl {
     public Settings getSettings() {
         return currentSettings;
     }
-    
+
     /**
      * Starts a {@linkplain Server} for a particular application identified
      * by {@linkplain Instrumentation} instance
      * @param instr The {@linkplain Instrumentation} instance obtained from the target application
      * @param settings BTrace server settings (a {@linkplain Settings} instance
-     * @throws IOException 
+     * @throws IOException
      */
-    public void start(Instrumentation instr, Server.Settings settings) throws IOException {      
+    @Override
+    public void start(Instrumentation instr, Server.Settings settings) throws IOException {
         // need to capture the class loads of extensions
         instr.addTransformer(extensionTransformer, true);
-        
+
         this.instr = instr;
         this.repository = ExtensionsRepositoryFactory.composite(
-                ExtensionsRepository.Location.SERVER, 
-                ExtensionsRepositoryFactory.builtin(ExtensionsRepository.Location.SERVER), 
+                ExtensionsRepository.Location.SERVER,
+                ExtensionsRepositoryFactory.builtin(ExtensionsRepository.Location.SERVER),
                 ExtensionsRepositoryFactory.fixed(ExtensionsRepository.Location.SERVER, settings.extPath)
         );
         currentSettings = settings;
-        
+
         ProbeDescriptorLoader.init(settings.probeDescPath);
         setupBootClassPath(settings);
         setupSystemClassPath(settings);
-        
+
         startProvidedScripts(settings);
-        
+
         if (!settings.noSocketServer) {
             int runningServerPort = Integer.valueOf(System.getProperty(Server.BTRACE_PORT_KEY, "-1"));
             if (runningServerPort != -1 && runningServerPort != settings.port) {
                 BTraceLogger.debugPrint("Can not start BTrace socket server on port " + settings.port + ". There is already a server running on port " + runningServerPort);
             } else {
                 if (runningServerPort == -1) {
-                    startSocketServer(settings.port);                    
+                    startSocketServer(settings.port);
                 }
                 // else just reuse the already running socket server
             }
         }
     }
-    
+
     /**
      * Called upon the target application shutdown. Performs all the necessary cleanup.
      */
+    @Override
     public void shutdown() {
         for(Session s : sessions) {
             s.shutdown(0);
         }
     }
-    
+
     /**
      * Loads the BTrace script in the form of a pre-compiled and pre-verified
      * bytecode. Links the script and starts a new {@linkplain Session}
@@ -205,27 +207,28 @@ final public class BTraceServer implements ServerImpl {
      *                  pre-verified bytecode
      * @param writer The writer used to redirect the script output to
      */
+    @Override
     public void loadBTraceScript(final byte[] traceCode, final PrintWriter writer) {
         try {
             if (traceCode == null || traceCode.length == 0) {
                 BTraceLogger.debugPrint("refusing empty script class data");
                 return;
             }
-            
+
             final BlockingQueue<AbstractCommand> q1 = new ArrayBlockingQueue<AbstractCommand>(500);
             final BlockingQueue<AbstractCommand> q2 = new ArrayBlockingQueue<AbstractCommand>(500);
-            
+
             final ExtensionsRepository extRepo = ExtensionsRepositoryFactory.composite(
-                ExtensionsRepository.Location.BOTH, 
-                ExtensionsRepositoryFactory.builtin(ExtensionsRepository.Location.BOTH), 
+                ExtensionsRepository.Location.BOTH,
+                ExtensionsRepositoryFactory.builtin(ExtensionsRepository.Location.BOTH),
                 ExtensionsRepositoryFactory.fixed(ExtensionsRepository.Location.BOTH, currentSettings.extPath)
             );
-            
+
             Channel serverChannel = new LocalChannel.Server(q1, q2, extRepo);
-                        
+
             final CountDownLatch latch = new CountDownLatch(1);
             final SessionImpl newSession = addServerSession(serverChannel, latch);
-            
+
             localClientProcessor.submit(new Runnable() {
                 @Override
                 public void run() {
@@ -243,7 +246,7 @@ final public class BTraceServer implements ServerImpl {
                                 cmd.setCode(traceCode);
                             }
                         });
-                        
+
                         while (!interrupted.get()) {
                             AbstractCommand cmd = channel.readCommand();
                             cmd.execute(ctx);
@@ -271,7 +274,7 @@ final public class BTraceServer implements ServerImpl {
     public List<Session> getSessions() {
         return new ArrayList<Session>(sessions);
     }
-    
+
     private void loadBTraceScript(final byte[] traceCode, boolean traceToStdOut, String scriptOutputFile, long fileRollMilliseconds) {
         final PrintWriter traceWriter;
         if (traceToStdOut) {
@@ -286,49 +289,49 @@ final public class BTraceServer implements ServerImpl {
 
         loadBTraceScript(traceCode, traceWriter);
     }
-    
+
     private void loadBTraceScript(String filename, boolean traceToStdOut, String scriptOutputFile, long fileRollMilliseconds) {
         try {
             if (!filename.endsWith(".class")) {
                 BTraceLogger.debugPrint("refusing " + filename + ". script should be a pre-compiled .class file");
                 return;
             }
-            
+
             final File traceScript = new File(filename);
             if (!traceScript.exists()) {
                 BTraceLogger.debugPrint("script " + traceScript + " does not exist!");
                 return;
             }
-            
+
             String currentBtraceScriptOutput = scriptOutputFile;
             if (!traceToStdOut) {
                 String agentName = System.getProperty("btrace.agent", null);
-                
+
                 if (currentBtraceScriptOutput == null || currentBtraceScriptOutput.length() == 0) {
                     currentBtraceScriptOutput = filename + (agentName != null ? "." + agentName : "") + ".btrace";
                     BTraceLogger.debugPrint("scriptOutputFile not specified. defaulting to " + currentBtraceScriptOutput);
                 }
             }
-            
+
             loadBTraceScript(readAll(filename), traceToStdOut, currentBtraceScriptOutput, fileRollMilliseconds);
         } catch (IOException e) {
             BTraceLogger.debugPrint(e);
         }
     }
-    
+
     private void startSocketServer(final int port) throws IOException {
         final ServerSocket ss = new ServerSocket(port);
         ss.setSoTimeout(1000);
-        
+
         final Thread shutdownThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 shutdown();
             }
         });
-        
+
         Runtime.getRuntime().addShutdownHook(shutdownThread);
-        
+
         new Thread(new Runnable() {
 
             @Override
@@ -385,10 +388,10 @@ final public class BTraceServer implements ServerImpl {
                 loadBTraceScript(tokenizer.nextToken(), settings.stdOut, settings.scriptOutputFile, settings.fileRollMilliseconds);
             }
         }
-        
+
         if (settings.scriptDir != null) {
             File scriptdir = new File(settings.scriptDir);
-            if (scriptdir != null && scriptdir.isDirectory()) {
+            if (scriptdir.isDirectory()) {
                 BTraceLogger.debugPrint("found scriptdir: " + scriptdir.getAbsolutePath());
                 File[] files = scriptdir.listFiles();
                 if (files != null) {
@@ -399,15 +402,15 @@ final public class BTraceServer implements ServerImpl {
             }
         }
     }
-    
+
     Instrumentation getInstrumentation() {
         return instr;
     }
-    
+
     ExtensionsRepository getExtensionRepository() {
         return repository;
     }
-    
+
     private void setupBootClassPath(Server.Settings ss) {
         StringBuilder bpcpBuilder = new StringBuilder(ss.bootClassPath != null ? ss.bootClassPath : "");
         bpcpBuilder.append(File.pathSeparator).append(repository.getClassPath());
@@ -429,7 +432,7 @@ final public class BTraceServer implements ServerImpl {
             }
         }
     }
-    
+
     private void setupSystemClassPath(Server.Settings ss) {
         if (ss.systemClassPath != null) {
             StringTokenizer tokenizer = new StringTokenizer(ss.systemClassPath, File.pathSeparator);
@@ -444,7 +447,7 @@ final public class BTraceServer implements ServerImpl {
             }
         }
     }
-    
+
     private static byte[] readAll(String fileName) throws IOException {
         File file = new File(fileName);
         if (!(file.exists() && file.isFile())) {
@@ -460,11 +463,11 @@ final public class BTraceServer implements ServerImpl {
             fis.close();
         }
     }
-    
+
     private SessionImpl addServerSession(Channel ch) throws IOException {
         return addServerSession(ch, null);
     }
-    
+
     private SessionImpl addServerSession(Channel ch, final CountDownLatch initLatch) throws IOException {
         SessionImpl session = new SessionImpl(ch, getExtensionRepository(), getInstrumentation());
         sessions.add(session);
@@ -494,6 +497,7 @@ final public class BTraceServer implements ServerImpl {
                 }
             }
         });
+        session.start();
         return session;
     }
 }

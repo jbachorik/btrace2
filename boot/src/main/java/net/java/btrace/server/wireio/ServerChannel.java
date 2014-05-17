@@ -38,6 +38,7 @@ import java.io.ObjectOutput ;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
+import net.java.btrace.api.wireio.Command;
 
 /**
  *
@@ -89,7 +90,7 @@ public final class ServerChannel extends SocketChannel {
                             Class cmdClz = Class.forName(cmdClass);
                             mapper[i] = cmdClz;
                         }
-                        CommandFactory cf = CommandFactory.getInstance(mapper, extRep.getClassLoader(getMyLoader()));
+                        CommandFactory cf = CommandFactory.getInstance(mapper, extRep.getClassLoader(getMyLoader()), Command.Target.SERVER);
                         List<Class<? extends AbstractCommand>> cmds  = cf.listSupportedCommands();
                         output.writeInt(cmds.size() - commandCnt);
                         for(int i=commandCnt;i<cmds.size();i++) {

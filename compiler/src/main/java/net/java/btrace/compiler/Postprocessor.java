@@ -586,6 +586,10 @@ public class Postprocessor extends ClassVisitor {
 
         @Override
         public void visitMethodInsn(int opcode, String clazz, String method, String desc) {
+            if (clazz.equals(Verifier.INLINED_INSTR_MARKER)) {
+                super.visitMethodInsn(opcode, clazz, method, desc);
+            }
+            
             int origOpcode = opcode;
             Type[] args = Type.getArgumentTypes(desc);
             

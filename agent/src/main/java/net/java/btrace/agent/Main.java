@@ -41,15 +41,15 @@ import net.java.btrace.api.server.Server;
  */
 public class Main {
     public static final int BTRACE_DEFAULT_PORT = 2020;
-    
+
     public static void agentmain(String args, Instrumentation inst) {
         doMain(args, inst);
     }
-    
+
     public static void premain(String args, Instrumentation inst) {
         doMain(args, inst);
     }
-    
+
     private static void setupBootstrap(String args, Instrumentation inst) throws IOException {
         String blPath = null;
 
@@ -72,13 +72,12 @@ public class Main {
         }
         inst.appendToBootstrapClassLoaderSearch(new JarFile(blPath));
     }
-    
+
     private static void doMain(String args, Instrumentation inst) {
         try {
             setupBootstrap(args, inst);
             Server s = Server.getDefault();
             if (!s.isRunning()) {
-                BTraceLogger.debugPrint("parsing command line arguments");
                 Map<String, String> argMap = mapArgs(args);
                 String p = argMap.get("help");
                 if (p != null) {
@@ -86,7 +85,8 @@ public class Main {
                     return;
                 }
                 Server.Settings ss = Server.Settings.from(argMap);
-                
+                BTraceLogger.config(ss);
+
                 BTraceLogger.debugPrint("parsed command line arguments");
                 s.start(inst, ss);
             } else {
@@ -98,7 +98,7 @@ public class Main {
             Thread.currentThread().interrupt();
         }
     }
-    
+
     private static void usage() {
         System.out.println(Messages.get("btrace.agent.usage"));
         System.exit(0);
@@ -109,7 +109,7 @@ public class Main {
             args = "";
         }
         String[] pairs = args.split(",");
-        
+
         Map<String, String> argMap = new HashMap<String, String>();
         for (String s : pairs) {
             int i = s.indexOf('=');
@@ -124,7 +124,7 @@ public class Main {
             }
             argMap.put(key, value);
         }
-        
+
         return argMap;
     }
 

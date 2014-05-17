@@ -1113,6 +1113,7 @@ public final class BTraceRuntime {
     }
 
     private synchronized void exitImpl(final int exitCode) {
+        System.err.println("[btrace] Notifyng BTrace client about the application shutdown ...");
         if (exitHandler != null) {
             try {
                 exitHandler.invoke(null, exitCode);

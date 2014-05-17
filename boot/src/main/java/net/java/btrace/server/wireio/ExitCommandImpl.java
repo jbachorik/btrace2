@@ -38,27 +38,40 @@ import net.java.btrace.wireio.commands.ACKCommand;
  *
  * @author Jaroslav Bachorik
  */
-@Command(clazz=ExitCommand.class)
+@Command(clazz = ExitCommand.class, target = Command.Target.SERVER)
 public class ExitCommandImpl extends CommandImpl<ExitCommand> {
     @Override
     public void execute(Lookup ctx, final ExitCommand cmd) {
         BTraceLogger.debugPrint("received exit command with exit code " + cmd.getExitCode());
-        Session s = ctx.lookup(Session.class);
         final Channel ch = ctx.lookup(Channel.class);
-        if (s != null && ch != null) {
-            BTraceLogger.debugPrint("detaching session");
-            s.detach(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        ch.sendResponse(cmd, ACKCommand.class, true);
-                    } catch (IOException e) {
-                        BTraceLogger.debugPrint(e);
-                    } finally {
-                        ch.close();
+        if (ch != null) {
+            Session s = ctx.lookup(Session.class);
+            if (s != null) {
+                System.err.println("detaching session");
+                BTraceLogger.debugPrint("detaching session");
+                s.detach(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ch.sendResponse(cmd, ACKCommand.class, true);
+                        } catch (IOException e) {
+                            BTraceLogger.debugPrint(e);
+                        } finally {
+                            ch.close();
+                        }
                     }
+                });
+            } else {
+                System.err.println("sending ACK to exit");
+                // no session to detach; just ACK exitting
+                try {
+                    ch.sendResponse(cmd, ACKCommand.class, true);
+                } catch (IOException e) {
+                    BTraceLogger.debugPrint(e);
+                } finally {
+                    ch.close();
                 }
-            });
+            }
         }
     }
 }

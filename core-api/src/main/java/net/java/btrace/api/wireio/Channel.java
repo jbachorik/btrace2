@@ -26,12 +26,14 @@ package net.java.btrace.api.wireio;
 
 import net.java.btrace.api.core.BTraceLogger;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The representation of the communication channel.
- * 
+ *
  * @author Jaroslav Bachorik <jaroslav.bachorik at oracle.com>
  * @since 2.0
  */
@@ -41,10 +43,10 @@ abstract public class Channel {
      */
     protected final AtomicBoolean isClosed = new AtomicBoolean(false);
     private final AtomicBoolean isInited = new AtomicBoolean(false);
-    
+
     final private ConcurrentHashMap<Integer, ResponseHandler> responseMap = new ConcurrentHashMap<Integer, ResponseHandler>();
-    final private BlockingQueue<AbstractCommand> commandQueue = new ArrayBlockingQueue<AbstractCommand>(128000);
-    
+    final private BlockingQueue<AbstractCommand> commandQueue = new ArrayBlockingQueue<AbstractCommand>(1280000);
+
     private Thread delayedWriteService = null;
 
     protected Channel(boolean useDelayedWrite) {
@@ -68,7 +70,7 @@ abstract public class Channel {
             delayedWriteService.setDaemon(true);
         }
     }
-    
+
     private <V> ResponseHandler<V> addResponseHandler(AbstractCommand cmd) {
         if (cmd.needsResponse()) {
             ResponseHandler<V> response = new ResponseHandler<V>();
@@ -77,9 +79,9 @@ abstract public class Channel {
         }
         return null;
     }
-    
+
     /**
-     * 
+     *
      * @return Returns the associated {@linkplain CommandFactory}
      */
     abstract protected CommandFactory getCommandFactory();
@@ -88,23 +90,23 @@ abstract public class Channel {
      * Reads and returns the next {@linkplain AbstractCommand} from the pipeline.
      * @return Returns the next deserialized {@linkplain AbstractCommand}
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     abstract public AbstractCommand readCommand() throws IOException, ClassNotFoundException;
 
     /**
      * Submits the {@linkplain AbstractCommand} to the pipeline
      * @param cmd The {@linkplain AbstractCommand} to write
-     * @throws IOException 
+     * @throws IOException
      */
     abstract public void writeCommand(AbstractCommand cmd) throws IOException;
-    
+
     /**
      * Perform the close operation.
      * To be overridden.
      */
     abstract protected void doClose();
-    
+
     /**
      * Startup the channel
      */
@@ -115,7 +117,7 @@ abstract public class Channel {
             }
         }
     }
-    
+
     /**
      * Closes the communication channel
      */
@@ -124,7 +126,9 @@ abstract public class Channel {
             delayedWriteService.interrupt();
             try {
                 // drain the queue
-                for (AbstractCommand cmd : commandQueue) {
+                Collection<AbstractCommand> drainage = new ArrayList<AbstractCommand>();
+                commandQueue.drainTo(drainage);
+                for (AbstractCommand cmd : drainage) {
                     writeCommand(cmd);
                 }
             } catch (IOException e) {
@@ -136,19 +140,19 @@ abstract public class Channel {
             doClose();
         }
     }
-    
+
     /**
      * Creates and sends a command of the given type
      * @param <T> The command type type
      * @param <V> The response type type
      * @param clz The command type class
      * @return Returns an asynchronous {@linkplain Response}
-     * @throws IOException 
+     * @throws IOException
      */
     final public <T extends AbstractCommand, V> Response<V> sendCommand(Class<? extends T> clz) throws IOException {
         return sendCommand(clz, null);
     }
-    
+
     /**
      * Creates and sends a command of the given type initialised by the given initialiser
      * @param <T> The command type type
@@ -156,9 +160,12 @@ abstract public class Channel {
      * @param clz The command type class
      * @param init The initialisation closure
      * @return Returns an asynchronous {@linkplain Response}
-     * @throws IOException 
+     * @throws IOException
      */
     final public <T extends AbstractCommand, V> Response<V> sendCommand(Class<? extends T> clz, AbstractCommand.Initializer<T> init) throws IOException {
+        if (isClosed.get()) {
+            return Response.NULL;
+        }
         T cmd = prepareCommand(clz, init);
         if (cmd != null) {
             try {
@@ -173,15 +180,19 @@ abstract public class Channel {
         }
         return Response.NULL;
     }
-    
+
     /**
      * Sends a response of the given type
      * @param <T> The response type type
      * @param cmd The {@linkplain AbstractCommand} to link the response to
      * @param data The response payload
-     * @throws IOException 
+     * @throws IOException
      */
     final public <T> void sendResponse(AbstractCommand cmd, Class<? extends DataCommand<T>> clz, T data) throws IOException {
+        if (isClosed.get()) {
+            return;
+        }
+
         AbstractCommand response = getCommandFactory().createResponse(data, clz, cmd.getRx());
         if (response != null) {
             try {
@@ -193,7 +204,7 @@ abstract public class Channel {
             BTraceLogger.debugPrint("can not instantiate " + clz + " command!");
         }
     }
-    
+
     /**
      * Creates a command of the given type and with the given initialiser
      * @param <T> The command type type
@@ -208,7 +219,7 @@ abstract public class Channel {
         }
         return cmd;
     }
-    
+
     /**
      * Response-received hook
      * @param <T> The response command type
@@ -218,9 +229,9 @@ abstract public class Channel {
         ResponseHandler<T> t = responseMap.get(cmd.getTx());
         t.setResponse(cmd.getPayload());
     }
-    
+
     /**
-     * 
+     *
      * @return The {@linkplain ClassLoader} used by this channel
      */
     protected static ClassLoader getMyLoader() {

@@ -72,11 +72,12 @@ public class Compiler {
     public List<String> includeDirs;
     private boolean unsafe;
     private ExtensionsRepository repository;
-    
+    private String dumpDir;
+
     public Compiler(String includePath, boolean unsafe, ExtensionsRepository repository) {
         this(includePath, unsafe, repository, ToolProvider.getSystemJavaCompiler());
     }
-    
+
     public Compiler(String includePath, boolean unsafe, ExtensionsRepository repository, JavaCompiler wrappedCompiler) {
         if (includePath != null) {
             includeDirs = new ArrayList<String>();
@@ -87,6 +88,15 @@ public class Compiler {
         this.compiler = wrappedCompiler;
         this.stdManager = compiler.getStandardFileManager(null, null, null);
         this.repository = repository;
+        this.dumpDir = System.getProperty("net.java.btrace.dumpDir", null);
+        if (this.dumpDir == null) {
+            try {
+                File tmp = File.createTempFile("tmp", ".tst");
+                this.dumpDir = tmp.getParent();
+            } catch (IOException e) {
+                BTraceLogger.debugPrint("*** unable to determina 'tmp' directory. dumps disabled.");
+            }
+        }
         if (BTraceLogger.isDebug()) {
             BTraceLogger.debugPrint("*** compiling with repository: " + repository.getExtensionsPath());
         }
@@ -270,7 +280,7 @@ public class Compiler {
         JavacTask task =
                 (JavacTask) compiler.getTask(err, manager, diagnostics,
                 options, null, compUnits);
-        
+
         CallTargetValidator ctValidator = new CallTargetValidator(repository);
         Verifier btraceVerifier = new Verifier(ctValidator, unsafe);
         task.setTaskListener(btraceVerifier);
@@ -332,12 +342,15 @@ public class Compiler {
 
                     };
 //                    cr.accept(cv, ClassReader.EXPAND_FRAMES + ClassReader.SKIP_DEBUG);
-                    cr.accept(new Postprocessor(ctValidator, cw), ClassReader.EXPAND_FRAMES + ClassReader.SKIP_DEBUG);
+                    cr.accept(new Postprocessor(ctValidator, cv), ClassReader.EXPAND_FRAMES + ClassReader.SKIP_DEBUG);
                     result.put(name, cw.toByteArray());
                     dump(name + "_after", cw.toByteArray());
                 }
             }
             return result;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return null;
         } finally {
             try {
                 manager.close();
@@ -347,18 +360,18 @@ public class Compiler {
     }
 
     private void dump(String name, byte[] code) {
-        if (BTraceLogger.isDebug()) {
+        if (this.dumpDir != null && BTraceLogger.isDebug()) {
             OutputStream os = null;
             try {
                 name = name.replace(".", "/") + ".class";
-                File f = new File("/tmp/" + name);
-                if (!f.exists()) {
-                    f.getParentFile().createNewFile();
+                File f = new File(this.dumpDir + File.separator + name);
+                if (!f.getParentFile().exists()) {
+                    f.getParentFile().mkdirs();
                 }
                 os = new FileOutputStream(f);
                 os.write(code);
             } catch (IOException e) {
-
+                e.printStackTrace();
             } finally {
                 if (os != null) {
                     try {

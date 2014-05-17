@@ -27,24 +27,25 @@ import net.java.btrace.jps.JpsVM;
  */
 public class Main1 {
     public static final int BTRACE_DEFAULT_PORT = 2020;
-    
+
     final private static String bootstrap;
     final private static String agentpath;
     final private static String defaultExtPath;
-    
+
     static {
         bootstrap = getJarFor("net/java/btrace/api/core/BTraceRuntime.class");
         agentpath = getJarFor("net/java/btrace/agent/Main.class");
-        
-        defaultExtPath = getJarFor("net/java/btrace/ext/Printer.class") + File.pathSeparator + 
+
+        defaultExtPath = getJarFor("net/java/btrace/ext/Printer.class") + File.pathSeparator +
                          getJarFor("net/java/btrace/ext/profiling/Profiler.class") + File.pathSeparator +
                          getJarFor("net/java/btrace/ext/aggregations/Aggregations.class") + File.pathSeparator +
-                         getJarFor("net/java/btrace/ext/collections/Collections.class") + File.pathSeparator + 
-                         getJarFor("net/java/btrace/ext/export/Export.class") + File.separator + 
-                         getJarFor("net/java/btrace/ext/sys/Memory.class").replace("null" + File.pathSeparator, "");
+                         getJarFor("net/java/btrace/ext/collections/Collections.class") + File.pathSeparator +
+                         getJarFor("net/java/btrace/ext/export/Export.class") + File.separator +
+                         getJarFor("net/java/btrace/ext/sys/Memory.class").replace("null" + File.pathSeparator, "") + File.pathSeparator +
+                         getJarFor("net/btrace/flightrecorder/JFRPrinter.class");
     }
-    
-    
+
+
     public static void main(String ... args) throws IOException {
         OptionParser parser = new OptionParser();
         parser.accepts("p").withRequiredArg().ofType(int.class).describedAs("Process PID to attach to");
@@ -54,22 +55,22 @@ public class Main1 {
         parser.accepts("unsafe");
         parser.accepts("debug");
         parser.accepts("dumpClasses").withOptionalArg().ofType(String.class).describedAs("Debug dump of the modified classes").defaultsTo(System.getProperty("java.io.tmpdir"));
-        
+
         run(parser.parse(args));
     }
-    
+
     private static void run(OptionSet optionSet) throws IOException {
         final ConsoleReader cr = new ConsoleReader();
-        
+
         Integer pid = (Integer)optionSet.valueOf("p");
         String trace = (String)optionSet.valueOf("s");
         String extensions = (String)optionSet.valueOf("x");
-        
+
         while (pid == null || trace == null) {
             pid = readPid(pid, cr);
             trace = readTrace(trace, cr);
         }
-        
+
         ExtensionsRepository extRepository = getRepository(defaultExtPath.isEmpty() ? extensions : defaultExtPath + File.pathSeparator + extensions);
         Compiler compiler = new Compiler(optionSet.has("unsafe"), extRepository);
         byte[] code = compiler.compile(trace, ".", null);
@@ -166,16 +167,16 @@ public class Main1 {
             int ch = cr.readCharacter();
 
             int option = Integer.parseInt(String.valueOf((char)ch));
-            
+
             if (option > 0 && option <= counter) {
-                pid = Integer.valueOf(vms.get(option - 1).getPid());
+                pid = vms.get(option - 1).getPid();
                 cr.println("Attaching to: " + vms.get(option - 1).getMainClass() + "(PID=" +  pid + ")");
                 cr.flush();
             }
         }
         return pid;
     }
-    
+
     private static String readTrace(String trace, ConsoleReader cr) throws IOException {
         Completer c = new FileNameCompleter();
         try {
@@ -187,36 +188,36 @@ public class Main1 {
             }
             return trace;
         } finally {
-            cr.removeCompleter(c);            
+            cr.removeCompleter(c);
         }
     }
-    
+
     private static String getJarFor(String clz) {
         ClassLoader cl =  Main1.class.getClassLoader();
         URL resURL = cl.getResource(clz);
         if (resURL == null)  return null;
-        
+
         String jarPath = resURL.toString().replace("jar:file:", "");
         jarPath = jarPath.substring(0, jarPath.indexOf(".jar!") + 4);
-        
+
         return jarPath;
     }
-    
+
     private static ExtensionsRepository getRepository(String extPath) {
         BTraceLogger.debugPrint("getting repository for " + extPath);
         return ExtensionsRepositoryFactory.composite(
-                ExtensionsRepository.Location.BOTH, 
-                ExtensionsRepositoryFactory.builtin(ExtensionsRepository.Location.BOTH), 
+                ExtensionsRepository.Location.BOTH,
+                ExtensionsRepositoryFactory.builtin(ExtensionsRepository.Location.BOTH),
                 ExtensionsRepositoryFactory.fixed(ExtensionsRepository.Location.BOTH, extPath)
         );
     }
-    
+
     private static void errorExit(String msg, int code) {
         System.err.println(msg);
         exitCode.set(code);
         System.exit(code);
     }
-    
+
     private static AtomicInteger exitCode = new AtomicInteger(-1); // -1 == normal shutdown
     private static void registerExitHook(final Client client) {
         BTraceLogger.debugPrint("registering shutdown hook");
@@ -230,7 +231,7 @@ public class Main1 {
             })
         );
     }
-    
+
     private static void sendEvent(Client client) throws IOException {
         sendEvent(client, null);
     }

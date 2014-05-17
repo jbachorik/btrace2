@@ -17,7 +17,7 @@
     <description>
         The BTrace Instrumentation Agent
     </description>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -35,7 +35,7 @@
                             <includes>
                                 <include>net/java/btrace/agent/**</include>
                                 <include>META-INF/MANIFEST.MF</include>
-                                <include>META-INF/services/net.java.btrace.spi.wireio.CommandImpl</include>
+                                <include>META-INF/services/net.java.btrace.spi.wireio.CommandImpl</include> 
                                 <include>META-INF/services/net.java.btrace.spi.server.*</include>
                             </includes>
                         </filter>
@@ -46,6 +46,7 @@
                           <manifestEntries>
                             <Premain-Class>net.java.btrace.agent.Main</Premain-Class>
                             <Agent-Class>net.java.btrace.agent.Main</Agent-Class>
+                            <Boot-Class-Path>btrace-boot-${project.version}.jar</Boot-Class-Path>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
                           </manifestEntries>

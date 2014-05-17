@@ -26,33 +26,38 @@ package net.java.btrace.api.core;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import net.java.btrace.api.server.Server;
 
 /**
  *
  * @author Jaroslav Bachorik
  */
 final public class BTraceLogger {
+    private static boolean isDebug;
+    public static void config(Server.Settings settings) {
+        isDebug = settings.debugMode || Boolean.getBoolean("net.java.btrace.debug");
+    }
+
     public static void setDebug(boolean val) {
         System.setProperty("net.java.btrace.debug", String.valueOf(val));
     }
     public static boolean isDebug() {
-//        return true;
-        return Boolean.getBoolean("net.java.btrace.debug");
+        return isDebug;
     }
-    
+
     public static boolean isDumpClasses() {
         return true;
     }
-    
+
     public static void debugPrint(String msg) {
         if (isDebug()) System.out.println("btrace DEBUG:" + msg);
     }
-    
+
     public static void debugPrint(Throwable th) {
         System.err.println("btrace ERROR: " + th);
         th.printStackTrace(System.err);
     }
-    
+
     public static void dumpClass(String className, byte[] code) {
         if (isDumpClasses()) {
             try {
@@ -89,7 +94,7 @@ final public class BTraceLogger {
             }
         }
     }
-    
+
     private static String getDumpDir() {
         return "/tmp";
 //        return System.getProperty("net.java.btrace.dumpDir", ".");

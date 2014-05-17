@@ -46,7 +46,7 @@
                                 <include>net/java/btrace/resources/**</include>
                                 <include>net/java/btrace/instr/**</include>
                                 <include>net/java/btrace/util/**</include>
-                                
+
                                 <include>META-INF/services/net.java.btrace.spi.wireio.CommandImpl</include>
                                 <include>META-INF/services/net.java.btrace.spi.server.*</include>
                             </includes>
@@ -59,6 +59,9 @@
                                 <BTrace-Boot>true</BTrace-Boot>
                             </manifestEntries>
                         </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/services/net.java.btrace.spi.wireio.CommandImpl</resource>
+                        </transformer>
                     </transformers>
                 </configuration>
                 <executions>
@@ -70,6 +73,15 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -77,6 +89,17 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
+            <version>2.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>net.java.btrace</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>core-api</artifactId>
             <version>2.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>

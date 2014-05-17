@@ -61,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Observer;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -79,10 +80,10 @@ final public class SessionImpl extends Session implements ShutdownHandler {
 
     final private static ExecutorService handlerPool = Executors.newCachedThreadPool(new BTraceThreadFactory());
     private Future<?> cmdHandler;
-    
+
     private AtomicReference<State> state = new AtomicReference<State>(State.DISCONNECTED);
     private Lookup lookup = new Lookup();
-    
+
     private String className;
     private volatile List<OnMethod> onMethods;
     private volatile List<OnProbe> onProbes;
@@ -168,18 +169,21 @@ final public class SessionImpl extends Session implements ShutdownHandler {
             }
         }
     };
-    
-    SessionImpl(Object ... ctx) throws IOException {
+
+    SessionImpl(Object... ctx) throws IOException {
         lookup.add(this);
         lookup.add(ctx);
-        
-        startCommandHandler();
     }
-    
+
     State getState() {
         return state.get();
     }
-    
+
+    @Override
+    public void start() {
+        startCommandHandler();
+    }
+
     @Override
     public void event(String name) {
         runtime.handleEvent(name);
@@ -218,9 +222,9 @@ final public class SessionImpl extends Session implements ShutdownHandler {
                 capturedError = th;
                 return false;
             }
-            
+
             Instrumentation instr = getInstrumentation();
-            
+
             BTraceLogger.dumpClass(className + "_proc", traceCode); // NOI18N
             SessionImpl.this.btraceCode = traceCode;
             BTraceLogger.debugPrint("creating BTraceRuntime instance for " + className); // NOI18N
@@ -302,7 +306,7 @@ final public class SessionImpl extends Session implements ShutdownHandler {
                 });
                 try {
                     // wait for response
-                    r.get();
+                    r.get(500);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
@@ -317,8 +321,7 @@ final public class SessionImpl extends Session implements ShutdownHandler {
             }
         }
     }
-    
-    
+
     @Override
     public boolean detach(Runnable detachHook) {
         if (setState(State.CONNECTED, State.DISCONNECTING)) {
@@ -331,7 +334,7 @@ final public class SessionImpl extends Session implements ShutdownHandler {
         }
         return false;
     }
-    
+
     private void cleanup() {
         if (cmdHandler.cancel(true)) {
             Instrumentation instr = getInstrumentation();
@@ -341,7 +344,7 @@ final public class SessionImpl extends Session implements ShutdownHandler {
             }
             try {
                 List<Class> toRetransform = new ArrayList<Class>();
-                for(Class clz : instr.getAllLoadedClasses()) {
+                for (Class clz : instr.getAllLoadedClasses()) {
                     if (instrumentedClasses.contains(clz.getName())) {
                         toRetransform.add(clz);
                     }
@@ -367,7 +370,7 @@ final public class SessionImpl extends Session implements ShutdownHandler {
         setChanged();
         notifyObservers(oldState);
     }
-    
+
     private boolean setState(State expState, State newState) {
         if (state.compareAndSet(expState, newState)) {
             setChanged();
@@ -385,7 +388,9 @@ final public class SessionImpl extends Session implements ShutdownHandler {
                 Channel ch = getChannel();
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
+                        BTraceLogger.debugPrint("SERVER: Reading command");
                         AbstractCommand cmd = ch.readCommand();
+                        BTraceLogger.debugPrint("Command: " + cmd);
                         if (cmd != null) {
                             try {
                                 cmd.execute(lookup);
@@ -419,7 +424,8 @@ final public class SessionImpl extends Session implements ShutdownHandler {
 
     private void verify(byte[] buf) {
         ClassReader reader = new ClassReader(buf);
-        Verifier verifier = new Verifier(new ClassVisitor(Opcodes.ASM4){}, false, lookup.lookup(ExtensionsRepository.class));
+        Verifier verifier = new Verifier(new ClassVisitor(Opcodes.ASM4) {
+        }, false, lookup.lookup(ExtensionsRepository.class));
         BTraceLogger.debugPrint("verifying BTrace class"); // NOI18N
         InstrumentUtils.accept(reader, verifier);
         className = verifier.getClassName().replace('/', '.');
@@ -439,15 +445,15 @@ final public class SessionImpl extends Session implements ShutdownHandler {
     }
 
     /**
-     * Maps a list of @OnProbe's to a list @OnMethod's using
-     * probe descriptor XML files.
+     * Maps a list of @OnProbe's to a list @OnMethod's using probe descriptor
+     * XML files.
      */
     private static List<OnMethod> mapOnProbes(List<OnProbe> onProbes) {
         List<OnMethod> res = new ArrayList<OnMethod>();
         for (OnProbe op : onProbes) {
             String ns = op.getNamespace();
             BTraceLogger.debugPrint("about to load probe descriptor for " + ns);
-            
+
             // load probe descriptor for this namespace
             ProbeDescriptor probeDesc = ProbeDescriptorLoader.load(ns);
             if (probeDesc == null) {
@@ -478,7 +484,7 @@ final public class SessionImpl extends Session implements ShutdownHandler {
         }
         return res;
     }
-    
+
     private boolean shouldAddTransformer() {
         return onMethods != null && onMethods.size() > 0;
     }
@@ -499,7 +505,7 @@ final public class SessionImpl extends Session implements ShutdownHandler {
                 cmd.setCause(th);
             }
         });
-        
+
         BTraceLogger.debugPrint("sending exit command"); // NOI18N
         Response<Void> r = getChannel().sendCommand(ExitCommand.class, new AbstractCommand.Initializer<ExitCommand>() {
 
@@ -517,7 +523,7 @@ final public class SessionImpl extends Session implements ShutdownHandler {
     }
 
     private static boolean isBTraceClass(String name) {
-        return name.startsWith("net/java/btrace"); // NOI18N
+        return name != null ? name.startsWith("net/java/btrace") : false; // NOI18N
     }
 
     /*
@@ -530,7 +536,8 @@ final public class SessionImpl extends Session implements ShutdownHandler {
      * For now, we avoid such classes till we find a solution.
      */
     private static boolean isSensitiveClass(String name) {
-        return name.equals("java/lang/Object") || // NOI18N
+        return name == null ||
+                name.equals("java/lang/Object") || // NOI18N
                 name.startsWith("java/lang/ThreadLocal") || // NOI18N
                 name.startsWith("sun/reflect") || // NOI18N
                 name.equals("sun/misc/Unsafe") || // NOI18N

@@ -5,8 +5,8 @@
 package net.btrace.flightrecorder;
 
 import com.oracle.jrockit.jfr.*;
-import com.sun.btrace.api.extensions.BTraceExtension;
 import java.net.URISyntaxException;
+import net.java.btrace.api.extensions.BTraceExtension;
 
 @BTraceExtension
 public class JFRPrinter {

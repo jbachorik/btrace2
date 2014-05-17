@@ -41,24 +41,24 @@ abstract public class Session extends Observable implements ShutdownHandler {
          * Session is not connected; the agent has been loaded, probe submitted
          * but the client has not yet been connected or the session has finished
          */
-        DISCONNECTED, 
+        DISCONNECTED,
         /**
          * Session is in the process of being disconnected
          */
         DISCONNECTING,
         /**
-         * Session is connected; the agent has been loaded, probe submitted 
+         * Session is connected; the agent has been loaded, probe submitted
          * and the client is receiving data
          */
         CONNECTED
     }
-    
+
     /**
      * Send a named event in the scope of the session
      * @param name The event name
      */
     abstract public void event(String name);
-    
+
     /**
      * Loads the precompiled and pre-verified trace class
      * @param traceCode The precompiled and pre-verified trace class (bytecode)
@@ -66,20 +66,25 @@ abstract public class Session extends Observable implements ShutdownHandler {
      * @return Returns true if the trace class has been successfully loaded
      */
     abstract public boolean loadTraceClass(byte[] traceCode, String[] args);
-    
+
     /**
      * Ends the session; performs cleanup and confirms the success if necessary
      * @param detachHook A hook executed right before the session is completely destroyed or NULL
      * @return Returns false if the detach fails for any reason
      */
     abstract public boolean detach(Runnable detachHook);
-    
+
     /**
      * Ends the session; performs cleanup and confirms the success if necessary
      * @see Session#detach(java.lang.Runnable) with detachHook set to NULL
-     * @return 
+     * @return
      */
     final public boolean detach() {
         return detach(null);
     }
+
+    /**
+     * Start the previously configured session
+     */
+    abstract public void start();
 }

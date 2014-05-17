@@ -30,6 +30,8 @@ import net.java.btrace.api.wireio.CommandFactory;
 import net.java.btrace.api.wireio.Channel;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
+import net.java.btrace.api.core.BTraceLogger;
+import net.java.btrace.api.wireio.Command;
 import net.java.btrace.api.wireio.ResponseCommand;
 
 /**
@@ -37,14 +39,15 @@ import net.java.btrace.api.wireio.ResponseCommand;
  * @author Jaroslav Bachorik
  */
 abstract public class LocalChannel extends Channel {
-    private BlockingQueue<AbstractCommand> in, out;
-    
+    private final BlockingQueue<AbstractCommand> in, out;
+
     public static class Client extends LocalChannel {
-        private CommandFactory cFactory;
-        
+        private final CommandFactory cFactory;
+
         public Client(BlockingQueue<AbstractCommand> in, BlockingQueue<AbstractCommand> out, ExtensionsRepository extRep) {
             super(in, out);
-            cFactory = CommandFactory.getInstance(extRep.getClassLoader(getMyLoader()));
+            cFactory = CommandFactory.getInstance(extRep.getClassLoader(getMyLoader()), Command.Target.SERVER);
+            init();
         }
 
         @Override
@@ -52,12 +55,13 @@ abstract public class LocalChannel extends Channel {
             return cFactory;
         }
     }
-    
+
     public static class Server extends LocalChannel {
         private CommandFactory cFactory;
         public Server(BlockingQueue<AbstractCommand> in, BlockingQueue<AbstractCommand> out, ExtensionsRepository extRep) {
             super(in, out);
-            cFactory = CommandFactory.getInstance(extRep.getClassLoader(getMyLoader()));
+            cFactory = CommandFactory.getInstance(extRep.getClassLoader(getMyLoader()), Command.Target.SERVER);
+            init();
         }
 
         @Override
@@ -65,16 +69,16 @@ abstract public class LocalChannel extends Channel {
             return cFactory;
         }
     }
-    
+
     private LocalChannel(BlockingQueue<AbstractCommand> in, BlockingQueue<AbstractCommand> out) {
         super(in != null && out != null);
         assert in != null;
         assert out != null;
-                
+
         this.in = in;
         this.out = out;
     }
-        
+
     @Override
     public void doClose() {
         // noop
@@ -106,5 +110,5 @@ abstract public class LocalChannel extends Channel {
             Thread.currentThread().interrupt();
         }
     }
-    
+
 }
