@@ -51,7 +51,7 @@ public class InstrumentCommandImpl extends CommandImpl<InstrumentCommand> {
                 } catch (IOException e) {
                     BTraceLogger.debugPrint(e);
                 }
-            } catch (Exception e) {                
+            } catch (Exception e) {
                 try {
                     ch.sendResponse(cmd, ACKCommand.class, false);
                 } catch (IOException ioe) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,35 +22,16 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package net.java.btrace.api.wireio;
+package basic;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import net.java.btrace.spi.wireio.CommandImpl;
+import junit.framework.TestCase;
 
 /**
- * Annotation used to mark a {@linkplain CommandImpl} implementation
+ * An integration test skeleton
  * @author Jaroslav Bachorik
- * @since 2.0
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Command {
-    public static enum Target {
-        CLIENT, SERVER, BOTH
+public class BasicIT extends TestCase {
+    public void testExecute() throws Exception {
+        assertTrue(true);
     }
-
-    /**
-     * The command type to implement
-     * @return A subclass of {@linkplain AbstractCommand} representing the command type
-     */
-    Class<? extends AbstractCommand> clazz();
-
-    /**
-     *
-     * @return
-     */
-    Target target() default Target.BOTH;
 }

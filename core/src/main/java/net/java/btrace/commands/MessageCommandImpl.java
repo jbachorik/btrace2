@@ -35,7 +35,7 @@ import java.io.PrintWriter;
  *
  * @author Jaroslav Bachorik
  */
-@Command(clazz=MessageCommand.class, async=true)
+@Command(clazz=MessageCommand.class)
 public class MessageCommandImpl extends CommandImpl<MessageCommand> {
     @Override
     public void execute(Lookup ctx, MessageCommand cmd) {
@@ -44,5 +44,5 @@ public class MessageCommandImpl extends CommandImpl<MessageCommand> {
             pw.print(cmd.getMessage());
             pw.flush();
         }
-    }   
+    }
 }

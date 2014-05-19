@@ -39,7 +39,7 @@ final public class InstrumentCommand extends AbstractCommand {
     final private static String[] EMPTY_ARGS = new String[0];
     private byte[] code = new byte[0];
     private String[] args = EMPTY_ARGS;
-    
+
     public InstrumentCommand(int typeId, int rx, int tx) {
         super(typeId, rx, tx);
     }
@@ -54,7 +54,8 @@ final public class InstrumentCommand extends AbstractCommand {
         return true;
     }
 
-    final public void write(ObjectOutput out) throws IOException {       
+    @Override
+    final public void write(ObjectOutput out) throws IOException {
         out.writeInt(code != null ? code.length : 0);
         out.write(code != null ? code : new byte[0]);
         out.writeInt(args != null ? args.length : 0);
@@ -65,6 +66,7 @@ final public class InstrumentCommand extends AbstractCommand {
         }
     }
 
+    @Override
     final public void read(ObjectInput in) throws IOException {
         int len = in.readInt();
         code = new byte[len];

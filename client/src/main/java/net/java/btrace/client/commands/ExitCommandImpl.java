@@ -22,6 +22,7 @@ import net.java.btrace.wireio.commands.ACKCommand;
  */
 @Command(clazz = ExitCommand.class, target = Command.Target.CLIENT)
 public class ExitCommandImpl extends CommandImpl<ExitCommand> {
+    @Override
     public void execute(Lookup ctx, ExitCommand cmd) {
         PrintWriter pw = ctx.lookup(PrintWriter.class);
         if (pw != null) {

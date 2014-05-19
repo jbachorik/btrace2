@@ -16,6 +16,18 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.4.3</version>
@@ -28,13 +40,13 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${basedir}/target/bin</outputDirectory>
-                            <resources>          
+                            <resources>
                                 <resource>
                                     <directory>${basedir}/src/bin</directory>
                                     <filtering>true</filtering>
                                 </resource>
-                            </resources>              
-                        </configuration>            
+                            </resources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -119,9 +131,14 @@
             <artifactId>btrace-boot</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+        </dependency>
     </dependencies>
-    
-<!--    <profiles>
+
+    <!--    <profiles>
         <profile>
             <id>solaris</id>
             <activation>

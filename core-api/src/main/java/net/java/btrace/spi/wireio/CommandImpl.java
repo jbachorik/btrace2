@@ -36,11 +36,12 @@ abstract public class CommandImpl<T extends AbstractCommand> {
      * NULL implementation; does nothing
      */
     final public static CommandImpl NULL = new CommandImpl() {
+        @Override
         public void execute(Lookup ctx, AbstractCommand cmd) {
             // do nothing
         }
     };
-    
+
     /**
      * Execute the given command with the given context
      * @param ctx The {@linkplain CommandContext}

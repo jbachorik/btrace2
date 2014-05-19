@@ -38,7 +38,7 @@ import java.io.ObjectInput;
  * used to allow decoupling of the command implementation (eg. client vs. server)
  * </p>
  * <p>
- * A specific implementation of a command type will extend {@linkplain CommandImpl} 
+ * A specific implementation of a command type will extend {@linkplain CommandImpl}
  * with the type parameter of the command type class to be extended. Also, an {@linkplain Command}
  * annotation is necessary to overcome generics erasure.
  * </p>
@@ -48,9 +48,9 @@ import java.io.ObjectInput;
 public abstract class AbstractCommand {
     transient final private int type;
     transient final private int rx, tx;
-    
-    transient private CommandImpl impl = CommandImpl.NULL;
-    
+
+    private final transient CommandImpl impl = CommandImpl.NULL;
+
     public static final AbstractCommand NULL = new AbstractCommand(-1, 1, -1) {
         @Override
         public void write(ObjectOutput  out) throws IOException {
@@ -60,11 +60,11 @@ public abstract class AbstractCommand {
         public void read(ObjectInput in) throws ClassNotFoundException, IOException {
         }
     };
-    
+
     public static interface Initializer<T extends AbstractCommand> {
         void init(T cmd);
     }
-    
+
     public AbstractCommand(int type, int rx, int tx) {
         this.type = type;
         this.rx = rx;
@@ -72,7 +72,7 @@ public abstract class AbstractCommand {
     }
 
     /**
-     * 
+     *
      * @return Internal type ID
      */
     final public int getType() {
@@ -80,7 +80,7 @@ public abstract class AbstractCommand {
     }
 
     /**
-     * 
+     *
      * @return Internal RX counter
      */
     final public int getRx() {
@@ -88,13 +88,13 @@ public abstract class AbstractCommand {
     }
 
     /**
-     * 
+     *
      * @return Internal TX counter
      */
     final public int getTx() {
         return tx;
     }
-    
+
     /**
      * Can this command be placed on speculation queue?
      * @return Returns <b>TRUE</b> if the command can be speculated, <b>FALSE</b> otherwise
@@ -102,7 +102,7 @@ public abstract class AbstractCommand {
     public boolean canBeSpeculated() {
         return true;
     }
-    
+
     /**
      * Executes the command with the given context
      * @param ctx The execution context - a command can use it to search for specific services and information
@@ -110,7 +110,7 @@ public abstract class AbstractCommand {
     final public void execute(Lookup ctx) {
         impl.execute(ctx, this);
     }
-    
+
     /**
      * Sync/Async command
      * @return Returns <b>TRUE</b> if the command is synchronous in nature, <b>FALSE</b> otherwise
@@ -123,7 +123,7 @@ public abstract class AbstractCommand {
      * Serializes the command.
      * To be overridden by subclasses.
      * @param out The output to write the command contents to
-     * @throws IOException 
+     * @throws IOException
      */
     abstract public void write(ObjectOutput  out) throws IOException;
     /**
@@ -131,7 +131,7 @@ public abstract class AbstractCommand {
      * To be overridden by subclasses
      * @param in The input to read the command contents from
      * @throws ClassNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
     abstract public void read(ObjectInput in) throws ClassNotFoundException, IOException;
 }

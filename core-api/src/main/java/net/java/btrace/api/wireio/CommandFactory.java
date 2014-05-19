@@ -135,9 +135,6 @@ public class CommandFactory {
                     ann.target() != target) continue;
 
                 Class<? extends AbstractCommand> cmdClz = ann.clazz();
-//                if (ann.async()) {
-//                    svc = new AsyncCommandImpl(svc);
-//                }
                 if (!mapByType.containsKey(cmdClz)) {
                     Constructor<? extends AbstractCommand> constructor = cmdClz.getDeclaredConstructor(int.class, int.class, int.class);
                     constructor.setAccessible(true);
@@ -173,6 +170,7 @@ public class CommandFactory {
     /**
      * Creates a factory with the given classloader
      * @param cl The {@linkplain ClassLoader} to use
+     * @param target Specifies whether this factory applies to Server or Client commands
      * @return Returns a new instance of {@linkplain CommandFactory} or <b>NULL</b>
      */
     public static CommandFactory getInstance(ClassLoader cl, Command.Target target) {
@@ -190,6 +188,7 @@ public class CommandFactory {
      * Creates a factory with the given classloader and a custom command implementation mapping
      * @param mapping The command implementation mapping list; the position is the key
      * @param cl The {@linkplain ClassLoader} to use
+     * @param target Specifies whether this factory applies to Server or Client commands
      * @return Returns a new instance of {@linkplain CommandFactory} or <b>NULL</b>
      */
     public static CommandFactory getInstance(Class<? extends AbstractCommand>[] mapping, ClassLoader cl, Command.Target target) {
@@ -238,6 +237,7 @@ public class CommandFactory {
      * Creates a new response of <b>&lt;T&gt;</b> type with an appropriate handler.
      * @param <T> Type parameter for the response type
      * @param data The response type class
+     * @param clz The command class
      * @param tx The TX value of the command to create the response for
      * @return A new instance of <b>&lt;T&gt;</b> or <b>NULL</b> if the factory can not handle this type
      */

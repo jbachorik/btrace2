@@ -52,6 +52,7 @@ abstract public class Channel {
     protected Channel(boolean useDelayedWrite) {
         if (useDelayedWrite) {
             delayedWriteService = new Thread(new Runnable() {
+                @Override
                 public void run() {
                     try {
                         while (!isClosed.get()) {
@@ -63,7 +64,7 @@ abstract public class Channel {
                             } catch (InterruptedException e) {}
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        BTraceLogger.debugPrint(e);
                     }
                 }
             }, "BTrace Delayed Writer");
@@ -185,6 +186,7 @@ abstract public class Channel {
      * Sends a response of the given type
      * @param <T> The response type type
      * @param cmd The {@linkplain AbstractCommand} to link the response to
+     * @param clz The response type
      * @param data The response payload
      * @throws IOException
      */

@@ -51,16 +51,18 @@ final public class ExitCommand extends AbstractCommand {
         return false;
     }
 
+    @Override
     final public void write(ObjectOutput  out) throws IOException {
         out.writeInt(exitCode);
     }
 
+    @Override
     final public void read(ObjectInput in) throws IOException {
         exitCode = in.readInt();
     }
 
     /**
-     * 
+     *
      * @return The exit code
      */
     final public int getExitCode() {

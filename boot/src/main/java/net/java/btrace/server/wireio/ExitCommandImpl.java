@@ -47,7 +47,6 @@ public class ExitCommandImpl extends CommandImpl<ExitCommand> {
         if (ch != null) {
             Session s = ctx.lookup(Session.class);
             if (s != null) {
-                System.err.println("detaching session");
                 BTraceLogger.debugPrint("detaching session");
                 s.detach(new Runnable() {
                     @Override
@@ -62,7 +61,7 @@ public class ExitCommandImpl extends CommandImpl<ExitCommand> {
                     }
                 });
             } else {
-                System.err.println("sending ACK to exit");
+                BTraceLogger.debugPrint("sending ACK to exit");
                 // no session to detach; just ACK exitting
                 try {
                     ch.sendResponse(cmd, ACKCommand.class, true);
