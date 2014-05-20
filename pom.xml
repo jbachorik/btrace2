@@ -6,13 +6,13 @@
     <version>2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>btrace-all</name>
-    
+
 <!--    <parent>
        	<groupId>net.java</groupId>
        	<artifactId>jvnet-parent</artifactId>
        	<version>3</version>
     </parent>-->
-    
+
 <!--    <repositories>
         <repository>
             <id>java.net-Public</id>
@@ -20,13 +20,13 @@
             <url>https://maven.java.net/content/groups/public/</url>
         </repository>
     </repositories>-->
-    
+
     <scm>
         <connection>scm:hg:http://hg.kenai.com/hg/btrace~hg</connection>
         <developerConnection>scm:hg:https://hg.kenai.com/hg/btrace~hg</developerConnection>
         <url>http://kenai.com/projects/btrace/sources/hg/show</url>
     </scm>
-    
+
     <modules>
         <module>btrace-parent</module>
         <module>core</module>
@@ -68,7 +68,7 @@
             <url>dav:https://kenai.com/website/btrace/site</url>
         </site>
     </distributionManagement>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -131,7 +131,7 @@
                             ...
                         </configuration>
                     </execution>
-                </executions>                    
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -41,8 +41,7 @@ public class Main1 {
                          getJarFor("net/java/btrace/ext/aggregations/Aggregations.class") + File.pathSeparator +
                          getJarFor("net/java/btrace/ext/collections/Collections.class") + File.pathSeparator +
                          getJarFor("net/java/btrace/ext/export/Export.class") + File.separator +
-                         getJarFor("net/java/btrace/ext/sys/Memory.class").replace("null" + File.pathSeparator, "") + File.pathSeparator +
-                         getJarFor("net/btrace/flightrecorder/JFRPrinter.class");
+                         getJarFor("net/java/btrace/ext/sys/Memory.class").replace("null" + File.pathSeparator, "") + File.pathSeparator;
     }
 
 
