@@ -29,4 +29,4 @@ This README would normally document whatever steps are necessary to get your app
 * Other community or team contact
 
 ### Donations
-[Flattr This!](https://flattr.com/submit/auto?user_id=j.bachorik&url=https%3A%2F%2Fbitbucket.org%2Fjbachorik%2Fbtrace2)
+![flattr-badge-large.png](https://bitbucket.org/repo/gRoGKX/images/687296601-flattr-badge-large.png)[Flattr This!](https://flattr.com/submit/auto?user_id=j.bachorik&url=https%3A%2F%2Fbitbucket.org%2Fjbachorik%2Fbtrace2)
