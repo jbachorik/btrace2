@@ -4,7 +4,9 @@
 2.0
 
 ## Quick Summary
-BTrace is a safe, dynamic tracing tool for the Java platform. BTrace2 can be used to dynamically trace a running Java program (similar to DTrace for OpenSolaris applications and OS). BTrace dynamically instruments the classes of the target application to inject tracing code ("bytecode tracing").
+BTrace is a safe, dynamic tracing tool for the Java platform. 
+
+BTrace can be used to dynamically trace a running Java program (similar to DTrace for OpenSolaris applications and OS). BTrace dynamically instruments the classes of the target application to inject tracing code ("bytecode tracing").
 
 ## Building BTrace
 
@@ -22,21 +24,19 @@ cd <btrace>
 mvn --also-make --projects dist install verify
 ```
 
-The binary dist packages can be found in `<btrace>/dist/target`
-* btrace-dist-*.tar.gz
-* btrace-dist-*.zip
+The binary dist packages can be found in `<btrace>/dist/target` as the *.tar.gz and *.zip files
 
 
 ## Using BTrace
 ### Installation
-Explode a binary distribution file (either tar.gz or .zip) to a directory of your choice
+Explode a binary distribution file (either *.tar.gz or *.zip) to a directory of your choice
 
-You may set the system environment variable *BTRACE_HOME* to point to the directory containing the exploded distribution.
+You may set the system environment variable __BTRACE_HOME__ to point to the directory containing the exploded distribution.
 
-You may enhance the system environment variable *PATH* with *$BTRACE_HOME/bin* for your convenience.
+You may enhance the system environment variable __PATH__ with __$BTRACE_HOME/bin__ for your convenience.
 
 ### Running
-* `<btrace>/bin/btrace <PID> <trace_script>` will attach to the *java* application with the given *PID* and compile and submit the trace script
+* `<btrace>/bin/btrace <PID> <trace_script>` will attach to the __java__ application with the given __PID__ and compile and submit the trace script
 * `<btrace>/bin/btracec <trace_script>` will compile the provided trace script
 * `<btrace>/bin/btracer <compiled_script> <args to launch a java app>` will start the specified java application with the btrace agent running and the script previously compiled by *btracec* loaded
 
