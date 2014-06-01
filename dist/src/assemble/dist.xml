@@ -74,6 +74,7 @@
                 <include>net.java.btrace:client</include>
                 <include>net.java.btrace:compiler</include>
                 <include>net.java.btrace:asm</include>
+                <include>net.java.btrace:jps-api</include>
                 <include>jline:jline</include>
                 <include>net.sf.jopt-simple:jopt-simple</include>
             </includes>
