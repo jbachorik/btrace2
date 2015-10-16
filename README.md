@@ -3,6 +3,10 @@
 ## Version
 2.0
 
+## Important
+
+Version 2.0 is a proof of concept for enhanced BTrace modularization. It has been dormant for quite a long time and there is no time estimate when the work on it would continue. Please note that there might be severe errors or omissions making this version not suitable for usage in production.
+
 ## Quick Summary
 BTrace is a safe, dynamic tracing tool for the Java platform. 
 
